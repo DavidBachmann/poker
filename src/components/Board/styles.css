@@ -2,12 +2,13 @@
 }
 
 .Board-holeCards {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
 }
 
 .Board-boardCards {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
 }
