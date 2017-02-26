@@ -16,7 +16,7 @@ class Card extends React.Component {
   }
 
   render() {
-    const { rank, suit, visibility } = this.props
+    const { rank, suit } = this.props
     const { revealed } = this.state
 
     return (
