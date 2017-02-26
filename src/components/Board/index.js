@@ -25,19 +25,20 @@ class Board extends Component {
 
   evaluateHandStrength(player1HoleCards, player2HoleCards, boardCards) {
 
-    const formatHand1 = player1HoleCards.map((card) => `${card.rank.symbol}${card.suit.letter}`)
-    const formatHand2 = player2HoleCards.map((card) => `${card.rank.symbol}${card.suit.letter}`)
-    const formatBoard = boardCards.map((card) => `${card.rank.symbol}${card.suit.letter}`)
-
-    const hand1Strength = Hand.solve(formatHand1.concat(formatBoard))
-    const hand2Strength = Hand.solve(formatHand2.concat(formatBoard))
-    const handWinner = Hand.winners([hand1Strength, hand2Strength])
-
+    const formattedHand1 = player1HoleCards.map((card) => `${card.rank.symbol}${card.suit.letter}`)
+    const formattedHand2 = player2HoleCards.map((card) => `${card.rank.symbol}${card.suit.letter}`)
+    const formattedBoard = boardCards.map((card) => `${card.rank.symbol}${card.suit.letter}`)
+    const handWinner = Hand.winners(
+      [Hand.solve(
+        formattedHand1.concat(formattedBoard)),
+        Hand.solve(formattedHand2.concat(formattedBoard))
+      ])
 
     return {
-      hand1Strength,
-      hand2Strength,
-      handWinner: this.determineWinner(hand1Strength, hand2Strength, handWinner),
+      handWinner: this.determineWinner(
+        Hand.solve(formattedHand1.concat(formattedBoard)),
+        Hand.solve(formattedHand2.concat(formattedBoard)),
+        handWinner),
     }
   }
 
