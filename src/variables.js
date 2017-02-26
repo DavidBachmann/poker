@@ -1,9 +1,5 @@
 export const availableRanks = [
   {
-    value: 1,
-    symbol: 'A',
-  },
-  {
     value: 2,
     symbol: 2,
   },
@@ -50,7 +46,11 @@ export const availableRanks = [
   {
     value: 13,
     symbol: 'K',
-  }
+  },
+  {
+    value: 14,
+    symbol: 'A',
+  },
 ]
 
 export const availableSuits = [

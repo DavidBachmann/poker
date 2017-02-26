@@ -1,53 +1,35 @@
 import React from 'react'
-import { availableRanks, availableSuits } from '../../variables'
-import { shuffle } from '../../utils'
+import classNames from 'classnames'
 
 import './styles.css'
 
 class Card extends React.Component {
+
   state = {
-    holeCards: [],
-    boardCards: [],
+    revealed: this.props.visibility === 'visible',
   }
 
-  constructor() {
-    super()
-    this.shuffledDeck = shuffle(this.generateDeck())
-  }
-
-  componentDidMount() {
-
-  }
-
-  generateDeck() {
-    this.deck = []
-
-    for (let i = 0; i < availableSuits.length; i++) {
-      for (let j = 0; j < availableRanks.length; j++) {
-        const card = {
-          rank: availableRanks[j],
-          suit: availableSuits[i]
-        }
-
-        this.deck.push(card)
-      }
-    }
-
-    return this.deck
+  onClick = () => {
+    this.setState({
+      revealed: true,
+    })
   }
 
   render() {
+    const { rank, suit, visibility } = this.props
+    const { revealed } = this.state
+
     return (
-      <div>
-        {this.shuffledDeck.map((card, index) => (
-          <div className="Card" key={index}>
-            <p className="Card-value">{card.rank.value}</p>
-            <p className="Card-value" style={{color: card.suit.color}}>
-              {card.suit.symbol}
-            </p>
-          </div>
-        ))}
-      </div>
+        <div className={classNames('Card', revealed && 'is-revealed')} onClick={this.onClick}>
+          {[0,1].map((a, index) => (
+            <div className="Card-mark" key={index}>
+              <p className="Card-value">{rank.symbol}</p>
+              <p className="Card-suit" style={{color: suit.color}}>
+                {suit.symbol}
+              </p>
+            </div>
+          ))}
+        </div>
     )
   }
 

@@ -1,0 +1,13 @@
+.Board {
+}
+
+.Board-holeCards {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Board-boardCards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

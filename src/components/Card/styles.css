@@ -1,4 +1,47 @@
 .Card {
+  background: rebeccapurple;
+  border-radius: 12px;
+  border: 1px solid #C5C5C5;
   display: flex;
   flex-direction: column;
+  font-size: 1.2rem;
+  height: 16rem;
+  margin: 1rem;
+  position: relative;
+  text-align: center;
+  user-select: none;
+  width: 11.4rem;
+}
+
+.Card:hover {
+  background: #7638b3;
+}
+
+.Card.is-revealed {
+  background: #FFF;
+}
+
+.Card.is-revealed:hover {
+  background: #FFF;
+}
+
+.Card-mark {
+  display: none;
+  position: absolute;
+}
+
+.Card.is-revealed .Card-mark {
+  display: block;
+}
+
+.Card-mark:first-child {
+  top: 0.75rem;
+  left: 0.75rem;
+}
+
+.Card-mark:last-child {
+  bottom: 0.75rem;
+  right: 0.75rem;
+  transform: scale(-1);
+  transform-origin: center;
 }
