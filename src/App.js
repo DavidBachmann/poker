@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Player from './classes/Player'
 import Board from './components/Board'
 import { shuffleDeck, generateDeck } from './utils'
 
