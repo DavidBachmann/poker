@@ -3,7 +3,6 @@ import { Hand } from 'pokersolver'
 import formatHand from '../formatHand'
 import { stripSpaces } from '../'
 
-
 const determineWinner = (allPlayerCards, communityCards) => {
   let allHands = []
   let players = []
@@ -36,19 +35,20 @@ const determineWinner = (allPlayerCards, communityCards) => {
     solvedHands.push(Hand.solve(players[i].hand))
   }
 
-  const handWinner = Hand.winners(solvedHands)
-
+  // Let PokerSolver figure out who won the hand
+  const handWinner = Hand.winners(solvedHands)[0]
+  // Flatten the string so we can compare it
+  const winningHand = stripSpaces(handWinner.cards.toString())
 
   players.map((player) => {
-    let winningHand = stripSpaces(handWinner[0].cards.toString())
     let playerHand = stripSpaces(Hand.solve(player.hand).toString())
 
+    // If the winning hand matches this player's hand we have found our winner.
     if (winningHand === playerHand) {
-
       return winner = {
         name: player.name,
         hand: player.hand,
-        handDetails: handWinner[0],
+        handDetails: handWinner,
       }
     }
   })

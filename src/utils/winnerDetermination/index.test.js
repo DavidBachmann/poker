@@ -10,15 +10,15 @@ test('Determine winner with 2 players', () => {
   const totalCommunityCards = 5
   const shuffledDeck = shuffleDeck(generateNewDeck())
 
+  // Deal cards to all players.
   for (let i = 0; i < totalPlayers; i++) {
     players[i] = shuffledDeck.splice(0, 2)
   }
 
+  // Deal 5 community cards.
   for (let i = 0; i < totalCommunityCards; i++) {
     communityCards = shuffledDeck.splice(0, 5)
   }
-
-  console.log(determineWinner(players, communityCards))
 })
 
 test('Determine winner with 3 players', () => {
