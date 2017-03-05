@@ -11,8 +11,10 @@ class Card extends React.Component {
   }
 
   onClick = () => {
+    const { revealed } = this.state
+
     this.setState({
-      revealed: true,
+      revealed: !revealed,
     })
   }
 

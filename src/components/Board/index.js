@@ -9,7 +9,7 @@ class Board extends Component {
   render() {
     const { players, communityCards } = this.props
     const winner = determineWinner(players, communityCards)
-    const randomPattern = Math.floor(Math.random() * 5) + 1
+    const randomPattern = Math.floor(Math.random() * 10) + 1
 
     return (
       <div className="Board">
