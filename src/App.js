@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Board from './components/Board'
-import { shuffleDeck, generateDeck } from './utils'
+import generateNewDeck from './utils/generateNewDeck'
+import shuffleDeck from './utils/shuffleDeck'
 
 import './App.css'
 
@@ -15,7 +16,8 @@ class App extends Component {
   }
 
   dealCards() {
-    this._shuffledDeck = shuffleDeck(generateDeck())
+    this._shuffledDeck = shuffleDeck(generateNewDeck())
+
     for (let i = 0; i < this.totalPlayers; i++) {
       this.players[i] = this._shuffledDeck.splice(0, 2)
     }
@@ -23,7 +25,8 @@ class App extends Component {
     if (this.players.length > MAX_PLAYERS) {
       throw new Error('Max players exceeded!')
     }
-    this.boardCards = this._shuffledDeck.splice(0, 5)
+
+    this.communityCards = this._shuffledDeck.splice(0, 5)
   }
 
   render() {
@@ -31,7 +34,7 @@ class App extends Component {
       <div className="App">
         <Board
           players={this.players}
-          boardCards={this.boardCards} />
+          communityCards={this.communityCards} />
       </div>
     )
   }
