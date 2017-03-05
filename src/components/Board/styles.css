@@ -32,42 +32,42 @@
   position: absolute;
   transform: translate(-50%, -50%); }
 
-.Player:nth-child(1) {
-  top: 74.98850513%;
-  left: 93.30790472%; }
+.Board-holeCards:nth-child(1) {
+  top: 14.65874%;
+  left: 85.36941%; }
 
-.Player:nth-child(2) {
-  top: 96.97403026%;
-  left: 67.13010453%; }
+.Board-holeCards:nth-child(2) {
+  top: 45.64442%;
+  left: 99.80993%; }
 
-.Player:nth-child(3) {
-  top: 97.00125299%;
-  left: 32.94473052%; }
+.Board-holeCards:nth-child(3) {
+  top: 78.66614%;
+  left: 90.96648%; }
 
-.Player:nth-child(4) {
-  top: 75.0574479%;
-  left: 6.73194822%; }
+.Board-holeCards:nth-child(4) {
+  top: 98.28769%;
+  left: 62.973%; }
 
-.Player:nth-child(5) {
-  top: 41.40038305%;
-  left: 0.74508564%; }
+.Board-holeCards:nth-child(5) {
+  top: 95.33687%;
+  left: 28.91521%; }
 
-.Player:nth-child(6) {
-  top: 11.7632626%;
-  left: 17.7827389%; }
+.Board-holeCards:nth-child(6) {
+  top: 71.19304%;
+  left: 4.71363%; }
 
-.Player:nth-child(7) {
-  top: 0.00014268%;
-  left: 49.88055109%; }
+.Board-holeCards:nth-child(7) {
+  top: 37.1424%;
+  left: 1.68145%; }
 
-.Player:nth-child(8) {
-  top: 11.60976682%;
-  left: 82.03420042%; }
+.Board-holeCards:nth-child(8) {
+  top: 9.10212%;
+  left: 21.23608%; }
 
-.Player:nth-child(9) {
-  top: 41.16514406%;
-  left: 99.21326366%; }
+.Board-holeCards:nth-child(9) {
+  top: 0.17981%;
+  left: 54.23658%; }
 
-.Player:nth-child(10) {
-  top: 74.85042962%;
-  left: 93.38728095%; }
+.Board-holeCards:nth-child(10) {
+  top: 14.54626%;
+  left: 85.25666%; }
