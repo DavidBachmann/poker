@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 import Card from '../Card'
+import { stripSpaces } from '../../utils'
 import determineWinner from '../../utils/winnerDetermination'
 
 import './styles.css'
@@ -19,7 +20,7 @@ class Board extends Component {
           const isWinner = playerName === winner.name
 
           return (
-            <div className={classNames(playerName, isWinner && 'is-winner', 'Player')} key={i}>
+            <div className={classNames('Player', stripSpaces(playerName), isWinner && 'is-winner', 'Board-holeCards')} key={i}>
               {/* <p>Player {i + 1} Cards:</p> */}
               {player.map((card, i) => (
                 <Card
