@@ -40,7 +40,7 @@ test('Determine winner with 2 players', () => {
     },
     {
       rank: { value: 9, symbol: '9' },
-      suit: { symbol: '♥', letter: 'h', name: 'heart', color: 'red' }
+      suit: { symbol: '♥', letter: 'h', name: 'heart', color: 'black' }
     },
     {
       rank: { value: 11, symbol: 'J' },
@@ -49,7 +49,7 @@ test('Determine winner with 2 players', () => {
   ]
 
 
-  expect(determineWinner(players, communityCards).hand).toEqual([ '9s', 'Kc', '8c', 'Jd', 'Kd', '9s', 'Jh' ])
+  expect(determineWinner(players, communityCards).hand).toEqual([ '9s', 'Kc', '8c', 'Jd', 'Kd', '9h', 'Jh' ])
   expect(determineWinner(players, communityCards).handDetails.name).toBe('Two Pair')
 })
 

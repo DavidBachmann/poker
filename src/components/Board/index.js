@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import classNames from 'classnames'
 import Card from '../Card'
 import determineWinner from '../../utils/winnerDetermination'
 
@@ -9,40 +10,41 @@ class Board extends Component {
   render() {
     const { players, communityCards } = this.props
     const winner = determineWinner(players, communityCards)
-    const randomPattern = Math.floor(Math.random() * 10) + 1
+
 
     return (
       <div className="Board">
+        {players.map((player, i) => {
+          const playerName = `Player ${i+1}`
+          const isWinner = playerName === winner.name
 
-        {players.map((player, index) => (
-          <div className="Board-holeCards" key={index}>
-            <p>Player {index + 1} Cards:</p>
-            {player.map((card, index) => (
-              <Card
-                visibility="invisible"
-                suit={card.suit}
-                rank={card.rank}
-                randomPattern={randomPattern}
-                key={index}
-              />
-            ))}
-          </div>
-        ))}
+          return (
+            <div className={classNames(playerName, isWinner && 'is-winner', 'Player')} key={i}>
+              {/* <p>Player {i + 1} Cards:</p> */}
+              {player.map((card, i) => (
+                <Card
+                  visibility="visible"
+                  suit={card.suit}
+                  rank={card.rank}
+                  key={i}
+                />
+              ))}
+            </div>
+          )
+        })}
 
         <div className="Board-communityCards">
-          <p>Community cards:</p>
-
-          {communityCards.map((card, index) => (
+          {communityCards.map((card, i) => (
             <Card
               visibility="visible"
               suit={card.suit}
               rank={card.rank}
-              key={index}
+              key={i}
             />
           ))}
 
         </div>
-        <p><strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong></p>
+        <p className="Board-info"><strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong></p>
       </div>
     )
   }

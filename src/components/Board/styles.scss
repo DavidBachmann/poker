@@ -1,3 +1,5 @@
+@import '../../vars';
+
 .Board {
   align-items: center;
   background-image: radial-gradient(#30a07d, #05844c);
@@ -8,14 +10,16 @@
   justify-content: center;
   margin: auto;
   position: relative;
-  width: 700px; }
+  width: 700px;
+}
 
 .Board-communityCards {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   margin: auto;
-  width: 18.4375rem; }
+  width: ($cardWidth + $cardMargin + 0.45rem) * 5;
+}
 
 .Board-info {
   color: #222;
@@ -25,49 +29,72 @@
   position: absolute;
   text-align: center;
   top: 60%;
-  width: 100%; }
+  width: 100%;
+}
+
+//Node sass can't do sin/cos ATM.
+//I have commented out the sass
+//and I'm just pasting the output from http://www.sassmeister.com/
+//instead of ripping my hair out.
+
+// @mixin circle-position($point, $total_points: 9) {
+//   $deg: 360 / $total-points;
+//   $rad: (($deg * ($point - 1)) + 30) * 3.14 / 180;
+//   $x: 0 + 50 * cos($rad);
+//   $y: 0 + 50 * sin($rad);
+//   top: #{$y + 50 + '%'};
+//   left: #{$x + 50 + '%'};
+// }
 
 .Player {
   display: flex;
   position: absolute;
-  transform: translate(-50%, -50%); }
+  transform: translate(-50%, -50%);
+
+  // @for $i from 1 through 10 {
+  //   &:nth-child(#{$i}) {
+  //     @include circle-position($i);
+  //   }
+  // }
+}
 
 .Player:nth-child(1) {
   top: 74.98850513%;
-  left: 93.30790472%; }
-
+  left: 93.30790472%;
+}
 .Player:nth-child(2) {
   top: 96.97403026%;
-  left: 67.13010453%; }
-
+  left: 67.13010453%;
+}
 .Player:nth-child(3) {
   top: 97.00125299%;
-  left: 32.94473052%; }
-
+  left: 32.94473052%;
+}
 .Player:nth-child(4) {
   top: 75.0574479%;
-  left: 6.73194822%; }
-
+  left: 6.73194822%;
+}
 .Player:nth-child(5) {
   top: 41.40038305%;
-  left: 0.74508564%; }
-
+  left: 0.74508564%;
+}
 .Player:nth-child(6) {
   top: 11.7632626%;
-  left: 17.7827389%; }
-
+  left: 17.7827389%;
+}
 .Player:nth-child(7) {
   top: 0.00014268%;
-  left: 49.88055109%; }
-
+  left: 49.88055109%;
+}
 .Player:nth-child(8) {
   top: 11.60976682%;
-  left: 82.03420042%; }
-
+  left: 82.03420042%;
+}
 .Player:nth-child(9) {
   top: 41.16514406%;
-  left: 99.21326366%; }
-
+  left: 99.21326366%;
+}
 .Player:nth-child(10) {
   top: 74.85042962%;
-  left: 93.38728095%; }
+  left: 93.38728095%;
+}

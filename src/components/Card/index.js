@@ -31,24 +31,25 @@ class Card extends React.Component {
   }
 
   render() {
-    const { rank, suit, randomPattern } = this.props
+    const { rank, suit } = this.props
     const { revealed, peakRevealed } = this.state
-    const classes = classNames('Card', `Card-pattern${randomPattern}`, revealed && 'is-revealed', peakRevealed && 'is-peaked')
+    const classes = classNames('Card', revealed && 'is-revealed', peakRevealed && 'is-peaked')
+
     return (
-        <div className={classes} onClick={this.onClick} onMouseOver={this.onMouseOver} onMouseOut={this.onMouseOut}>
-            <div className="Card-mark" >
-              <p className="Card-value">{rank.symbol}</p>
-              <p className="Card-suit" style={{color: suit.color}}>
-                {suit.symbol}
-              </p>
-            </div>
-            <div className="Card-mark" >
-              <p className="Card-value">{rank.symbol}</p>
-              <p className="Card-suit" style={{color: suit.color}}>
-                {suit.symbol}
-              </p>
-            </div>
+      <div className={classes} onClick={this.onClick} onMouseOver={this.onMouseOver} onMouseOut={this.onMouseOut}>
+        <div className="Card-mark" >
+          <p className="Card-value">{rank.symbol}</p>
+          <p className="Card-suit" style={{color: suit.color}}>
+            {suit.symbol}
+          </p>
         </div>
+        <div className="Card-mark" >
+          <p className="Card-value">{rank.symbol}</p>
+          <p className="Card-suit" style={{color: suit.color}}>
+            {suit.symbol}
+          </p>
+        </div>
+      </div>
     )
   }
 

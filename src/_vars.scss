@@ -1,0 +1,6 @@
+$multiplier: 1.25;
+$cardWidth: 2.34rem * $multiplier;
+$cardHeight: 3.5rem * $multiplier;
+$cardMargin: 0.25rem * $multiplier;
+$cardBorder: 0.09375rem * $multiplier;
+$communityCardsWidth: ($cardWidth + $cardMargin + $cardBorder + 0.5rem) * 5;
