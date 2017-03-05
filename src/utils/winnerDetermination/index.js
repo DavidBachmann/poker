@@ -51,6 +51,8 @@ const determineWinner = (allPlayerCards, communityCards) => {
         handDetails: handWinner,
         allHands: allHands
       }
+    } else {
+      return 0
     }
   })
 

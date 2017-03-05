@@ -40,7 +40,7 @@ test('Determine winner with 2 players', () => {
     },
     {
       rank: { value: 9, symbol: '9' },
-      suit: { symbol: '♠', letter: 's', name: 'spade', color: 'black' }
+      suit: { symbol: '♥', letter: 'h', name: 'heart', color: 'red' }
     },
     {
       rank: { value: 11, symbol: 'J' },

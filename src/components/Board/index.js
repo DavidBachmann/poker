@@ -9,6 +9,7 @@ class Board extends Component {
   render() {
     const { players, communityCards } = this.props
     const winner = determineWinner(players, communityCards)
+    const randomPattern = Math.floor(Math.random() * 5) + 1
 
     return (
       <div className="Board">
@@ -18,9 +19,10 @@ class Board extends Component {
             <p>Player {index + 1} Cards:</p>
             {player.map((card, index) => (
               <Card
-                visibility="visible"
+                visibility="invisible"
                 suit={card.suit}
                 rank={card.rank}
+                randomPattern={randomPattern}
                 key={index}
               />
             ))}

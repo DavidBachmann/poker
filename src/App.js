@@ -11,7 +11,7 @@ class App extends Component {
   constructor() {
     super()
     this.players = []
-    this.totalPlayers = 2
+    this.totalPlayers = 9
     this.dealCards()
   }
 

@@ -7,6 +7,7 @@ class Card extends React.Component {
 
   state = {
     revealed: this.props.visibility === 'visible',
+    peakRevealed: false
   }
 
   onClick = () => {
@@ -15,20 +16,36 @@ class Card extends React.Component {
     })
   }
 
-  render() {
-    const { rank, suit } = this.props
-    const { revealed } = this.state
+  onMouseOver = () => {
+    this.setState({
+      peakRevealed: true
+    })
+  }
 
+  onMouseOut = () => {
+    this.setState({
+      peakRevealed: false
+    })
+  }
+
+  render() {
+    const { rank, suit, randomPattern } = this.props
+    const { revealed, peakRevealed } = this.state
+    const classes = classNames('Card', `Card-pattern${randomPattern}`, revealed && 'is-revealed', peakRevealed && 'is-peaked')
     return (
-        <div className={classNames('Card', revealed && 'is-revealed')} onClick={this.onClick}>
-          {[0,1].map((a, index) => (
-            <div className="Card-mark" key={index}>
+        <div className={classes} onClick={this.onClick} onMouseOver={this.onMouseOver} onMouseOut={this.onMouseOut}>
+            <div className="Card-mark" >
               <p className="Card-value">{rank.symbol}</p>
               <p className="Card-suit" style={{color: suit.color}}>
                 {suit.symbol}
               </p>
             </div>
-          ))}
+            <div className="Card-mark" >
+              <p className="Card-value">{rank.symbol}</p>
+              <p className="Card-suit" style={{color: suit.color}}>
+                {suit.symbol}
+              </p>
+            </div>
         </div>
     )
   }
