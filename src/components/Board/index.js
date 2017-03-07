@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import classNames from 'classnames'
-import { stripSpaces } from '../../utils'
 import Bot from '../Bot'
 import Hero from '../Hero'
 import Community from '../Community'
@@ -22,7 +20,7 @@ export class Board extends Component {
             visibility="hidden"
             cards={heroCards}
           />
-      </div>
+        </div>
         {bots.map((bot, i) => (
           <Bot
             cards={bot}
