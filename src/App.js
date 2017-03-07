@@ -1,32 +1,30 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Board from './components/Board'
+import { startGame, stopGame, determineWinner } from './actions/game'
 
 import './App.css'
 
 class App extends Component {
-
-  componentWillMount() {
-    const { dispatch } = this.props
-    dispatch({ type: 'DEAL' })
-  }
-
   render() {
-    const { dispatch, started, pot, players, communityCards } = this.props
+    const { dispatch, winner, started, pot, players, communityCards } = this.props
 
     return (
       <div className="App">
         <div>
           {started && (
             <Board
+              dispatch={dispatch}
               started={started}
               pot={pot}
               players={players}
               communityCards={communityCards}
+              winner={winner && winner}
             />
           )}
-          <button onClick={() => dispatch({ type: 'START' })}>Start Game</button>
-          <button onClick={() => dispatch({ type: 'STOP' })}>Restart Game</button>
+          <button onClick={() => dispatch(startGame(9))}>Start Game</button>
+          <button onClick={() => dispatch(stopGame())}>Stop Game</button>
+          <button onClick={() => dispatch(determineWinner())}>Determine Winner</button>
           <button onClick={() => console.log(this.props)}>Get State</button>
         </div>
       </div>

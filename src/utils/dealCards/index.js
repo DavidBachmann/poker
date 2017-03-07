@@ -1,6 +1,3 @@
-import generateShuffledDeck from './generateShuffledDeck'
-import shuffleDeck from './shuffleDeck'
-
 const dealCards = (players, deck) => {
   const MAX_PLAYERS = 9
   const totalPlayers = players.length
