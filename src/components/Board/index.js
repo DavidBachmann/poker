@@ -1,13 +1,18 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import classNames from 'classnames'
 import Card from '../Card'
 import { stripSpaces } from '../../utils'
 
 import './styles.css'
 
-class Board extends Component {
+export class Board extends Component {
   render() {
-    const { players, communityCards, winner } = this.props
+    const { started, players, communityCards, winner, pot } = this.props
+
+    if (!started) {
+      return null
+    }
 
     return (
       <div className="Board">
@@ -38,10 +43,14 @@ class Board extends Component {
               key={i}
             />
           ))}
-
+          <p className="Board-potInfo">
+            Pot: <strong>${pot}</strong>
+          </p>
         </div>
         {winner && (
-          <p className="Board-info"><strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong></p>
+          <p className="Board-winnerInfo">
+            <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
+          </p>
         )}
       </div>
     )
@@ -49,4 +58,4 @@ class Board extends Component {
 
 }
 
-export default Board
+export default connect(state => state)(Board)

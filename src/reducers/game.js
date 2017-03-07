@@ -33,6 +33,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         started: true,
+        winner: null,
         ...dealCards(action.numberOfPlayers),
       }
     case 'STOP':
