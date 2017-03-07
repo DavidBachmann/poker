@@ -1,4 +1,4 @@
 # React + Redux poker client vs bots
 Work In Progress. Very much incomplete.
 
-![Screenshot of the client in action](https://cloud.githubusercontent.com/assets/8494120/23590385/ab1eed14-01d6-11e7-89e4-ac669bf600de.png)
+![Screenshot March 7 2017](https://cloud.githubusercontent.com/assets/8494120/23683639/0d79c224-0392-11e7-8045-170703f340e3.png)
