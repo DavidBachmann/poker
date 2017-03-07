@@ -2,26 +2,21 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 import Card from '../Card'
 import { stripSpaces } from '../../utils'
-import determineWinner from '../../utils/winnerDetermination'
 
 import './styles.css'
 
 class Board extends Component {
-
   render() {
-    const { players, communityCards } = this.props
-    const winner = determineWinner(players, communityCards)
-
+    const { players, communityCards, winner } = this.props
 
     return (
       <div className="Board">
         {players.map((player, i) => {
           const playerName = `Player ${i+1}`
-          const isWinner = playerName === winner.name
+          const isWinner = winner && playerName === winner.name
 
           return (
             <div className={classNames('Player', stripSpaces(playerName), isWinner && 'is-winner', 'Board-holeCards')} key={i}>
-              {/* <p>Player {i + 1} Cards:</p> */}
               {player.map((card, i) => (
                 <Card
                   visibility="visible"
@@ -45,7 +40,9 @@ class Board extends Component {
           ))}
 
         </div>
-        <p className="Board-info"><strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong></p>
+        {winner && (
+          <p className="Board-info"><strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong></p>
+        )}
       </div>
     )
   }

@@ -1,43 +1,35 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import Board from './components/Board'
-import generateNewDeck from './utils/generateNewDeck'
-import shuffleDeck from './utils/shuffleDeck'
+import { startGame, stopGame, determineWinner } from './actions/game'
 
 import './App.css'
 
-const MAX_PLAYERS = 9
-
 class App extends Component {
-  constructor() {
-    super()
-    this.players = []
-    this.totalPlayers = 9
-    this.dealCards()
-  }
-
-  dealCards() {
-    const shuffledDeck = shuffleDeck(generateNewDeck())
-
-    for (let i = 0; i < this.totalPlayers; i++) {
-      this.players[i] = shuffledDeck.splice(0, 2)
-    }
-
-    if (this.players.length > MAX_PLAYERS) {
-      throw new Error('Max players exceeded!')
-    }
-
-    this.communityCards = shuffledDeck.splice(0, 5)
-  }
-
   render() {
+    const { dispatch, winner, started, pot, players, communityCards } = this.props
+
     return (
       <div className="App">
-        <Board
-          players={this.players}
-          communityCards={this.communityCards} />
+        <div>
+          {started && (
+            <Board
+              dispatch={dispatch}
+              started={started}
+              pot={pot}
+              players={players}
+              communityCards={communityCards}
+              winner={winner && winner}
+            />
+          )}
+          <button onClick={() => dispatch(startGame(9))}>Start Game</button>
+          <button onClick={() => dispatch(stopGame())}>Stop Game</button>
+          <button onClick={() => dispatch(determineWinner())}>Determine Winner</button>
+          <button onClick={() => console.log(this.props)}>Get State</button>
+        </div>
       </div>
     )
   }
 }
 
-export default App
+export default connect(state => state)(App)
