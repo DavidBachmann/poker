@@ -6,10 +6,10 @@ import Card from '../Card'
 class Bot extends Component {
 
   render() {
-    const { cards, name } = this.props
+    const { cards, name, nextToAct } = this.props
 
     return (
-      <div className={classNames('Player', stripSpaces(name), 'Board-holeCards')}>
+      <div className={classNames('Player', stripSpaces(name), nextToAct && 'is-next-to-act', 'Board-holeCards')}>
         {cards.map((card, i) => (
           <Card
             visibility="hidden"

@@ -14,3 +14,7 @@ export const determineWinner = () => ({
 export const showAll = () => ({
   type: 'SHOW_ALL'
 })
+
+export const nextPlayerToAct = () => ({
+  type: 'NEXT_TO_ACT'
+})

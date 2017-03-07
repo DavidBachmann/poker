@@ -1,26 +1,29 @@
+// TODO: Refactor
+
 import Player from '../../Player'
 import { Hand } from 'pokersolver'
 import formatHand from '../../utils/formatHand'
 import { stripSpaces } from '../../utils'
 
-const determineWinner = (allPlayerCards, communityCards) => {
+const determineWinner = (bots, heroCards, communityCards) => {
+  let allPlayerCards = [heroCards].concat(bots)
   let allHands = []
   let players = []
   let solvedHands = []
   let winner = undefined
 
   /*
-    Transform communityCards; an array with with two card objects that look like:
+    Transform communityCards; an array with with two 5 objects that look like:
     { rank: { value: 7, symbol: '7' }, suit: { symbol: '♥', letter: 'h', name: 'heart', color: 'red' } }
-    { rank: { value: 12, symbol: 'Q' }, suit: { symbol: '♣', letter: 'c', name: 'club', color: 'black' } }
+    { rank: { value: 12, symbol: 'Q' }, suit: { symbol: '♣', letter: 'c', name: 'club', color: 'black' } ... }
     into:
-    [ '7h', 'Qc' ]
+    [ '7h', 'Qc', ... ]
   */
 
   const formattedCommunityCards = formatHand(communityCards)
 
-  // Do the same for allPlayerCards
   for (let i = 0; i < allPlayerCards.length; i++) {
+    // Do the same for allPlayerCards
     // and concatinate it with the formatted community cards
     allHands.push(formatHand(allPlayerCards[i]).concat(formattedCommunityCards))
   }

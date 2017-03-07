@@ -7,7 +7,7 @@ import './styles.css'
 
 export class Board extends Component {
   render() {
-    const { started, bots, communityCards, heroCards, winner, pot } = this.props
+    const { started, bots, communityCards, heroCards, winner, nextToAct, pot } = this.props
 
     if (!started) {
       return null
@@ -15,16 +15,16 @@ export class Board extends Component {
 
     return (
       <div className="Board">
-        <div className="Player1">
-          <Hero
-            visibility="hidden"
-            cards={heroCards}
-          />
-        </div>
+        <Hero
+          cards={heroCards}
+          nextToAct={nextToAct === 0}
+        />
         {bots.map((bot, i) => (
           <Bot
             cards={bot}
             name={`Player ${i+2}`}
+            nextToAct={nextToAct === i+1}
+            key={i}
           />
         ))}
 
@@ -49,7 +49,6 @@ export class Board extends Component {
       </div>
     )
   }
-
 }
 
 export default connect(state => state)(Board)

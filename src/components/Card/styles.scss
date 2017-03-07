@@ -13,12 +13,32 @@
   margin: $cardMargin;
   position: relative;
   text-align: center;
+  transition: transform 0.25s ease-in-out;
   user-select: none;
   width: $cardWidth;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.1s;
+    box-shadow: 0 0px 40px white;
+    z-index: -1;
+  }
 
   .Player.is-winner & {
     animation: win 1.5s ease-in-out infinite;
     box-shadow: 0 6px 15px rgba(255,255,255,0.2), 0 6px 15px rgba(36,37,38,0.08);
+  }
+  .Player.is-next-to-act & {
+    transform: translateY(-10px);
+    &::after {
+      opacity: 1;
+    }
   }
 }
 
