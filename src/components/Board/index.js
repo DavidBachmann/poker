@@ -7,7 +7,7 @@ import './styles.css'
 
 export class Board extends Component {
   render() {
-    const { started, bots, communityCards, heroCards, winner, nextToAct, pot } = this.props
+    const { started, bots, communityCards, heroCards, winner, showdown, nextToAct, pot } = this.props
 
     if (!started) {
       return null
@@ -22,7 +22,8 @@ export class Board extends Component {
         {bots.map((bot, i) => (
           <Bot
             cards={bot}
-            name={`Player ${i+2}`}
+            cardsVisibility={showdown ? 'visible' : 'hidden'}
+            name={`Player ${i+1}`}
             nextToAct={nextToAct === i+1}
             key={i}
           />
@@ -31,7 +32,6 @@ export class Board extends Component {
         <div className="Board-communityCards">
           {communityCards.map((card, i) => (
             <Community
-              visibility="visible"
               suit={card.suit}
               rank={card.rank}
               key={i}

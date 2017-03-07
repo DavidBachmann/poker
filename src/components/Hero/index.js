@@ -8,7 +8,7 @@ class Hero extends Component {
     const { cards, nextToAct } = this.props
 
     return (
-      <div className={classNames('Player', 'Player1', nextToAct && 'is-next-to-act', 'Hero', 'Board-holeCards')}>
+      <div className={classNames('Player', 'Player0', nextToAct && 'is-next-to-act', 'Hero', 'Board-holeCards')}>
         {cards.map((card, i) => (
           <Card
             visibility="visible"
