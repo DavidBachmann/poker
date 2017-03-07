@@ -16,17 +16,17 @@ class App extends Component {
   }
 
   dealCards() {
-    this._shuffledDeck = shuffleDeck(generateNewDeck())
+    const shuffledDeck = shuffleDeck(generateNewDeck())
 
     for (let i = 0; i < this.totalPlayers; i++) {
-      this.players[i] = this._shuffledDeck.splice(0, 2)
+      this.players[i] = shuffledDeck.splice(0, 2)
     }
 
     if (this.players.length > MAX_PLAYERS) {
       throw new Error('Max players exceeded!')
     }
 
-    this.communityCards = this._shuffledDeck.splice(0, 5)
+    this.communityCards = shuffledDeck.splice(0, 5)
   }
 
   render() {
