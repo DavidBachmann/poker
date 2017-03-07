@@ -15,7 +15,6 @@ export class UI extends React.Component {
       </div>
     )
   }
-
 }
 
 export default connect(null, dispatch => ({

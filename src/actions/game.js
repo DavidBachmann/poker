@@ -10,3 +10,7 @@ export const stopGame = () => ({
 export const determineWinner = () => ({
   type: 'DETERMINE_WINNER'
 })
+
+export const showAll = () => ({
+  type: 'SHOW_ALL'
+})

@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
-import Card from '../Card'
 import { stripSpaces } from '../../utils'
-
+import Bot from '../Bot'
+import Hero from '../Hero'
+import Community from '../Community'
 import './styles.css'
 
 export class Board extends Component {
   render() {
-    const { started, players, communityCards, winner, pot } = this.props
+    const { started, bots, communityCards, heroCards, winner, pot } = this.props
 
     if (!started) {
       return null
@@ -16,37 +17,32 @@ export class Board extends Component {
 
     return (
       <div className="Board">
-        {players.map((player, i) => {
-          const playerName = `Player ${i+1}`
-          const isWinner = winner && playerName === winner.name
-
-          return (
-            <div className={classNames('Player', stripSpaces(playerName), isWinner && 'is-winner', 'Board-holeCards')} key={i}>
-              {player.map((card, i) => (
-                <Card
-                  visibility="visible"
-                  suit={card.suit}
-                  rank={card.rank}
-                  key={i}
-                />
-              ))}
-            </div>
-          )
-        })}
+        <div className="Player1">
+          <Hero
+            visibility="hidden"
+            cards={heroCards}
+          />
+      </div>
+        {bots.map((bot, i) => (
+          <Bot
+            cards={bot}
+            name={`Player ${i+2}`}
+          />
+        ))}
 
         <div className="Board-communityCards">
           {communityCards.map((card, i) => (
-            <Card
+            <Community
               visibility="visible"
               suit={card.suit}
               rank={card.rank}
               key={i}
             />
           ))}
-          <p className="Board-potInfo">
-            Pot: <strong>${pot}</strong>
-          </p>
         </div>
+        <p className="Board-potInfo">
+          Pot: <strong>${pot}</strong>
+        </p>
         {winner && (
           <p className="Board-winnerInfo">
             <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>

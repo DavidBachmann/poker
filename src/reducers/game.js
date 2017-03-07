@@ -4,27 +4,32 @@ import winnerDetermination from '../utils/winnerDetermination'
 // Dummy player generation
 const dealCards = (totalPlayers) => {
   const deck = generateShuffledDeck()
-  let players = []
+  let bots = []
   let communityCards = []
+  let heroCards = []
 
-  for (let i = 0; i < totalPlayers; i++) {
-    players[i] = deck.splice(0, 2)
+  for (let i = 0; i < totalPlayers - 1; i++) {
+    bots[i] = deck.splice(0, 2)
   }
 
   communityCards = deck.splice(0, 5)
+  heroCards = deck.splice(0, 2)
 
   return {
-    players,
-    communityCards
+    bots,
+    communityCards,
+    heroCards
   }
 }
 
 const initialState = {
   started: false,
   pot: 0,
-  players: [],
+  bots: [],
+  player: [],
   communityCards: [],
   winner: null,
+  showdown: false,
 }
 
 export default (state = initialState, action) => {
@@ -34,23 +39,25 @@ export default (state = initialState, action) => {
         ...state,
         started: true,
         winner: null,
+        showdown: false,
         ...dealCards(action.numberOfPlayers),
       }
     case 'STOP':
       return {
         ...state,
         started: false,
-        players: [],
+        bots: [],
         communityCards: [],
         winner: null,
       }
-    case 'DETERMINE_WINNER': {
-      const { players, communityCards } = state
+    case 'DETERMINE_WINNER':
+      const { bots, communityCards } = state
       return {
         ...state,
-        winner: winnerDetermination(players, communityCards),
+        winner: winnerDetermination(bots, communityCards),
+        showdown: true,
       }
-    }
+
     default:
       return state
   }
