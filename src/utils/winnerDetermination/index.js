@@ -1,7 +1,7 @@
 import Player from '../../Player'
 import { Hand } from 'pokersolver'
-import formatHand from '../formatHand'
-import { stripSpaces } from '../'
+import formatHand from '../../utils/formatHand'
+import { stripSpaces } from '../../utils'
 
 const determineWinner = (allPlayerCards, communityCards) => {
   let allHands = []

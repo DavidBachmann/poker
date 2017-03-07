@@ -7,11 +7,9 @@ import determineWinner from '../../utils/winnerDetermination'
 import './styles.css'
 
 class Board extends Component {
-
   render() {
     const { players, communityCards } = this.props
     const winner = determineWinner(players, communityCards)
-
 
     return (
       <div className="Board">
@@ -21,7 +19,6 @@ class Board extends Component {
 
           return (
             <div className={classNames('Player', stripSpaces(playerName), isWinner && 'is-winner', 'Board-holeCards')} key={i}>
-              {/* <p>Player {i + 1} Cards:</p> */}
               {player.map((card, i) => (
                 <Card
                   visibility="visible"

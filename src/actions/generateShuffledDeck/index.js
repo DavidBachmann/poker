@@ -1,4 +1,5 @@
 import { availableRanks, availableSuits } from '../../variables'
+import shuffleDeck from '../../utils/shuffleDeck'
 
 const generateNewDeck = () => {
   let deck = []
@@ -12,7 +13,7 @@ const generateNewDeck = () => {
       deck.push(card)
     }
   }
-  return deck
+  return shuffleDeck(deck)
 }
 
 export default generateNewDeck
