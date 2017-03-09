@@ -6,18 +6,6 @@ import Community from '../Community'
 import './styles.css'
 
 export class Board extends Component {
-  // getWinnerDetails(winners) {
-  //   if (winners !== null && winners.length !== 0) {
-  //     winners.map((winner, index) => {
-  //       return {
-  //         place: index + 1,
-  //         name: winner.name,
-  //         hand: winner.hand,
-  //         handDetails: winner.handDetails,
-  //       }
-  //     })
-  //   }
-  // }
 
   render() {
     const { started, bots, communityCards, heroCards, winners, showdown, nextToAct, pot } = this.props
