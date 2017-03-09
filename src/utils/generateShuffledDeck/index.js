@@ -1,4 +1,4 @@
-import { availableRanks, availableSuits } from '../../variables'
+import { availableRanks, availableSuits } from './'
 import shuffleDeck from '../../utils/shuffleDeck'
 
 const generateNewDeck = () => {

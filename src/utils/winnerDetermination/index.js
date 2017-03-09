@@ -1,14 +1,14 @@
 import { Hand } from 'pokersolver'
 import { concat } from 'lodash'
 import { stripSpaces } from '../../utils'
-import formatHand from '../../utils/formatHand'
+import { formatHand } from '../../utils/formatHand'
 
 const determineWinner = (bots, heroCards, communityCards) => {
   let allPlayerCards = concat([heroCards], bots)
   let winners = []
 
   /*
-    Transform communityCards; an array with with 5 objects that look like:
+    Formatting means taking an array with with objects that look like:
     { rank: { value: 7, symbol: '7' }, suit: { symbol: '♥', letter: 'h', color: 'red' } }
     { rank: { value: 12, symbol: 'Q' }, suit: { symbol: '♣', letter: 'c', color: 'black' } ... }
     into:
@@ -34,8 +34,8 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   // Let PokerSolver figure out who won the hand
   const handWinners = Hand.winners(formattedPlayerHandsSolved)
+
   // Flatten the string so we can compare it
-  // TODO: This fails if there are multiple winners, I.E. a tied pot
   let winningHands = handWinners.map((winner, index) => {
     return {
       place: index+1,
