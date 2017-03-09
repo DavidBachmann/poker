@@ -8,7 +8,7 @@ class Community extends React.Component {
 
     return (
       <Card
-        visibility="visible"
+        visible={true}
         suit={suit}
         rank={rank}
       />

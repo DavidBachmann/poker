@@ -4,15 +4,14 @@ import { stripSpaces } from '../../utils'
 import Card from '../Card'
 
 class Bot extends Component {
-
   render() {
-    const { cards, name, nextToAct, cardsVisibility } = this.props
+    const { cards, name, nextToAct, visibleCards } = this.props
 
     return (
       <div className={classNames('Player', stripSpaces(name), nextToAct && 'is-next-to-act', 'Board-holeCards')}>
         {cards.map((card, i) => (
           <Card
-            visibility={cardsVisibility}
+            visible={visibleCards}
             suit={card.suit}
             rank={card.rank}
             key={i}
@@ -21,7 +20,6 @@ class Bot extends Component {
       </div>
     )
   }
-
 }
 
 export default Bot

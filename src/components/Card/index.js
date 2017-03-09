@@ -6,8 +6,8 @@ import './styles.css'
 class Card extends React.Component {
 
   render() {
-    const { rank, suit, visibility } = this.props
-    const classes = classNames('Card', visibility === 'visible' && 'is-revealed')
+    const { rank, suit, visible } = this.props
+    const classes = classNames('Card', visible && 'is-revealed')
 
     return (
       <div className={classes} onClick={this.onClick}>

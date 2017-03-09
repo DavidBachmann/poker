@@ -6,8 +6,21 @@ import Community from '../Community'
 import './styles.css'
 
 export class Board extends Component {
+  // getWinnerDetails(winners) {
+  //   if (winners !== null && winners.length !== 0) {
+  //     winners.map((winner, index) => {
+  //       return {
+  //         place: index + 1,
+  //         name: winner.name,
+  //         hand: winner.hand,
+  //         handDetails: winner.handDetails,
+  //       }
+  //     })
+  //   }
+  // }
+
   render() {
-    const { started, bots, communityCards, heroCards, winner, showdown, nextToAct, pot } = this.props
+    const { started, bots, communityCards, heroCards, winners, showdown, nextToAct, pot } = this.props
 
     if (!started) {
       return null
@@ -22,9 +35,9 @@ export class Board extends Component {
         {bots.map((bot, i) => (
           <Bot
             cards={bot}
-            cardsVisibility={showdown ? 'visible' : 'hidden'}
-            name={`Player ${i+1}`}
-            nextToAct={nextToAct === i+1}
+            visibleCards={showdown ? true : false}
+            name={`Player ${i + 1}`}
+            nextToAct={nextToAct === i + 1}
             key={i}
           />
         ))}
@@ -41,10 +54,22 @@ export class Board extends Component {
         <p className="Board-potInfo">
           Pot: <strong>${pot}</strong>
         </p>
-        {winner && (
-          <p className="Board-winnerInfo">
-            <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
-          </p>
+        {winners && (
+          <div className="Board-winnerInfo">
+            {winners.length === 1 && winners.map((winner) => (
+              <span key={winner.name}>
+                <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
+            </span>
+            ))}
+            {winners.length > 1 && (
+              <div>
+                {winners.map((winner) => (
+                  <strong key={winner.name}>{winner.name}, </strong>
+                ))}
+                <p>tie for the hand with <strong>{winners[0].handDetails.descr}</strong></p>
+              </div>
+            )}
+          </div>
         )}
       </div>
     )

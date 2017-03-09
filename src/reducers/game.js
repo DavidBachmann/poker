@@ -33,7 +33,7 @@ const initialState = {
   bots: [],
   communityCards: [],
   heroCards: [],
-  winner: null,
+  winners: null,
   nextToAct: 0,
   showdown: false,
 }
@@ -46,7 +46,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         started: true,
-        winner: null,
+        winners: null,
         showdown: false,
         ...dealCards(action.numberOfPlayers),
       }
@@ -57,13 +57,13 @@ export default (state = initialState, action) => {
         started: false,
         bots: [],
         communityCards: [],
-        winner: null,
+        winners: null,
       }
 
     case 'DETERMINE_WINNER':
       return {
         ...state,
-        winner: winnerDetermination(bots, heroCards, communityCards),
+        winners: winnerDetermination(bots, heroCards, communityCards),
         showdown: true,
       }
 

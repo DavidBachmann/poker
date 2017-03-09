@@ -1,16 +1,11 @@
-// TODO: Refactor
-
-import Player from '../../Player'
 import { Hand } from 'pokersolver'
-import formatHand from '../../utils/formatHand'
+import { concat } from 'lodash'
 import { stripSpaces } from '../../utils'
+import formatHand from '../../utils/formatHand'
 
 const determineWinner = (bots, heroCards, communityCards) => {
-  let allPlayerCards = [heroCards].concat(bots)
-  let allHands = []
-  let players = []
-  let solvedHands = []
-  let winner = undefined
+  let allPlayerCards = concat([heroCards], bots)
+  let winners = []
 
   /*
     Transform communityCards; an array with with two 5 objects that look like:
@@ -22,44 +17,49 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   const formattedCommunityCards = formatHand(communityCards)
 
-  for (let i = 0; i < allPlayerCards.length; i++) {
-    // Do the same for allPlayerCards
-    // and concatinate it with the formatted community cards
-    allHands.push(formatHand(allPlayerCards[i]).concat(formattedCommunityCards))
-  }
+  const formattedPlayerHands = allPlayerCards.map((card) => {
+    return concat(formatHand(card), formattedCommunityCards)
+  })
 
-  // Now we can create Players and give them their full cards
-  for (let i = 0; i < allHands.length; i++) {
-    players.push(new Player(`Player ${i+1}`, allHands[i]))
-  }
-
-  // Take all the players hands and figure out who has the best hand
-  for (let i = 0; i < players.length; i++) {
-    solvedHands.push(Hand.solve(players[i].hand))
-  }
-
-  // Let PokerSolver figure out who won the hand
-  const handWinner = Hand.winners(solvedHands)[0]
-  // Flatten the string so we can compare it
-  const winningHand = stripSpaces(handWinner.cards.toString())
-
-  players.map((player) => {
-    let playerHand = stripSpaces(Hand.solve(player.hand).toString())
-
-    // If the winning hand matches this player's hand we have found our winner.
-    if (winningHand === playerHand) {
-      return winner = {
-        name: player.name,
-        hand: player.hand,
-        handDetails: handWinner,
-        allHands: allHands
-      }
-    } else {
-      return 0
+  const players = formattedPlayerHands.map((hand, index) => {
+    return {
+      name: `Player ${index+1}`,
+      hand: hand
     }
   })
 
-  return winner
+  const formattedPlayerHandsSolved = players.map((player) => {
+    return Hand.solve(player.hand)
+  })
+
+  // Let PokerSolver figure out who won the hand
+  const handWinners = Hand.winners(formattedPlayerHandsSolved)
+  // Flatten the string so we can compare it
+  // TODO: This fails if there are multiple winners, I.E. a tied pot
+  let winningHands = handWinners.map((winner, index) => {
+    return {
+      place: index+1,
+      winningHand: stripSpaces(winner.cards.toString())
+    }
+  })
+
+  players.forEach((player) => {
+    let playerHand = stripSpaces(Hand.solve(player.hand).toString())
+    // If the winning hand matches this player's hand we have found our winner.
+    for (let i = 0; i < winningHands.length; i++) {
+      if (winningHands[i].winningHand === playerHand) {
+        winners.push({
+          place: winningHands[i].place,
+          name: player.name,
+          hand: player.hand,
+          handDetails: handWinners[i],
+          allHands: formattedPlayerHands
+        })
+      }
+
+    }
+  })
+  return winners
 }
 
 export default determineWinner

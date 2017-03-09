@@ -11,7 +11,7 @@ class Hero extends Component {
       <div className={classNames('Player', 'Player0', nextToAct && 'is-next-to-act', 'Hero', 'Board-holeCards')}>
         {cards.map((card, i) => (
           <Card
-            visibility="visible"
+            visible="visible"
             suit={card.suit}
             rank={card.rank}
             key={i}
