@@ -1,4 +1,5 @@
-import { availableRanks, availableSuits } from './'
+import { availableRanks } from './availableRanks'
+import { availableSuits } from './availableSuits'
 import shuffleDeck from '../../utils/shuffleDeck'
 
 const generateNewDeck = () => {
