@@ -8,9 +8,9 @@ const determineWinner = (bots, heroCards, communityCards) => {
   let winners = []
 
   /*
-    Transform communityCards; an array with with two 5 objects that look like:
-    { rank: { value: 7, symbol: '7' }, suit: { symbol: '♥', letter: 'h', name: 'heart', color: 'red' } }
-    { rank: { value: 12, symbol: 'Q' }, suit: { symbol: '♣', letter: 'c', name: 'club', color: 'black' } ... }
+    Transform communityCards; an array with with 5 objects that look like:
+    { rank: { value: 7, symbol: '7' }, suit: { symbol: '♥', letter: 'h', color: 'red' } }
+    { rank: { value: 12, symbol: 'Q' }, suit: { symbol: '♣', letter: 'c', color: 'black' } ... }
     into:
     [ '7h', 'Qc', ... ]
   */
@@ -23,7 +23,7 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   const players = formattedPlayerHands.map((hand, index) => {
     return {
-      name: `Player ${index+1}`,
+      name: `Player ${index}`,
       hand: hand
     }
   })
@@ -45,6 +45,7 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   players.forEach((player) => {
     let playerHand = stripSpaces(Hand.solve(player.hand).toString())
+
     // If the winning hand matches this player's hand we have found our winner.
     for (let i = 0; i < winningHands.length; i++) {
       if (winningHands[i].winningHand === playerHand) {
@@ -56,8 +57,8 @@ const determineWinner = (bots, heroCards, communityCards) => {
           allHands: formattedPlayerHands
         })
       }
-
     }
+
   })
   return winners
 }

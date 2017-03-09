@@ -30,16 +30,36 @@
     z-index: -1;
   }
 
-  .Player.is-winner & {
-    animation: win 1.5s ease-in-out infinite;
-    box-shadow: 0 6px 15px rgba(255,255,255,0.2), 0 6px 15px rgba(36,37,38,0.08);
-  }
+  // Transform the player's cards up 10px to indicate it's their turn
   .Player.is-next-to-act & {
     transform: translateY(-10px);
     &::after {
       opacity: 1;
     }
   }
+
+  // Remove the transform if the player is next to act _and_ is the winner
+  .Player.is-next-to-act.is-winner & {
+    transform: none;
+  }
+
+  // Remove the 'next-to-act' effect if the player is next to act _and_ is the loser
+  .Player.is-next-to-act.is-loser & {
+    transform: none;
+    &::after {
+      opacity: 0;
+    }
+  }
+
+  // Play win animation if the player in the winner
+  .Player.is-winner & {
+    animation: win 1.5s ease-in-out infinite;
+    box-shadow: 0 6px 15px rgba(255,255,255,0.2), 0 6px 15px rgba(36,37,38,0.08);
+    &::after {
+      opacity: 1;
+    }
+  }
+
 }
 
 .Card.is-revealed,

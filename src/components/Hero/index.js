@@ -5,10 +5,10 @@ import Card from '../Card'
 class Hero extends Component {
 
   render() {
-    const { cards, nextToAct } = this.props
+    const { cards, nextToAct, isWinner } = this.props
 
     return (
-      <div className={classNames('Player', 'Player0', nextToAct && 'is-next-to-act', 'Hero', 'Board-holeCards')}>
+      <div className={classNames('Hero', 'Player', 'Player0', nextToAct && 'is-next-to-act', isWinner && 'is-winner', isWinner === false && 'is-loser', 'Board-holeCards')}>
         {cards.map((card, i) => (
           <Card
             visible="visible"

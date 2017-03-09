@@ -14,19 +14,35 @@ export class Board extends Component {
       return null
     }
 
+    const getListOfWinnerNames = (winners = this.props.winners) => {
+      let winnerNames = []
+      if (winners !== null && winners.length) {
+        winners.forEach((winner) => {
+          console.log(winner.name)
+          winnerNames.push(winner.name)
+        })
+        return winnerNames
+      } else {
+        return null
+      }
+
+    }
+
     return (
       <div className="Board">
         <Hero
           cards={heroCards}
           nextToAct={nextToAct === 0}
+          isWinner={getListOfWinnerNames() === null ? null : getListOfWinnerNames().includes('Player 0')}
         />
-        {bots.map((bot, i) => (
+        {bots.map((bot, index) => (
           <Bot
             cards={bot}
             visibleCards={showdown ? true : false}
-            name={`Player ${i + 1}`}
-            nextToAct={nextToAct === i + 1}
-            key={i}
+            name={`Player ${index + 1}`}
+            nextToAct={nextToAct === index + 1}
+            isWinner={getListOfWinnerNames() === null ? null : getListOfWinnerNames().includes(`Player ${index + 1}`)}
+            key={index}
           />
         ))}
 

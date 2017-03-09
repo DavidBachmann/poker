@@ -57,25 +57,21 @@ export const availableSuits = [
   {
     symbol: '♠',
     letter: 's',
-    name: 'spade',
     color: 'black'
   },
   {
     symbol: '♣',
     letter: 'c',
-    name: 'club',
     color: 'black'
   },
   {
     symbol: '♥',
     letter: 'h',
-    name: 'heart',
     color: 'red'
   },
   {
     symbol: '♦',
     letter: 'd',
-    name: 'diamond',
     color: 'red'
   }
 ]
