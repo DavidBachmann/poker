@@ -45,7 +45,6 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   players.forEach((player) => {
     let playerHand = stripSpaces(Hand.solve(player.hand).toString())
-
     // If the winning hand matches this player's hand we have found our winner.
     for (let i = 0; i < winningHands.length; i++) {
       if (winningHands[i].winningHand === playerHand) {
@@ -54,12 +53,11 @@ const determineWinner = (bots, heroCards, communityCards) => {
           name: player.name,
           hand: player.hand,
           handDetails: handWinners[i],
-          allHands: formattedPlayerHands
         })
       }
     }
-
   })
+
   return winners
 }
 

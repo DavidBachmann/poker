@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Board from './components/Board'
 import UI from './components/UI'
 
 import './App.css'
 
-class App extends Component {
+class App extends PureComponent {
   render() {
     return (
       <div className="App">

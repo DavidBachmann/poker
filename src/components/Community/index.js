@@ -29,7 +29,6 @@ class Community extends React.Component {
           </div>
         )
     } else if (nextStreet === 3 && communityCards.turn.length === 1) {
-      console.log(communityCards.turn)
       return (
         <div className="CommunityCards">
             <Card

@@ -1,23 +1,20 @@
-import React, { Component } from 'react'
-import classNames from 'classnames'
-import Card from '../Card'
+import React, { PureComponent } from 'react'
+import Player from '../Player'
 
-class Hero extends Component {
+class Hero extends PureComponent {
 
   render() {
-    const { cards, nextToAct, isWinner } = this.props
+    const { cards, nextToAct, isWinner, isLoser } = this.props
 
     return (
-      <div className={classNames('Hero', 'Player', 'Player0', nextToAct && 'is-next-to-act', isWinner && 'is-winner', isWinner === false && 'is-loser', 'Board-holeCards')}>
-        {cards.map((card, i) => (
-          <Card
-            visible="visible"
-            suit={card.suit}
-            rank={card.rank}
-            key={i}
-          />
-        ))}
-      </div>
+      <Player
+        visibleCards={true}
+        isHero={true}
+        cards={cards}
+        nextToAct={nextToAct}
+        isWinner={isWinner}
+        isLoser={isLoser}
+      />
     )
   }
 

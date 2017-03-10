@@ -111,25 +111,4 @@ test('Determine winner with 3 players', () => {
 
   expect((determineWinner(players, communityCards).name)).toBe('Player 3')
   expect((determineWinner(players, communityCards).handDetails.descr)).toBe("Full House, K's over J's")
-  expect((determineWinner(players, communityCards).allHands.length)).toBe(3)
-})
-
-test('Determine a winner in a game with 9 players', () => {
-  let players = []
-  let communityCards = []
-
-  const totalPlayers = 9
-  const totalCommunityCards = 5
-  const shuffledDeck = shuffleDeck(generateNewDeck())
-
-  for (let i = 0; i < totalPlayers; i++) {
-    players[i] = shuffledDeck.splice(0, 2)
-  }
-
-  for (let i = 0; i < totalCommunityCards; i++) {
-    communityCards = shuffledDeck.splice(0, 5)
-  }
-
-  expect((determineWinner(players, communityCards).allHands.length)).toBe(9)
-
 })

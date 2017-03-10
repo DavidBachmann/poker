@@ -1,0 +1,70 @@
+//Node sass can't do sin/cos ATM.
+//I have commented out the sass
+//and I'm just pasting the output from http://www.sassmeister.com/
+//instead of ripping my hair out.
+
+// @mixin circle-position($point, $total_points: 9) {
+//   $deg: 360 / $total-points;
+//   $rad: (($deg * ($point - 1)) - 45) * 3.14 / 180;
+//   $x: 0 + 50 * cos($rad);
+//   $y: 0 + 50 * sin($rad);
+//   top: #{$y + 50 + '%'};
+//   left: #{$x + 50 + '%'};
+// }
+
+.Player {
+  display: flex;
+  position: absolute;
+  transform: translate(-50%, -50%);
+
+  // @for $i from 1 through 10 {
+  //   &:nth-child(#{$i}) {
+  //     @include circle-position($i);
+  //   }
+  // }
+}
+
+.Player-cards {
+  display: flex;
+}
+
+.Player:nth-child(1) {
+  top: 14.65874%;
+  left: 85.36941%;
+}
+.Player:nth-child(2) {
+  top: 45.64442%;
+  left: 99.80993%;
+}
+.Player:nth-child(3) {
+  top: 78.66614%;
+  left: 90.96648%;
+}
+.Player:nth-child(4) {
+  top: 98.28769%;
+  left: 62.973%;
+}
+.Player:nth-child(5) {
+  top: 95.33687%;
+  left: 28.91521%;
+}
+.Player:nth-child(6) {
+  top: 71.19304%;
+  left: 4.71363%;
+}
+.Player:nth-child(7) {
+  top: 37.1424%;
+  left: 1.68145%;
+}
+.Player:nth-child(8) {
+  top: 9.10212%;
+  left: 21.23608%;
+}
+.Player:nth-child(9) {
+  top: 0.17981%;
+  left: 54.23658%;
+}
+.Player:nth-child(10) {
+  top: 14.54626%;
+  left: 85.25666%;
+}
