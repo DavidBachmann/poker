@@ -24,47 +24,109 @@
   // }
 }
 
+.Player-avatar {
+  background-color: red;
+  background-image: url('/bender-min.png');
+  background-origin: border-box;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 70%;
+  border-radius: 50%;
+  border: 5px solid #eac40a;
+  height: 75px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%) translateY(-20%);
+  width: 75px;
+  box-sizing: border-box;
+}
+
+.Hero .Player-avatar {
+  background-image: url('/fry-min.png');
+}
+
 .Player-cards {
   display: flex;
+  transform: translateY(20%);
 }
 
 .Player:nth-child(1) {
   top: 14.65874%;
   left: 85.36941%;
+
+  .Player-avatar {
+    background-color: rebeccapurple;
+  }
 }
 .Player:nth-child(2) {
   top: 45.64442%;
   left: 99.80993%;
+
+  .Player-avatar {
+    background-color: #3BB4C1;
+  }
 }
 .Player:nth-child(3) {
   top: 78.66614%;
   left: 90.96648%;
+
+  .Player-avatar {
+    background-color: #FF006C;
+  }
 }
 .Player:nth-child(4) {
   top: 98.28769%;
   left: 62.973%;
+
+  .Player-avatar {
+    background-color: #A9E6E6;
+  }
 }
 .Player:nth-child(5) {
   top: 95.33687%;
   left: 28.91521%;
+
+  .Player-avatar {
+    background-color: #7DCE94;
+  }
 }
 .Player:nth-child(6) {
   top: 71.19304%;
   left: 4.71363%;
+  .Player-avatar {
+    background-color: #FF5200;
+  }
 }
 .Player:nth-child(7) {
   top: 37.1424%;
   left: 1.68145%;
+
+  .Player-avatar {
+    background-color: #402785;
+  }
 }
 .Player:nth-child(8) {
   top: 9.10212%;
   left: 21.23608%;
+
+  .Player-avatar {
+    background-color: #FFABE5;
+  }
 }
 .Player:nth-child(9) {
   top: 0.17981%;
   left: 54.23658%;
+
+  .Player-avatar {
+    background-color: #FB9935;
+  }
 }
 .Player:nth-child(10) {
   top: 14.54626%;
   left: 85.25666%;
+
+
+  .Player-avatar {
+    background-color: #7098DA;
+  }
 }

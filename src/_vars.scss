@@ -1,6 +1,13 @@
-$multiplier: 1.25;
-$cardWidth: 2.34rem * $multiplier;
-$cardHeight: 3.5rem * $multiplier;
-$cardMargin: 0.25rem * $multiplier;
-$cardBorder: 0.09375rem * $multiplier;
+$heroMultiplier: 1.25;
+
+$cardWidth: 2.34rem;
+$cardHeight: 3.5rem;
+$cardMargin: 0.25rem;
+$cardBorder: 0.09375rem;
 $communityCardsWidth: ($cardWidth + $cardMargin + $cardBorder + 0.5rem) * 5;
+
+
+$heroCardWidth: 2.34rem * $heroMultiplier;
+$heroCardHeight: 3.5rem * $heroMultiplier;
+$heroCardMargin: 0.25rem * $heroMultiplier;
+$heroCardBorder: 0.09375rem * $heroMultiplier;
