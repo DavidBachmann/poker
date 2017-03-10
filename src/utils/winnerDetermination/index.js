@@ -1,5 +1,5 @@
 import { Hand } from 'pokersolver'
-import { concat } from 'lodash'
+import { concat, valuesIn, flatten } from 'lodash'
 import { stripSpaces } from '../../utils'
 import { formatHand } from '../../utils/formatHand'
 
@@ -8,14 +8,14 @@ const determineWinner = (bots, heroCards, communityCards) => {
   let winners = []
 
   /*
-    Formatting means taking an array with with objects that look like:
+    Note: Format Hand means taking an array with with objects that look like:
     { rank: { value: 7, symbol: '7' }, suit: { symbol: '♥', letter: 'h', color: 'red' } }
     { rank: { value: 12, symbol: 'Q' }, suit: { symbol: '♣', letter: 'c', color: 'black' } ... }
-    into:
+    and turning it into:
     [ '7h', 'Qc', ... ]
   */
 
-  const formattedCommunityCards = formatHand(communityCards)
+  const formattedCommunityCards = formatHand(flatten(valuesIn(communityCards)))
 
   const formattedPlayerHands = allPlayerCards.map((card) => {
     return concat(formatHand(card), formattedCommunityCards)

@@ -18,3 +18,11 @@ export const showAll = () => ({
 export const nextPlayerToAct = () => ({
   type: 'NEXT_TO_ACT'
 })
+
+export const dealNextStreet = () => ({
+  type: 'DEAL_NEXT_STREET'
+})
+
+export const resetStreet = () => ({
+  type: 'RESET_STREET'
+})

@@ -1,45 +1,22 @@
-import generateShuffledDeck from '../utils/generateShuffledDeck'
 import winnerDetermination from '../utils/winnerDetermination'
-
-// Dummy player generation
-const dealCards = (totalPlayers) => {
-  const deck = generateShuffledDeck()
-  let bots = []
-  let communityCards = []
-  let heroCards = []
-
-  for (let i = 0; i < totalPlayers; i++) {
-    if (i === 0) {
-      // First deal for Hero
-      heroCards = deck.splice(0, 2)
-    } else {
-      // Then for bots
-      bots[i - 1] = deck.splice(0, 2)
-    }
-  }
-
-  communityCards = deck.splice(0, 5)
-
-  return {
-    bots,
-    communityCards,
-    heroCards
-  }
-}
+import dealCards from '../utils/dealCards'
+import generateShuffledDeck from '../utils/generateShuffledDeck'
 
 const initialState = {
-  started: false,
-  pot: 0,
-  bots: [],
-  communityCards: [],
-  heroCards: [],
-  winners: null,
-  nextToAct: 0,
-  showdown: false,
+  deck: generateShuffledDeck(),
+  started: false, // Game is not started
+  pot: 0, // Pot in dollars
+  nextStreet: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'}
+  bots: [], // Array of bot players.
+  communityCards: {flop: {}, turn: {}, river: {}}, // Array of dealt community cards
+  heroCards: [], // Array of our cards
+  winners: null, // We haven't selected a winner yet
+  nextToAct: 0, // Player at index 0 starts (TODO)
+  showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
 }
 
 export default (state = initialState, action) => {
-  const { bots, communityCards, heroCards, nextToAct } = state
+  const { deck, nextStreet, bots, communityCards, heroCards, nextToAct } = state
 
   switch (action.type) {
     case 'START':
@@ -48,7 +25,8 @@ export default (state = initialState, action) => {
         started: true,
         winners: null,
         showdown: false,
-        ...dealCards(action.numberOfPlayers),
+        nextStreet: 1,
+        ...dealCards(deck, nextStreet, communityCards, (action.numberOfPlayers)),
       }
 
     case 'STOP':
@@ -70,8 +48,22 @@ export default (state = initialState, action) => {
     case 'NEXT_TO_ACT':
       return {
         ...state,
-        nextToAct: nextToAct === 8 ? 0 : nextToAct + 1
+        nextToAct: nextToAct === 8 ? 0 : nextToAct + 1,
       }
+
+    case 'DEAL_NEXT_STREET':
+      return {
+        ...state,
+        nextStreet: nextStreet + 1,
+        ...dealCards(deck, nextStreet, communityCards)
+      }
+
+    case 'RESET_STREET':
+      return {
+        ...state,
+        nextStreet: 0,
+      }
+
 
     default:
       return state

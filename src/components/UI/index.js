@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { startGame, stopGame, nextPlayerToAct, determineWinner } from '../../actions/game'
+import { startGame, stopGame, nextPlayerToAct, determineWinner, dealNextStreet, resetStreet } from '../../actions/game'
 
 export class UI extends React.Component {
   render() {
-    const { onClickStart, onClickStop, onClickPlayerNextToAct, onClickDetermine } = this.props
+    const { onClickStart, onClickStop, onClickPlayerNextToAct, onClickDetermine, onClickDealNextStreet, onClickResetStreet } = this.props
 
     return (
       <div>
@@ -12,7 +12,8 @@ export class UI extends React.Component {
         <button onClick={onClickStop}>Stop Game</button>
         <button onClick={onClickDetermine}>Determine Winner</button>
         <button onClick={onClickPlayerNextToAct}>Next Player To Act</button>
-        <button onClick={() => console.log(this.props)}>Get State</button>
+        <button onClick={onClickDealNextStreet}>Deal Next Street</button>
+        <button onClick={onClickResetStreet}>Reset Street</button>
       </div>
     )
   }
@@ -23,4 +24,6 @@ export default connect(null, dispatch => ({
   onClickStop: () => dispatch(stopGame()),
   onClickPlayerNextToAct: () => dispatch(nextPlayerToAct()),
   onClickDetermine: () => dispatch(determineWinner()),
+  onClickDealNextStreet: () => dispatch(dealNextStreet()),
+  onClickResetStreet: () => dispatch(resetStreet()),
 }))(UI)

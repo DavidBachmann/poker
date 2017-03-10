@@ -8,8 +8,7 @@ import './styles.css'
 export class Board extends Component {
 
   render() {
-    const { started, bots, communityCards, heroCards, winners, showdown, nextToAct, pot } = this.props
-
+    const { started, nextStreet, bots, communityCards, heroCards, winners, showdown, nextToAct, pot } = this.props
     if (!started) {
       return null
     }
@@ -47,13 +46,10 @@ export class Board extends Component {
         ))}
 
         <div className="Board-communityCards">
-          {communityCards.map((card, i) => (
-            <Community
-              suit={card.suit}
-              rank={card.rank}
-              key={i}
-            />
-          ))}
+          <Community
+            communityCards={communityCards}
+            nextStreet={nextStreet}
+          />
         </div>
         <p className="Board-potInfo">
           Pot: <strong>${pot}</strong>
