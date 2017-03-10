@@ -37,6 +37,7 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   // Flatten the string so we can compare it
   let winningHands = handWinners.map((winner, index) => {
+    // Add 1 to index so 1st place isn't 0th place.
     return {
       place: index+1,
       winningHand: stripSpaces(winner.cards.toString())

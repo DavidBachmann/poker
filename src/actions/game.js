@@ -1,6 +1,5 @@
-export const startGame = (numberOfPlayers) => ({
+export const startGame = () => ({
   type: 'START',
-  numberOfPlayers,
 })
 
 export const stopGame = () => ({
@@ -19,10 +18,23 @@ export const nextPlayerToAct = () => ({
   type: 'NEXT_TO_ACT'
 })
 
-export const dealNextStreet = () => ({
-  type: 'DEAL_NEXT_STREET'
+export const dealPreflop = () => ({
+  type: 'DEAL_PREFLOP'
 })
 
-export const resetStreet = () => ({
-  type: 'RESET_STREET'
+export const dealFlop = () => ({
+  type: 'DEAL_FLOP'
+})
+
+export const dealTurn = () => ({
+  type: 'DEAL_TURN'
+})
+
+export const dealRiver = () => ({
+  type: 'DEAL_RIVER'
+})
+
+
+export const resetCards = () => ({
+  type: 'RESET_CARDS'
 })

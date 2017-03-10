@@ -32,7 +32,9 @@ export class Board extends PureComponent {
     }
 
     const getListOfWinnerNames = (winners) => {
-      if (winners.length === 0) {
+      if (!winners) {
+        return
+      } else if (winners.length === 0) {
         return null
       } else {
         winners.map((winner) => {
@@ -45,7 +47,15 @@ export class Board extends PureComponent {
       getListOfWinnerNames(winners)
     }
 
-    console.log(this.cachedWinners.length)
+    // const checkIfShouldGiveBotsCards = () => {
+    //   if (!botsCards.length === 0) {
+    //     return
+    //   }
+    //
+    //   if (botsCards.length) {
+    //     return deck.splice(0, 2)
+    //   }
+    // }
 
     return (
       <div className="Board">
@@ -57,7 +67,7 @@ export class Board extends PureComponent {
         />
         {bots.map((bot, index) => (
           <Bot
-            cards={bot}
+            cards={bot.cards}
             visibleCards={showdown ? true : false}
             name={`Player ${index + 1}`}
             nextToAct={nextToAct === index + 1}

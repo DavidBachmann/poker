@@ -1,8 +1,4 @@
-const dealCardsToPlayers = (deck, totalPlayers) => {
-
-  // Dummy player generation
-  let bots = []
-  let heroCards = []
+const dealCardsToPlayers = (deck, bots, heroCards, totalPlayers) => {
 
   for (let i = 0; i < totalPlayers; i++) {
     if (i === 0) {
@@ -10,7 +6,7 @@ const dealCardsToPlayers = (deck, totalPlayers) => {
       heroCards = deck.splice(0, 2)
     } else {
       // Then for bots
-      bots[i - 1] = deck.splice(0, 2)
+      bots[i - 1].cards = deck.splice(0, 2)
     }
   }
 
@@ -23,7 +19,7 @@ const dealCardsToPlayers = (deck, totalPlayers) => {
 
 const dealFlop = (deck, communityCards) => {
   communityCards.flop = deck.splice(0, 3)
-
+  console.log('dealt flop')
   return {
     deck,
     communityCards
@@ -48,17 +44,17 @@ const dealRiver = (deck, communityCards) => {
   }
 }
 
-const dealCards = (deck, nextStreet, communityCards, totalPlayers = 9) => {
-  if (nextStreet === 0) {
+const dealCards = (deck, bots, heroCards, nextStreet, communityCards, totalPlayers) => {
+  if (nextStreet === 1) {
     console.log('Dealing cards to players')
-    return dealCardsToPlayers(deck, totalPlayers)
-  } else if (nextStreet === 1) {
+    return dealCardsToPlayers(deck, bots, heroCards, totalPlayers)
+  } else if (nextStreet === 2) {
     console.log('Dealing flop')
     return dealFlop(deck, communityCards)
-  } else if (nextStreet === 2) {
+  } else if (nextStreet === 3) {
     console.log('Dealing turn')
     return dealTurn(deck, communityCards)
-  } else if (nextStreet === 3) {
+  } else if (nextStreet === 4) {
     console.log('Dealing river')
     return dealRiver(deck, communityCards)
   }

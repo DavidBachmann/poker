@@ -1,29 +1,39 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { startGame, stopGame, nextPlayerToAct, determineWinner, dealNextStreet, resetStreet } from '../../actions/game'
+import { startGame, stopGame, nextPlayerToAct, determineWinner, dealPreflop, dealFlop, dealTurn, dealRiver, resetCards } from '../../actions/game'
 
 export class UI extends React.Component {
   render() {
-    const { onClickStart, onClickStop, onClickPlayerNextToAct, onClickDetermine, onClickDealNextStreet, onClickResetStreet } = this.props
+    const { onClickStart, onClickStop, onClickPlayerNextToAct, onClickDetermine, onClickDealPreflop, onClickDealFlop, onClickDealTurn, onClickDealRiver, onClickResetCards } = this.props
 
     return (
       <div>
-        <button onClick={onClickStart}>Start Game</button>
-        <button onClick={onClickStop}>Stop Game</button>
-        <button onClick={onClickDetermine}>Determine Winner</button>
-        <button onClick={onClickPlayerNextToAct}>Next Player To Act</button>
-        <button onClick={onClickDealNextStreet}>Deal Next Street</button>
-        <button onClick={onClickResetStreet}>Reset Street</button>
+        <div>
+          <button onClick={onClickStart}>Start Game</button>
+          <button onClick={onClickStop}>Stop Game</button>
+          <button onClick={onClickDetermine}>Determine Winner</button>
+          <button onClick={onClickPlayerNextToAct}>Next Player To Act</button>
+          <button onClick={onClickResetCards}>Reset Cards</button>
+        </div>
+        <div>
+          <button onClick={onClickDealPreflop}>Deal Preflop</button>
+          <button onClick={onClickDealFlop}>Deal Flop</button>
+          <button onClick={onClickDealTurn}>Deal Turn</button>
+          <button onClick={onClickDealRiver}>Deal River</button>
+        </div>
       </div>
     )
   }
 }
 
 export default connect(null, dispatch => ({
-  onClickStart: () => dispatch(startGame(9)),
+  onClickStart: () => dispatch(startGame()),
   onClickStop: () => dispatch(stopGame()),
   onClickPlayerNextToAct: () => dispatch(nextPlayerToAct()),
   onClickDetermine: () => dispatch(determineWinner()),
-  onClickDealNextStreet: () => dispatch(dealNextStreet()),
-  onClickResetStreet: () => dispatch(resetStreet()),
+  onClickResetCards: () => dispatch(resetCards()),
+  onClickDealPreflop: () => dispatch(dealPreflop()),
+  onClickDealFlop: () => dispatch(dealFlop()),
+  onClickDealTurn: () => dispatch(dealTurn()),
+  onClickDealRiver: () => dispatch(dealRiver()),
 }))(UI)

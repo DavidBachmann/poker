@@ -12,16 +12,18 @@ class Player extends PureComponent {
     return (
       <div className={classNames(isHero ? 'Hero' : 'Bot', name && stripSpaces(name), 'Player', nextToAct && 'is-next-to-act', isWinner && 'is-winner', isLoser && 'is-loser')}>
         <div className="Player-avatar"></div>
-        <div className="Player-cards">
-          {cards.map((card, i) => (
-            <Card
-              visible={visibleCards}
-              suit={card.suit}
-              rank={card.rank}
-              key={i}
-            />
-          ))}
-        </div>
+        {cards && (
+          <div className="Player-cards">
+            {cards.map((card, i) => (
+              <Card
+                visible={visibleCards}
+                suit={card.suit}
+                rank={card.rank}
+                key={i}
+              />
+            ))}
+          </div>
+        )}
       </div>
     )
   }
