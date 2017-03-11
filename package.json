@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "npm-run-all": "^4.0.2",
-    "react-scripts": "0.9.1",
+    "react-scripts": "0.9.5",
     "redux-devtools": "^3.3.2"
   },
   "dependencies": {
@@ -14,13 +14,15 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.3",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "serve": "^5.0.2"
   },
   "scripts": {
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
     "start-js": "react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
+    "now-start": "serve build/",
     "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

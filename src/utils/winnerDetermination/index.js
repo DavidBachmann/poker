@@ -1,7 +1,7 @@
 import { Hand } from 'pokersolver'
 import { concat, valuesIn, flatten } from 'lodash'
-import { stripSpaces } from '../../utils'
-import { formatHand } from '../../utils/formatHand'
+import { stripSpaces } from '../'
+import { formatHand } from '../formatHand'
 
 const determineWinner = (bots, heroCards, communityCards) => {
   let allPlayerCards = concat([heroCards], bots)
