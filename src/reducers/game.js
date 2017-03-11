@@ -18,7 +18,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
   const { deck, totalPlayers, nextStreet, bots, communityCards, heroCards, nextToAct } = state
-  console.log(Array.from({length: 8}, () => []))
+
   switch (action.type) {
     case 'START':
       return {

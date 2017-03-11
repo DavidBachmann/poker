@@ -65,9 +65,9 @@ export class Board extends PureComponent {
           isWinner={this.cachedWinners.includes('Player 0')}
           isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')}
         />
-        {bots.map((bot, index) => (
+        {bots.map((botCards, index) => (
           <Bot
-            cards={bot.cards}
+            cards={botCards}
             visibleCards={showdown ? true : false}
             name={`Player ${index + 1}`}
             nextToAct={nextToAct === index + 1}

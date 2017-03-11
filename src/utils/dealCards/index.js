@@ -6,7 +6,7 @@ const dealCardsToPlayers = (deck, bots, heroCards, totalPlayers) => {
       heroCards = deck.splice(0, 2)
     } else {
       // Then for bots
-      bots[i - 1].cards = deck.splice(0, 2)
+      bots[i - 1] = deck.splice(0, 2)
     }
   }
 
