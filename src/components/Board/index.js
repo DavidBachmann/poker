@@ -8,13 +8,33 @@ import './styles.css'
 export class Board extends PureComponent {
 
   cachedWinners = []
+  MAX_PLAYERS = 9
 
   state = {
     winnersHaveBeenDetermined: false,
+    bb: null,
+    sb: null,
+    dealer: null,
+  }
+
+  componentDidMount() {
+    const { nextToAct, totalPlayers } = this.props
+
+    this.setState({
+      bb: (nextToAct + totalPlayers - 1) % totalPlayers,
+      sb: (nextToAct + totalPlayers - 2) % totalPlayers,
+      dealer: (nextToAct + totalPlayers - 3) % totalPlayers,
+    })
   }
 
   componentWillReceiveProps(props) {
-    const { winners } = props
+    const { winners, nextToAct, totalPlayers } = props
+
+    this.setState({
+      bb: (nextToAct + totalPlayers - 1) % totalPlayers,
+      sb: (nextToAct + totalPlayers - 2) % totalPlayers,
+      dealer: (nextToAct + totalPlayers - 3) % totalPlayers,
+    })
 
     if (winners == null) {
       // Set or Reset
@@ -30,8 +50,19 @@ export class Board extends PureComponent {
   }
 
   render() {
-    const { started, nextStreet, bots, communityCards, hero, winners, showdown, nextToAct, pot } = this.props
-    const { winnersHaveBeenDetermined } = this.state
+    const {
+      bots,
+      communityCards,
+      hero,
+      nextStreet,
+      nextToAct,
+      pot,
+      showdown,
+      started,
+      winners,
+    } = this.props
+
+    const { winnersHaveBeenDetermined, bb, sb, dealer } = this.state
 
     if (!started) {
       return null
@@ -53,28 +84,37 @@ export class Board extends PureComponent {
       getListOfWinnerNames(winners)
     }
 
+    // Todo abstract Hero and Bot into one Player array to map through.
     return (
       <div className="Board">
         {hero && hero.map((hero, index) => (
           <Hero
             cards={hero && hero.cards}
             chips={hero && hero.chips}
-            nextToAct={nextToAct === 0}
+            isBB={index === bb}
+            isDealer={index === dealer}
+            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')}
+            isSB={index === sb}
             isWinner={this.cachedWinners.includes('Player 0')}
-            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')} // todo
             key={index}
+            nextToAct={nextToAct === 0}
+            position={index}
           />
         ))}
         {bots && bots.map((bot, index) => (
           <Bot
             cards={bot && bot.cards}
             chips={bot && bot.chips}
-            visibleCards={showdown ? true : false}
+            isBB={index + 1 === bb}
+            isDealer={index + 1 === dealer}
+            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index + 1}`)}
+            isSB={index + 1 === sb}
+            isWinner={this.cachedWinners.includes(`Player ${index + 1}`)}
+            key={index + 1}
             name={`Player ${index + 1}`}
             nextToAct={nextToAct === index + 1}
-            isWinner={this.cachedWinners.includes(`Player ${index + 1}`)}
-            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index + 1}`)} // todo
-            key={index}
+            position={index + 1}
+            visibleCards={showdown ? true : false}
           />
         ))}
 
@@ -107,6 +147,7 @@ export class Board extends PureComponent {
       </div>
     )
   }
+
 }
 
 export default connect(state => state)(Board)

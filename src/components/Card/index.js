@@ -1,16 +1,16 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import classNames from 'classnames'
 
 import './styles.css'
 
-class Card extends React.Component {
+class Card extends PureComponent {
 
   render() {
     const { rank, suit, visible } = this.props
     const classes = classNames('Card', visible && 'is-revealed')
 
     return (
-      <div className={classes} onClick={this.onClick}>
+      <div className={classes}>
         <div className="Card-mark" >
           <p className="Card-value">{rank.symbol}</p>
           <p className="Card-suit" style={{color: suit.color}}>

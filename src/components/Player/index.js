@@ -30,6 +30,11 @@ class Player extends PureComponent {
             ))}
           </div>
         )}
+      <div className="test-buttons">
+        <button disabled={!nextToAct}>Bet/Raise</button>
+        <button disabled={!nextToAct}>Call</button>
+        <button disabled={!nextToAct}>Fold</button>
+      </div>
       </div>
     )
   }

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux'
 import { startGame, killGame, nextPlayerToAct, determineWinner, dealPreflop, dealFlop, dealTurn, dealRiver } from '../../actions/game'
 
-export class UI extends React.Component {
+export class UI extends PureComponent {
   render() {
     const { onClickStart, onClickKill, onClickPlayerNextToAct, onClickDetermine, onClickDealPreflop, onClickDealFlop, onClickDealTurn, onClickDealRiver } = this.props
 

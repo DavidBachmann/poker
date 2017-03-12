@@ -11,7 +11,15 @@ const initialState = {
   totalPlayers: 9, // Players currently connected
   started: false, // Game is not started
   pot: 0, // Chips currently in the pot
-  nextStreet: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'}
+  level: { // Temp levels (TODO)
+    1: { smallBlind: 25, bigBlind: 50 },
+    2: { smallBlind: 50, bigBlind: 100 },
+    3: { smallBlind: 150, bigBlind: 300 },
+    4: { smallBlind: 300, bigBlind: 600 },
+    5: { smallBlind: 600, bigBlind: 1200 },
+  },
+  currentLevel: 1, // Starting level
+  nextStreet: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   bots: [], // Array of bots
   hero: [], // Array of hero (Using array for consistency)
   communityCards: {}, // Object of dealt community cards
@@ -21,7 +29,16 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-  const { deck, totalPlayers, nextStreet, bots, communityCards, hero, nextToAct } = state
+  const {
+    deck,
+    totalPlayers,
+    nextStreet,
+    bots,
+    communityCards,
+    hero,
+    nextToAct,
+    currentLevel
+  } = state
 
   switch (action.type) {
     case 'START':
@@ -88,6 +105,11 @@ export default (state = initialState, action) => {
         nextStreet: 0,
       }
 
+    case 'NEXT_LEVEL':
+      return {
+        ...state,
+        currentLevel: currentLevel + 1,
+        }
     default:
       return state
   }

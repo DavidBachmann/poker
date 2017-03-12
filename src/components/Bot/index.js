@@ -7,13 +7,13 @@ class Bot extends PureComponent {
 
     return (
       <Player
-        name={name}
-        chips={chips}
-        visibleCards={visibleCards}
         cards={cards}
-        nextToAct={nextToAct}
-        isWinner={isWinner}
+        chips={chips}
         isLoser={isLoser}
+        isWinner={isWinner}
+        name={name}
+        nextToAct={nextToAct}
+        visibleCards={visibleCards}
       />
     )
 
