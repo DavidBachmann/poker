@@ -3,8 +3,8 @@ import { concat, valuesIn, flatten } from 'lodash'
 import { stripSpaces } from '../'
 import { formatHand } from '../formatHand'
 
-const determineWinner = (bots, heroCards, communityCards) => {
-  let allPlayerCards = concat([heroCards], bots)
+const determineWinner = (bots, hero, communityCards) => {
+  let allPlayerCards = concat(hero, bots)
   let winners = []
 
   /*
@@ -17,11 +17,13 @@ const determineWinner = (bots, heroCards, communityCards) => {
 
   const formattedCommunityCards = formatHand(flatten(valuesIn(communityCards)))
 
-  const formattedPlayerHands = allPlayerCards.map((card) => {
-    return concat(formatHand(card), formattedCommunityCards)
+
+  const formattedPlayerHands = allPlayerCards.map((player) => {
+    return concat(formatHand(player.cards), formattedCommunityCards)
   })
 
   const players = formattedPlayerHands.map((hand, index) => {
+
     return {
       name: `Player ${index}`,
       hand: hand
@@ -31,7 +33,7 @@ const determineWinner = (bots, heroCards, communityCards) => {
   const formattedPlayerHandsSolved = players.map((player) => {
     return Hand.solve(player.hand)
   })
-
+  console.log(formattedPlayerHandsSolved)
   // Let PokerSolver figure out who won the hand
   const handWinners = Hand.winners(formattedPlayerHandsSolved)
 

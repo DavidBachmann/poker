@@ -24,8 +24,9 @@ export class Board extends PureComponent {
   }
 
   render() {
-    const { started, nextStreet, bots, communityCards, heroCards, winners, showdown, nextToAct, pot } = this.props
+    const { started, nextStreet, bots, communityCards, hero, winners, showdown, nextToAct, pot } = this.props
     const { winnersHaveBeenDetermined } = this.state
+    console.log(hero)
 
     if (!started) {
       return null
@@ -47,27 +48,22 @@ export class Board extends PureComponent {
       getListOfWinnerNames(winners)
     }
 
-    // const checkIfShouldGiveBotsCards = () => {
-    //   if (!botsCards.length === 0) {
-    //     return
-    //   }
-    //
-    //   if (botsCards.length) {
-    //     return deck.splice(0, 2)
-    //   }
-    // }
-
     return (
       <div className="Board">
-        <Hero
-          cards={heroCards}
-          nextToAct={nextToAct === 0}
-          isWinner={this.cachedWinners.includes('Player 0')}
-          isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')}
-        />
-        {bots.map((botCards, index) => (
+        {hero && hero.map((hero, index) => (
+          <Hero
+            cards={hero && hero.cards}
+            chips={hero && hero.chips}
+            nextToAct={nextToAct === 0}
+            isWinner={this.cachedWinners.includes('Player 0')}
+            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')}
+            key={index}
+          />
+        ))}
+        {bots && bots.map((bot, index) => (
           <Bot
-            cards={botCards}
+            cards={bot && bot.cards}
+            chips={bot && bot.chips}
             visibleCards={showdown ? true : false}
             name={`Player ${index + 1}`}
             nextToAct={nextToAct === index + 1}

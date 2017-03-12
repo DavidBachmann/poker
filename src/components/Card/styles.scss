@@ -16,6 +16,9 @@
   transition: transform 0.25s ease-in-out;
   user-select: none;
   width: $cardWidth;
+  & + & {
+    margin-left: 0;
+  }
 
   &::after {
     content: '';
