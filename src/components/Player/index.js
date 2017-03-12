@@ -7,10 +7,10 @@ import './styles.css'
 class Player extends PureComponent {
 
   render() {
-    const { cards, chips, name, isHero, nextToAct, isWinner, isLoser, visibleCards } = this.props
+    const { cards, chips, name, isHero, isNextToAct, isWinner, isLoser, visibleCards } = this.props
 
     return (
-      <div className={classNames(isHero ? 'Hero' : 'Bot', name && stripSpaces(name), 'Player', nextToAct && 'is-next-to-act', isWinner && 'is-winner', isLoser && 'is-loser')}>
+      <div className={classNames(isHero ? 'Hero' : 'Bot', name && stripSpaces(name), 'Player', isNextToAct && 'is-next-to-act', isWinner && 'is-winner', isLoser && 'is-loser')}>
         <div className="Player-panel">
           <div className="Player-avatar"></div>
           <div className="Player-details">
@@ -31,9 +31,9 @@ class Player extends PureComponent {
           </div>
         )}
       <div className="test-buttons">
-        <button disabled={!nextToAct}>Bet/Raise</button>
-        <button disabled={!nextToAct}>Call</button>
-        <button disabled={!nextToAct}>Fold</button>
+        <button disabled={!isNextToAct}>Bet/Raise</button>
+        <button disabled={!isNextToAct}>Call</button>
+        <button disabled={!isNextToAct}>Fold</button>
       </div>
       </div>
     )

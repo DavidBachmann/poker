@@ -5,10 +5,11 @@ import Hero from '../Hero'
 import Community from '../Community'
 import './styles.css'
 
+
+
 export class Board extends PureComponent {
 
   cachedWinners = []
-  MAX_PLAYERS = 9
 
   state = {
     winnersHaveBeenDetermined: false,
@@ -17,7 +18,7 @@ export class Board extends PureComponent {
     dealer: null,
   }
 
-  componentDidMount() {
+  calcPositions() {
     const { nextToAct, totalPlayers } = this.props
 
     this.setState({
@@ -27,14 +28,14 @@ export class Board extends PureComponent {
     })
   }
 
-  componentWillReceiveProps(props) {
-    const { winners, nextToAct, totalPlayers } = props
+  componentDidMount() {
+    this.calcPositions()
+  }
 
-    this.setState({
-      bb: (nextToAct + totalPlayers - 1) % totalPlayers,
-      sb: (nextToAct + totalPlayers - 2) % totalPlayers,
-      dealer: (nextToAct + totalPlayers - 3) % totalPlayers,
-    })
+  componentWillReceiveProps(props) {
+    const { winners } = props
+
+    this.calcPositions()
 
     if (winners == null) {
       // Set or Reset
@@ -84,7 +85,7 @@ export class Board extends PureComponent {
       getListOfWinnerNames(winners)
     }
 
-    // Todo abstract Hero and Bot into one Player array to map through.
+    // Todo combine Hero and Bot into one Player array to map through.
     return (
       <div className="Board">
         {hero && hero.map((hero, index) => (
@@ -97,7 +98,7 @@ export class Board extends PureComponent {
             isSB={index === sb}
             isWinner={this.cachedWinners.includes('Player 0')}
             key={index}
-            nextToAct={nextToAct === 0}
+            isNextToAct={nextToAct === 0}
             position={index}
           />
         ))}
@@ -112,7 +113,7 @@ export class Board extends PureComponent {
             isWinner={this.cachedWinners.includes(`Player ${index + 1}`)}
             key={index + 1}
             name={`Player ${index + 1}`}
-            nextToAct={nextToAct === index + 1}
+            isNextToAct={nextToAct === index + 1}
             position={index + 1}
             visibleCards={showdown ? true : false}
           />

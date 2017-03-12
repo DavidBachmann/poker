@@ -4,7 +4,7 @@ import Player from '../Player'
 class Hero extends PureComponent {
 
   render() {
-    const { cards, chips, nextToAct, isWinner, isLoser, name = 'Hero' } = this.props
+    const { cards, chips, isNextToAct, isWinner, isLoser, isBB, isSB, isDealer, name = 'Hero' } = this.props
 
     return (
       <Player
@@ -13,7 +13,10 @@ class Hero extends PureComponent {
         cards={cards}
         visibleCards={true}
         isHero={true}
-        nextToAct={nextToAct}
+        isNextToAct={isNextToAct}
+        isBB={isBB}
+        isDealer={isDealer}
+        isSB={isSB}
         isWinner={isWinner}
         isLoser={isLoser}
       />

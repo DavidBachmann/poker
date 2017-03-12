@@ -3,16 +3,30 @@ import Player from '../Player'
 
 class Bot extends PureComponent {
   render() {
-    const { cards, chips, isWinner, isLoser, name, nextToAct, visibleCards } = this.props
+    const {
+      cards,
+      chips,
+      isBB,
+      isDealer,
+      isLoser,
+      isNextToAct,
+      isSB,
+      isWinner,
+      name,
+      visibleCards,
+    } = this.props
 
     return (
       <Player
         cards={cards}
         chips={chips}
-        isLoser={isLoser}
+        isNextToAct={isNextToAct}
+        isBB={isBB}
+        isDealer={isDealer}
+        isSB={isSB}
         isWinner={isWinner}
+        isLoser={isLoser}
         name={name}
-        nextToAct={nextToAct}
         visibleCards={visibleCards}
       />
     )
