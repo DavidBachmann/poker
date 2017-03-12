@@ -17,7 +17,6 @@ const determineWinner = (bots, hero, communityCards) => {
 
   const formattedCommunityCards = formatHand(flatten(valuesIn(communityCards)))
 
-
   const formattedPlayerHands = allPlayerCards.map((player) => {
     return concat(formatHand(player.cards), formattedCommunityCards)
   })
@@ -33,7 +32,7 @@ const determineWinner = (bots, hero, communityCards) => {
   const formattedPlayerHandsSolved = players.map((player) => {
     return Hand.solve(player.hand)
   })
-  console.log(formattedPlayerHandsSolved)
+
   // Let PokerSolver figure out who won the hand
   const handWinners = Hand.winners(formattedPlayerHandsSolved)
 
@@ -41,7 +40,7 @@ const determineWinner = (bots, hero, communityCards) => {
   let winningHands = handWinners.map((winner, index) => {
     // Add 1 to index so 1st place isn't 0th place.
     return {
-      place: index+1,
+      place: index + 1,
       winningHand: stripSpaces(winner.cards.toString())
     }
   })

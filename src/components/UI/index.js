@@ -1,10 +1,30 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux'
-import { startGame, killGame, nextPlayerToAct, determineWinner, dealPreflop, dealFlop, dealTurn, dealRiver } from '../../actions/game'
+import {
+  dealFlop,
+  dealPreflop,
+  dealRiver,
+  dealTurn,
+  determineWinner,
+  killGame,
+  nextPlayerToAct,
+  postBlinds,
+  startGame,
+ } from '../../actions/game'
 
 export class UI extends PureComponent {
   render() {
-    const { onClickStart, onClickKill, onClickPlayerNextToAct, onClickDetermine, onClickDealPreflop, onClickDealFlop, onClickDealTurn, onClickDealRiver } = this.props
+    const {
+      onClickStart,
+      onClickKill,
+      onClickPlayerNextToAct,
+      onClickDetermine,
+      onClickDealPreflop,
+      onClickDealFlop,
+      onClickDealTurn,
+      onClickDealRiver,
+      onClickPostBlinds,
+    } = this.props
 
     return (
       <div>
@@ -20,6 +40,9 @@ export class UI extends PureComponent {
           <button onClick={onClickDealTurn}>Deal Turn</button>
           <button onClick={onClickDealRiver}>Deal River</button>
         </div>
+        <div>
+          <button onClick={onClickPostBlinds}>Post blinds</button>
+        </div>
       </div>
     )
   }
@@ -34,4 +57,5 @@ export default connect(null, dispatch => ({
   onClickDealFlop: () => dispatch(dealFlop()),
   onClickDealTurn: () => dispatch(dealTurn()),
   onClickDealRiver: () => dispatch(dealRiver()),
+  onClickPostBlinds: () => dispatch(postBlinds()),
 }))(UI)

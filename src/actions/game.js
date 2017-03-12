@@ -33,3 +33,7 @@ export const dealTurn = () => ({
 export const dealRiver = () => ({
   type: 'DEAL_RIVER'
 })
+
+export const postBlinds = () => ({
+  type: 'POST_BLINDS'
+})

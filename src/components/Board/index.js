@@ -5,8 +5,6 @@ import Hero from '../Hero'
 import Community from '../Community'
 import './styles.css'
 
-
-
 export class Board extends PureComponent {
 
   cachedWinners = []
@@ -18,7 +16,7 @@ export class Board extends PureComponent {
     dealer: null,
   }
 
-  calcPositions() {
+  calculatePositions() {
     const { nextToAct, totalPlayers } = this.props
 
     this.setState({
@@ -29,13 +27,12 @@ export class Board extends PureComponent {
   }
 
   componentDidMount() {
-    this.calcPositions()
+    this.calculatePositions()
   }
 
   componentWillReceiveProps(props) {
     const { winners } = props
-
-    this.calcPositions()
+    this.calculatePositions()
 
     if (winners == null) {
       // Set or Reset
@@ -87,7 +84,7 @@ export class Board extends PureComponent {
 
     // Todo combine Hero and Bot into one Player array to map through.
     return (
-      <div className="Board">
+      <div className="Board" onClick={this.handlePostBlinds}>
         {hero && hero.map((hero, index) => (
           <Hero
             cards={hero && hero.cards}

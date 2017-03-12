@@ -30,14 +30,16 @@ const initialState = {
 
 export default (state = initialState, action) => {
   const {
-    deck,
-    totalPlayers,
-    nextStreet,
     bots,
     communityCards,
+    currentLevel,
+    deck,
     hero,
+    nextStreet,
+    level,
     nextToAct,
-    currentLevel
+    pot,
+    totalPlayers,
   } = state
 
   switch (action.type) {
@@ -109,7 +111,17 @@ export default (state = initialState, action) => {
       return {
         ...state,
         currentLevel: currentLevel + 1,
-        }
+      }
+
+    case 'POST_BLINDS': {
+      const { smallBlind, bigBlind } = level[currentLevel]
+
+      return {
+        ...state,
+        pot: pot + smallBlind + bigBlind
+      }
+    }
+
     default:
       return state
   }
