@@ -2,8 +2,8 @@ export const startGame = () => ({
   type: 'START',
 })
 
-export const stopGame = () => ({
-  type: 'STOP'
+export const killGame = () => ({
+  type: 'KILL'
 })
 
 export const determineWinner = () => ({
@@ -32,9 +32,4 @@ export const dealTurn = () => ({
 
 export const dealRiver = () => ({
   type: 'DEAL_RIVER'
-})
-
-
-export const resetCards = () => ({
-  type: 'RESET_CARDS'
 })

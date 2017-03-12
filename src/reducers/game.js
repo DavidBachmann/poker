@@ -6,11 +6,6 @@ import generateShuffledDeck from '../utils/generateShuffledDeck'
 const STARTING_STACK = 1500
 const TOTAL_BOTS = 8
 
-const initializeBots = initializer(TOTAL_BOTS, STARTING_STACK)
-const initializeHero = initializer(1, STARTING_STACK)
-
-console.log(initializeBots)
-
 const initialState = {
   deck: [], // Current deck of cards
   totalPlayers: 9, // Players currently connected
@@ -19,7 +14,7 @@ const initialState = {
   nextStreet: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'}
   bots: [], // Array of bots
   hero: [], // Array of hero (Using array for consistency)
-  communityCards: {flop: {}, turn: {}, river: {}}, // Object of dealt community cards
+  communityCards: {}, // Object of dealt community cards
   winners: null, // We haven't selected a winner yet
   nextToAct: 0, // Player at index 0 starts (TODO)
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
@@ -27,20 +22,22 @@ const initialState = {
 
 export default (state = initialState, action) => {
   const { deck, totalPlayers, nextStreet, bots, communityCards, hero, nextToAct } = state
+
   switch (action.type) {
     case 'START':
       return {
         ...state,
-        bots: initializeBots,
+        bots: initializer(TOTAL_BOTS, STARTING_STACK),
         deck: generateShuffledDeck(),
-        hero: initializeHero,
+        hero: initializer(1, STARTING_STACK),
+        communityCards: {flop: {}, turn: {}, river: {}},
         nextStreet: 1,
         showdown: false,
         started: true,
         winners: null,
       }
 
-    case 'STOP':
+    case 'KILL':
       return {
         ...state,
         bots: [],
@@ -90,19 +87,6 @@ export default (state = initialState, action) => {
         ...dealCards(deck, bots, hero, nextStreet, communityCards),
         nextStreet: 0,
       }
-
-    case 'RESET_CARDS':
-      return {
-        ...state,
-        bots: [],
-        communityCards: [],
-        deck: [],
-        hero: [],
-        nextStreet: 1,
-        showdown: false,
-        winners: null,
-      }
-
 
     default:
       return state

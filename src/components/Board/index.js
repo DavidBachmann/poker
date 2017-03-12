@@ -7,16 +7,22 @@ import './styles.css'
 
 export class Board extends PureComponent {
 
+  cachedWinners = []
+
   state = {
     winnersHaveBeenDetermined: false,
   }
 
-  cachedWinners = []
-
   componentWillReceiveProps(props) {
     const { winners } = props
 
-    if (winners !== null) {
+    if (winners == null) {
+      // Set or Reset
+      this.cachedWinners = []
+      this.setState({
+        winnersHaveBeenDetermined: false
+      })
+    } else {
       this.setState({
         winnersHaveBeenDetermined: true
       })
@@ -26,7 +32,6 @@ export class Board extends PureComponent {
   render() {
     const { started, nextStreet, bots, communityCards, hero, winners, showdown, nextToAct, pot } = this.props
     const { winnersHaveBeenDetermined } = this.state
-    console.log(hero)
 
     if (!started) {
       return null
@@ -56,7 +61,7 @@ export class Board extends PureComponent {
             chips={hero && hero.chips}
             nextToAct={nextToAct === 0}
             isWinner={this.cachedWinners.includes('Player 0')}
-            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')}
+            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')} // todo
             key={index}
           />
         ))}
@@ -68,7 +73,7 @@ export class Board extends PureComponent {
             name={`Player ${index + 1}`}
             nextToAct={nextToAct === index + 1}
             isWinner={this.cachedWinners.includes(`Player ${index + 1}`)}
-            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index + 1}`)}
+            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index + 1}`)} // todo
             key={index}
           />
         ))}

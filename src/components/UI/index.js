@@ -1,19 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { startGame, stopGame, nextPlayerToAct, determineWinner, dealPreflop, dealFlop, dealTurn, dealRiver, resetCards } from '../../actions/game'
+import { startGame, killGame, nextPlayerToAct, determineWinner, dealPreflop, dealFlop, dealTurn, dealRiver } from '../../actions/game'
 
 export class UI extends React.Component {
   render() {
-    const { onClickStart, onClickStop, onClickPlayerNextToAct, onClickDetermine, onClickDealPreflop, onClickDealFlop, onClickDealTurn, onClickDealRiver, onClickResetCards } = this.props
+    const { onClickStart, onClickKill, onClickPlayerNextToAct, onClickDetermine, onClickDealPreflop, onClickDealFlop, onClickDealTurn, onClickDealRiver } = this.props
 
     return (
       <div>
         <div>
-          <button onClick={onClickStart}>Start Game</button>
-          <button onClick={onClickStop}>Stop Game</button>
+          <button onClick={onClickStart}>Re/Start Game</button>
+          <button onClick={onClickKill}>Kill Game</button>
           <button onClick={onClickDetermine}>Determine Winner</button>
           <button onClick={onClickPlayerNextToAct}>Next Player To Act</button>
-          <button onClick={onClickResetCards}>Reset Cards</button>
         </div>
         <div>
           <button onClick={onClickDealPreflop}>Deal Preflop</button>
@@ -28,10 +27,9 @@ export class UI extends React.Component {
 
 export default connect(null, dispatch => ({
   onClickStart: () => dispatch(startGame()),
-  onClickStop: () => dispatch(stopGame()),
+  onClickKill: () => dispatch(killGame()),
   onClickPlayerNextToAct: () => dispatch(nextPlayerToAct()),
   onClickDetermine: () => dispatch(determineWinner()),
-  onClickResetCards: () => dispatch(resetCards()),
   onClickDealPreflop: () => dispatch(dealPreflop()),
   onClickDealFlop: () => dispatch(dealFlop()),
   onClickDealTurn: () => dispatch(dealTurn()),
