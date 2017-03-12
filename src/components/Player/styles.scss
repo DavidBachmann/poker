@@ -38,6 +38,26 @@ $panelHeight: 55; //px
   width: 140px;
   overflow: hidden;
   z-index: 10;
+
+  .is-dealer &::before {
+    $size: 20px;
+
+    background: #FFF;
+    border-radius: 50%;
+    bottom: 3px;
+    content: 'D';
+    display: block;
+    height: $size;
+    left: 50%;
+    font-size: 12px;
+    color: #444;
+    line-height: $size;
+    position: absolute;
+    text-align: center;
+    transform: translateX(-50%);
+    width: $size;
+    z-index: 30;
+  }
 }
 
 .Player-avatar {

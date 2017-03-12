@@ -2,15 +2,18 @@ import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
 import initializer from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
+import { concat } from 'lodash'
 
 const STARTING_STACK = 1500
 const TOTAL_BOTS = 8
 
+const bots = initializer(TOTAL_BOTS, STARTING_STACK)
+const hero = initializer(1, STARTING_STACK)
+
 const initialState = {
+  communityCards: {}, // Object of dealt community cards
+  currentLevel: 1, // Starting level
   deck: [], // Current deck of cards
-  totalPlayers: 9, // Players currently connected
-  started: false, // Game is not started
-  pot: 0, // Chips currently in the pot
   level: { // Temp levels (TODO)
     1: { smallBlind: 25, bigBlind: 50 },
     2: { smallBlind: 50, bigBlind: 100 },
@@ -18,26 +21,25 @@ const initialState = {
     4: { smallBlind: 300, bigBlind: 600 },
     5: { smallBlind: 600, bigBlind: 1200 },
   },
-  currentLevel: 1, // Starting level
   nextStreet: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
-  bots: [], // Array of bots
-  hero: [], // Array of hero (Using array for consistency)
-  communityCards: {}, // Object of dealt community cards
-  winners: null, // We haven't selected a winner yet
   nextToAct: 0, // Player at index 0 starts (TODO)
+  players: [],
+  pot: 0, // Chips currently in the pot
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
+  started: false, // Game is not started
+  totalPlayers: 9, // Players currently connected
+  winners: null, // We haven't selected a winner yet
 }
 
 export default (state = initialState, action) => {
   const {
-    bots,
     communityCards,
     currentLevel,
     deck,
-    hero,
-    nextStreet,
     level,
+    nextStreet,
     nextToAct,
+    players,
     pot,
     totalPlayers,
   } = state
@@ -46,9 +48,8 @@ export default (state = initialState, action) => {
     case 'START':
       return {
         ...state,
-        bots: initializer(TOTAL_BOTS, STARTING_STACK),
+        players: concat(hero, bots),
         deck: generateShuffledDeck(),
-        hero: initializer(1, STARTING_STACK),
         communityCards: {flop: {}, turn: {}, river: {}},
         nextStreet: 1,
         showdown: false,
@@ -59,7 +60,7 @@ export default (state = initialState, action) => {
     case 'KILL':
       return {
         ...state,
-        bots: [],
+        players: [],
         communityCards: [],
         started: false,
         winners: null,
@@ -69,7 +70,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         showdown: true,
-        winners: winnerDetermination(bots, hero, communityCards, totalPlayers),
+        winners: winnerDetermination(players, communityCards, totalPlayers),
       }
 
     case 'NEXT_TO_ACT':
@@ -82,28 +83,28 @@ export default (state = initialState, action) => {
       return {
         ...state,
         nextStreet: 2,
-        ...dealCards(deck, bots, hero, nextStreet, communityCards, totalPlayers)
+        ...dealCards(deck, players, nextStreet, communityCards, totalPlayers)
       }
 
     case 'DEAL_FLOP':
       return {
         ...state,
         nextStreet: 3,
-        ...dealCards(deck, bots, hero, nextStreet, communityCards)
+        ...dealCards(deck, players, nextStreet, communityCards)
       }
 
     case 'DEAL_TURN':
       return {
         ...state,
         nextStreet: 4,
-        ...dealCards(deck, bots, hero, nextStreet, communityCards)
+        ...dealCards(deck, players, nextStreet, communityCards)
 
       }
 
     case 'DEAL_RIVER':
       return {
         ...state,
-        ...dealCards(deck, bots, hero, nextStreet, communityCards),
+        ...dealCards(deck, players, nextStreet, communityCards),
         nextStreet: 0,
       }
 
@@ -114,11 +115,18 @@ export default (state = initialState, action) => {
       }
 
     case 'POST_BLINDS': {
+      const bbPosition = (nextToAct + totalPlayers - 1) % totalPlayers
+      const sbPosition = (nextToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
+
+      // Remove chips from relevant players
+      players[bbPosition].chips -= bigBlind
+      players[sbPosition].chips -= smallBlind
 
       return {
         ...state,
-        pot: pot + smallBlind + bigBlind
+        pot: pot + smallBlind + bigBlind,
+        players,
       }
     }
 

@@ -3,8 +3,7 @@ import { concat, valuesIn, flatten } from 'lodash'
 import { stripSpaces } from '../'
 import { formatHand } from '../formatHand'
 
-const determineWinner = (bots, hero, communityCards) => {
-  let allPlayerCards = concat(hero, bots)
+const determineWinner = (players, communityCards) => {
   let winners = []
 
   /*
@@ -17,19 +16,18 @@ const determineWinner = (bots, hero, communityCards) => {
 
   const formattedCommunityCards = formatHand(flatten(valuesIn(communityCards)))
 
-  const formattedPlayerHands = allPlayerCards.map((player) => {
+  const formattedPlayerHands = players.map((player) => {
     return concat(formatHand(player.cards), formattedCommunityCards)
   })
 
-  const players = formattedPlayerHands.map((hand, index) => {
-
+  const playerObj = formattedPlayerHands.map((hand, index) => {
     return {
       name: `Player ${index}`,
       hand: hand
     }
   })
 
-  const formattedPlayerHandsSolved = players.map((player) => {
+  const formattedPlayerHandsSolved = playerObj.map((player) => {
     return Hand.solve(player.hand)
   })
 
@@ -45,7 +43,7 @@ const determineWinner = (bots, hero, communityCards) => {
     }
   })
 
-  players.forEach((player) => {
+  playerObj.forEach((player) => {
     let playerHand = stripSpaces(Hand.solve(player.hand).toString())
     // If the winning hand matches this player's hand we have found our winner.
     for (let i = 0; i < winningHands.length; i++) {

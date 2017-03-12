@@ -1,19 +1,12 @@
-const dealCardsToPlayers = (deck, bots, hero, totalPlayers) => {
+const dealCardsToPlayers = (deck, players) => {
 
-  for (let i = 0; i < totalPlayers; i++) {
-    if (i === 0) {
-      // First deal for Hero
-      hero[0].cards = deck.splice(0, 2)
-    } else {
-      // Then for bots
-      bots[i - 1].cards = deck.splice(0, 2)
-    }
-  }
+  players.forEach((player) => {
+    player.cards = deck.splice(0, 2)
+  })
 
   return {
     deck,
-    bots,
-    hero
+    players
   }
 }
 
@@ -44,10 +37,10 @@ const dealRiver = (deck, communityCards) => {
   }
 }
 
-const dealCards = (deck, bots, hero, nextStreet, communityCards, totalPlayers) => {
+const dealCards = (deck, players, nextStreet, communityCards, totalPlayers) => {
   if (nextStreet === 1) {
     console.log('Dealing cards to players')
-    return dealCardsToPlayers(deck, bots, hero, totalPlayers)
+    return dealCardsToPlayers(deck, players)
   } else if (nextStreet === 2) {
     console.log('Dealing flop')
     return dealFlop(deck, communityCards)

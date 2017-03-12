@@ -7,10 +7,28 @@ import './styles.css'
 class Player extends PureComponent {
 
   render() {
-    const { cards, chips, name, isHero, isNextToAct, isWinner, isLoser, visibleCards } = this.props
+    const {
+      cards,
+      chips,
+      isDealer,
+      isHero,
+      isLoser,
+      isNextToAct,
+      isWinner,
+      name,
+      visibleCards,
+     } = this.props
 
     return (
-      <div className={classNames(isHero ? 'Hero' : 'Bot', name && stripSpaces(name), 'Player', isNextToAct && 'is-next-to-act', isWinner && 'is-winner', isLoser && 'is-loser')}>
+      <div className={classNames(
+        'Player',
+        isDealer && 'is-dealer',
+        isHero ? 'Hero' : 'Bot',
+        isLoser && 'is-loser',
+        isNextToAct && 'is-next-to-act',
+        isWinner && 'is-winner',
+        name && stripSpaces(name),
+      )}>
         <div className="Player-panel">
           <div className="Player-avatar"></div>
           <div className="Player-details">

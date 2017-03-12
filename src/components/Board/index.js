@@ -49,9 +49,8 @@ export class Board extends PureComponent {
 
   render() {
     const {
-      bots,
+      players,
       communityCards,
-      hero,
       nextStreet,
       nextToAct,
       pot,
@@ -85,36 +84,26 @@ export class Board extends PureComponent {
     // Todo combine Hero and Bot into one Player array to map through.
     return (
       <div className="Board" onClick={this.handlePostBlinds}>
-        {hero && hero.map((hero, index) => (
-          <Hero
-            cards={hero && hero.cards}
-            chips={hero && hero.chips}
-            isBB={index === bb}
-            isDealer={index === dealer}
-            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes('Player 0')}
-            isSB={index === sb}
-            isWinner={this.cachedWinners.includes('Player 0')}
-            key={index}
-            isNextToAct={nextToAct === 0}
-            position={index}
-          />
-        ))}
-        {bots && bots.map((bot, index) => (
-          <Bot
-            cards={bot && bot.cards}
-            chips={bot && bot.chips}
-            isBB={index + 1 === bb}
-            isDealer={index + 1 === dealer}
-            isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index + 1}`)}
-            isSB={index + 1 === sb}
-            isWinner={this.cachedWinners.includes(`Player ${index + 1}`)}
-            key={index + 1}
-            name={`Player ${index + 1}`}
-            isNextToAct={nextToAct === index + 1}
-            position={index + 1}
-            visibleCards={showdown ? true : false}
-          />
-        ))}
+        {players && players.map((player, index) => {
+          const PlayerType = index === 0 ? Hero : Bot
+
+          return (
+            <PlayerType
+              cards={player && player.cards}
+              chips={player && player.chips}
+              isBB={index === bb}
+              isDealer={index === dealer}
+              isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index}`)}
+              isSB={index === sb}
+              isWinner={this.cachedWinners.includes(`Player ${index}`)}
+              key={index}
+              name={`Player ${index}`}
+              isNextToAct={nextToAct === index}
+              position={index}
+              visibleCards={showdown ? true : false}
+            />
+          )
+        })}
 
         <div className="Board-communityCards">
           <Community
