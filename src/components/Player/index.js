@@ -1,10 +1,10 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import classNames from 'classnames'
 import Card from '../Card'
 import { stripSpaces } from '../../utils'
 import './styles.css'
 
-class Player extends PureComponent {
+class Player extends Component {
 
   render() {
     const {

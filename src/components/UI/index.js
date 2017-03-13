@@ -10,6 +10,7 @@ import {
   nextPlayerToAct,
   postBlinds,
   startGame,
+  payOutChips,
  } from '../../actions/game'
 
 export class UI extends PureComponent {
@@ -24,8 +25,8 @@ export class UI extends PureComponent {
       onClickDealTurn,
       onClickDealRiver,
       onClickPostBlinds,
+      onClickPayOutChips,
     } = this.props
-
     return (
       <div>
         <div>
@@ -42,6 +43,7 @@ export class UI extends PureComponent {
         </div>
         <div>
           <button onClick={onClickPostBlinds}>Post blinds</button>
+          <button onClick={onClickPayOutChips}>Pay out chips</button>
         </div>
       </div>
     )
@@ -58,4 +60,5 @@ export default connect(null, dispatch => ({
   onClickDealTurn: () => dispatch(dealTurn()),
   onClickDealRiver: () => dispatch(dealRiver()),
   onClickPostBlinds: () => dispatch(postBlinds()),
+  onClickPayOutChips: () => dispatch(payOutChips()),
 }))(UI)

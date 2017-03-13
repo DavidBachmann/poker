@@ -16,18 +16,11 @@ const determineWinner = (players, communityCards) => {
 
   const formattedCommunityCards = formatHand(flatten(valuesIn(communityCards)))
 
-  const formattedPlayerHands = players.map((player) => {
-    return concat(formatHand(player.cards), formattedCommunityCards)
+  players.forEach((player) => {
+      player.hand = concat(formatHand(player.cards), formattedCommunityCards)
   })
 
-  const playerObj = formattedPlayerHands.map((hand, index) => {
-    return {
-      name: `Player ${index}`,
-      hand: hand
-    }
-  })
-
-  const formattedPlayerHandsSolved = playerObj.map((player) => {
+  const formattedPlayerHandsSolved = players.map((player) => {
     return Hand.solve(player.hand)
   })
 
@@ -43,13 +36,14 @@ const determineWinner = (players, communityCards) => {
     }
   })
 
-  playerObj.forEach((player) => {
+  players.forEach((player) => {
     let playerHand = stripSpaces(Hand.solve(player.hand).toString())
     // If the winning hand matches this player's hand we have found our winner.
     for (let i = 0; i < winningHands.length; i++) {
       if (winningHands[i].winningHand === playerHand) {
         winners.push({
           place: winningHands[i].place,
+          id: player.id,
           name: player.name,
           hand: player.hand,
           handDetails: handWinners[i],

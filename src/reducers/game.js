@@ -2,7 +2,7 @@ import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
 import initializer from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
-import { concat } from 'lodash'
+import { concat, find } from 'lodash'
 
 const STARTING_STACK = 1500
 const TOTAL_BOTS = 8
@@ -41,7 +41,9 @@ export default (state = initialState, action) => {
     nextToAct,
     players,
     pot,
+    showdown,
     totalPlayers,
+    winners,
   } = state
 
   switch (action.type) {
@@ -66,17 +68,35 @@ export default (state = initialState, action) => {
         winners: null,
       }
 
-    case 'DETERMINE_WINNER':
+    case 'DETERMINE_WINNER': {
       return {
         ...state,
         showdown: true,
         winners: winnerDetermination(players, communityCards, totalPlayers),
       }
+    }
+
+    case 'PAY_OUT_CHIPS': {
+      if (!showdown) {
+        return null
+      }
+
+      const totalWinners = winners.length
+
+      winners.forEach((winner) => {
+        const playerThatWon = find(players, (player) => player.name === winner.name)
+        playerThatWon.chips += pot/totalWinners
+      })
+
+      return {
+        ...state,
+      }
+    }
 
     case 'NEXT_TO_ACT':
       return {
         ...state,
-        nextToAct: nextToAct === 8 ? 0 : nextToAct + 1,
+        nextToAct: nextToAct === players.length - 1 ? 0 : nextToAct + 1,
       }
 
     case 'DEAL_PREFLOP':

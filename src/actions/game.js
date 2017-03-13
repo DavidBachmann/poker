@@ -37,3 +37,8 @@ export const dealRiver = () => ({
 export const postBlinds = () => ({
   type: 'POST_BLINDS'
 })
+
+export const payOutChips = (winners) => ({
+  type: 'PAY_OUT_CHIPS',
+  winners
+})

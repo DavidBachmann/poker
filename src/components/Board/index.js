@@ -93,11 +93,11 @@ export class Board extends PureComponent {
               chips={player && player.chips}
               isBB={index === bb}
               isDealer={index === dealer}
-              isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(`Player ${index}`)}
+              isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(player.name)}
               isSB={index === sb}
-              isWinner={this.cachedWinners.includes(`Player ${index}`)}
+              isWinner={this.cachedWinners.includes(player.name)}
               key={index}
-              name={`Player ${index}`}
+              name={player && player.name}
               isNextToAct={nextToAct === index}
               position={index}
               visibleCards={showdown ? true : false}
