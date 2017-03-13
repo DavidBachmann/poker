@@ -35,7 +35,7 @@ $panelHeight: 55; //px
   height: #{$panelHeight}px;
   padding: 5px;
   position: relative;
-  width: 140px;
+  width: 160px;
   overflow: hidden;
   z-index: 10;
 
@@ -90,15 +90,16 @@ $panelHeight: 55; //px
 }
 
 .Player-details {
-  font-size: 15px;
   color: #FFF;
-  line-height: 1.333;
+  line-height: 1.45;
 }
 
 .Player-name {
+  font-size: 12px;
 }
 
 .Player-chipCount {
+  font-size: 14px;
   font-weight: 300;
 }
 .Player:nth-child(1) {

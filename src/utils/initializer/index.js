@@ -1,4 +1,5 @@
 import guid from '../guid'
+import generateRandomName from '../generateRandomName'
 
 const initalizer = (totalPlayers, startingStack) =>
   Array.from({
@@ -6,7 +7,7 @@ const initalizer = (totalPlayers, startingStack) =>
   }, () => ({
       cards: [],
       hand: [],
-      name: Math.random().toString(36).substr(2, 5),
+      name: generateRandomName(),
       chips: startingStack,
       id: guid(),
     })

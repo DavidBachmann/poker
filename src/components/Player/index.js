@@ -33,7 +33,7 @@ class Player extends Component {
           <div className="Player-avatar"></div>
           <div className="Player-details">
             <p className="Player-name">{name}</p>
-            <p className="Player-chipCount">{chips}</p>
+            <p className="Player-chipCount">${chips}</p>
           </div>
         </div>
         {cards && (
