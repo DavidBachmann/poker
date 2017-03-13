@@ -1,4 +1,4 @@
 # React poker client
 Work In Progress.
 
-![Screenshot March 13th](https://cloud.githubusercontent.com/assets/8494120/23879395/b2f81a3c-0844-11e7-83fb-14d0bd6c80a7.png)
+![Screenshot March 13th](https://cloud.githubusercontent.com/assets/8494120/23879476/476f866e-0845-11e7-9e16-f5739c0dae91.png)
