@@ -21,7 +21,7 @@
   display: flex;
   flex-wrap: wrap;
   margin: auto;
-  width: ($cardWidth + $cardMargin + 0.45rem) * 5;
+  width: ($cardWidth + $cardMargin + 1rem) * 5;
 }
 
 .Board-winnerInfo {
