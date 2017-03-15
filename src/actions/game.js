@@ -30,7 +30,7 @@ function postBlinds() {
   }
 }
 
-function payOutChips(winners) {
+export const payOutChips = (winners) => {
   return {
     type: 'PAY_OUT_CHIPS',
     winners

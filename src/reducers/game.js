@@ -54,6 +54,8 @@ export default (state = initialState, action) => {
         deck: generateShuffledDeck(),
         communityCards: {flop: {}, turn: {}, river: {}},
         street: 0,
+        pot: 0,
+        
         showdown: false,
         started: true,
         winners: null,

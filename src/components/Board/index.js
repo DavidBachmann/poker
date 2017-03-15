@@ -1,5 +1,6 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
+import { isEqual } from 'lodash'
 import Bot from '../Bot'
 import Hero from '../Hero'
 import Community from '../Community'
@@ -12,7 +13,7 @@ import {
  } from '../../actions/game'
 
 
-export class Board extends Component {
+export class Board extends PureComponent {
 
   cachedWinners = []
 
@@ -54,8 +55,15 @@ export class Board extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (isEqual(this.props, nextProps)) {
+      return false
+    } else {
+      return true
+    }
+  }
+
   render() {
-    console.log("Called render on board")
     const {
       players,
       communityCards,
@@ -93,16 +101,17 @@ export class Board extends Component {
       <div className="Board" onClick={this.handlePostBlinds}>
         {players && players.map((player, index) => {
           const PlayerType = index === 0 ? Hero : Bot
+          const isWinner = this.cachedWinners.includes(player.name)
 
           return (
             <PlayerType
-              cards={player && player.cards}
-              chips={player && player.chips}
+              cards={player.cards}
+              chips={player.chips}
               isBB={index === bb}
               isDealer={index === dealer}
-              isLoser={this.cachedWinners.length > 0 && !this.cachedWinners.includes(player.name)}
+              isLoser={this.cachedWinners.length > 0 && !isWinner}
               isSB={index === sb}
-              isWinner={this.cachedWinners.includes(player.name)}
+              isWinner={isWinner}
               key={index}
               name={player && player.name}
               isNextToAct={nextToAct === index}
