@@ -88,7 +88,7 @@ export class Board extends PureComponent {
         return null
       } else {
         winners.map((winner) => {
-          return this.cachedWinners.push(winner.name)
+          return this.cachedWinners.push(winner.id)
         })
       }
     }
@@ -101,18 +101,19 @@ export class Board extends PureComponent {
       <div className="Board" onClick={this.handlePostBlinds}>
         {players && players.map((player, index) => {
           const PlayerType = index === 0 ? Hero : Bot
-          const isWinner = this.cachedWinners.includes(player.name)
+          const isWinner = this.cachedWinners.includes(player.id)
 
           return (
             <PlayerType
-              cards={player.cards}
+              cards={player.cards && player.cards}
               chips={player.chips}
+              id={player.id}
               isBB={index === bb}
               isDealer={index === dealer}
               isLoser={this.cachedWinners.length > 0 && !isWinner}
               isSB={index === sb}
               isWinner={isWinner}
-              key={index}
+              key={player.id}
               name={player && player.name}
               isNextToAct={nextToAct === index}
               position={index}

@@ -10,6 +10,12 @@ function showAll() {
   }
 }
 
+export const throwAwayCards = () => {
+  return {
+    type: 'THROW_AWAY_CARDS'
+  }
+}
+
 function nextPlayerToAct() {
   return {
     type: 'NEXT_TO_ACT'
@@ -30,10 +36,9 @@ function postBlinds() {
   }
 }
 
-export const payOutChips = (winners) => {
+export const payOutChips = () => {
   return {
-    type: 'PAY_OUT_CHIPS',
-    winners
+    type: 'PAY_OUT_CHIPS'
   }
 }
 
@@ -42,8 +47,8 @@ export const start = () => dispatch => {
   dispatch(postBlinds())
 }
 
-export const dealNext = (street) => dispatch => {
-  dispatch(deal(street))
+export const dealNext = () => dispatch => {
+  dispatch(deal())
 }
 
 export const determineWinner = () => {

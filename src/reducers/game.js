@@ -55,7 +55,6 @@ export default (state = initialState, action) => {
         communityCards: {flop: {}, turn: {}, river: {}},
         street: 0,
         pot: 0,
-        
         showdown: false,
         started: true,
         winners: null,
@@ -122,6 +121,13 @@ export default (state = initialState, action) => {
         ...state,
         pot: pot + smallBlind + bigBlind,
         players,
+      }
+    }
+
+    case 'THROW_AWAY_CARDS': {
+      return {
+        ...state,
+        players: []
       }
     }
 

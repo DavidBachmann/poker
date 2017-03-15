@@ -11,7 +11,6 @@ class App extends Component {
       <div className="App">
         <GameManager>
           <Board />
-          <UI />
         </GameManager>
       </div>
     )
