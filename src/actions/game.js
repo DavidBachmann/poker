@@ -1,44 +1,53 @@
-export const startGame = () => ({
-  type: 'START',
-})
+function startGame() {
+  return {
+    type: 'START',
+  }
+}
 
-export const killGame = () => ({
-  type: 'KILL'
-})
+function showAll() {
+  return {
+    type: 'SHOW_ALL'
+  }
+}
 
-export const determineWinner = () => ({
-  type: 'DETERMINE_WINNER'
-})
+function nextPlayerToAct() {
+  return {
+    type: 'NEXT_TO_ACT'
+  }
+}
 
-export const showAll = () => ({
-  type: 'SHOW_ALL'
-})
+function deal(street,) {
+  return {
+    type: 'DEAL',
+    street
+  }
+}
 
-export const nextPlayerToAct = () => ({
-  type: 'NEXT_TO_ACT'
-})
 
-export const dealPreflop = () => ({
-  type: 'DEAL_PREFLOP'
-})
+function postBlinds() {
+  return {
+    type: 'POST_BLINDS'
+  }
+}
 
-export const dealFlop = () => ({
-  type: 'DEAL_FLOP'
-})
+function payOutChips(winners) {
+  return {
+    type: 'PAY_OUT_CHIPS',
+    winners
+  }
+}
 
-export const dealTurn = () => ({
-  type: 'DEAL_TURN'
-})
+export const start = () => dispatch => {
+  dispatch(startGame())
+  dispatch(postBlinds())
+}
 
-export const dealRiver = () => ({
-  type: 'DEAL_RIVER'
-})
+export const dealNext = (street) => dispatch => {
+  dispatch(deal(street))
+}
 
-export const postBlinds = () => ({
-  type: 'POST_BLINDS'
-})
-
-export const payOutChips = (winners) => ({
-  type: 'PAY_OUT_CHIPS',
-  winners
-})
+export const determineWinner = () => {
+  return {
+    type: 'DETERMINE_WINNER'
+  }
+}

@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import Player from '../Player'
 
-class Bot extends PureComponent {
+class Bot extends Component {
   render() {
     const {
       cards,

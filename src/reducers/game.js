@@ -21,7 +21,7 @@ const initialState = {
     4: { smallBlind: 300, bigBlind: 600 },
     5: { smallBlind: 600, bigBlind: 1200 },
   },
-  nextStreet: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
+  street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   nextToAct: 0, // Player at index 0 starts (TODO)
   players: [],
   pot: 0, // Chips currently in the pot
@@ -37,7 +37,7 @@ export default (state = initialState, action) => {
     currentLevel,
     deck,
     level,
-    nextStreet,
+    street,
     nextToAct,
     players,
     pot,
@@ -53,18 +53,9 @@ export default (state = initialState, action) => {
         players: concat(hero, bots),
         deck: generateShuffledDeck(),
         communityCards: {flop: {}, turn: {}, river: {}},
-        nextStreet: 1,
+        street: 0,
         showdown: false,
         started: true,
-        winners: null,
-      }
-
-    case 'KILL':
-      return {
-        ...state,
-        players: [],
-        communityCards: [],
-        started: false,
         winners: null,
       }
 
@@ -99,34 +90,16 @@ export default (state = initialState, action) => {
         nextToAct: nextToAct === players.length - 1 ? 0 : nextToAct + 1,
       }
 
-    case 'DEAL_PREFLOP':
+    case 'DEAL': {
+      if (street >= 4) {
+        return
+      }
       return {
         ...state,
-        nextStreet: 2,
-        ...dealCards(deck, players, nextStreet, communityCards, totalPlayers)
+        ...dealCards(deck, players, street, communityCards, totalPlayers),
+        street: street + 1,
       }
-
-    case 'DEAL_FLOP':
-      return {
-        ...state,
-        nextStreet: 3,
-        ...dealCards(deck, players, nextStreet, communityCards)
-      }
-
-    case 'DEAL_TURN':
-      return {
-        ...state,
-        nextStreet: 4,
-        ...dealCards(deck, players, nextStreet, communityCards)
-
-      }
-
-    case 'DEAL_RIVER':
-      return {
-        ...state,
-        ...dealCards(deck, players, nextStreet, communityCards),
-        nextStreet: 0,
-      }
+    }
 
     case 'NEXT_LEVEL':
       return {

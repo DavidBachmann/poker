@@ -1,11 +1,18 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Bot from '../Bot'
 import Hero from '../Hero'
 import Community from '../Community'
 import './styles.css'
 
-export class Board extends PureComponent {
+import {
+  start,
+  dealNext,
+  determineWinner,
+ } from '../../actions/game'
+
+
+export class Board extends Component {
 
   cachedWinners = []
 
@@ -48,10 +55,11 @@ export class Board extends PureComponent {
   }
 
   render() {
+    console.log("Called render on board")
     const {
       players,
       communityCards,
-      nextStreet,
+      street,
       nextToAct,
       pot,
       showdown,
@@ -81,7 +89,6 @@ export class Board extends PureComponent {
       getListOfWinnerNames(winners)
     }
 
-    // Todo combine Hero and Bot into one Player array to map through.
     return (
       <div className="Board" onClick={this.handlePostBlinds}>
         {players && players.map((player, index) => {
@@ -108,7 +115,7 @@ export class Board extends PureComponent {
         <div className="Board-communityCards">
           <Community
             communityCards={communityCards}
-            nextStreet={nextStreet}
+            street={street}
           />
         </div>
         <p className="Board-potInfo">
@@ -137,4 +144,15 @@ export class Board extends PureComponent {
 
 }
 
-export default connect(state => state)(Board)
+const mapStateToProps = (state, ownProps) => ({
+  players: state.players,
+  communityCards: state.communityCards,
+  street: state.street,
+  nextToAct: state.nextToAct,
+  pot: state.pot,
+  showdown: state.showdown,
+  started: state.started,
+  winners: state.winners,
+})
+
+export default connect(mapStateToProps)(Board)

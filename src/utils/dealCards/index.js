@@ -37,17 +37,17 @@ const dealRiver = (deck, communityCards) => {
   }
 }
 
-const dealCards = (deck, players, nextStreet, communityCards, totalPlayers) => {
-  if (nextStreet === 1) {
+const dealCards = (deck, players, street, communityCards, totalPlayers) => {
+  if (street === 0) {
     console.log('Dealing cards to players')
     return dealCardsToPlayers(deck, players)
-  } else if (nextStreet === 2) {
+  } else if (street === 1) {
     console.log('Dealing flop')
     return dealFlop(deck, communityCards)
-  } else if (nextStreet === 3) {
+  } else if (street === 2) {
     console.log('Dealing turn')
     return dealTurn(deck, communityCards)
-  } else if (nextStreet === 4) {
+  } else if (street === 3) {
     console.log('Dealing river')
     return dealRiver(deck, communityCards)
   }

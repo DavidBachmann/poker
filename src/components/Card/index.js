@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import classNames from 'classnames'
 
 import './styles.css'
 
-class Card extends PureComponent {
+class Card extends Component {
 
   render() {
     const { rank, suit, visible } = this.props

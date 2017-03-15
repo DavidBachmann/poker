@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import Player from '../Player'
 
-class Hero extends PureComponent {
+class Hero extends Component {
 
   render() {
     const { cards, chips, isNextToAct, isWinner, isLoser, isBB, isSB, isDealer, name = 'Hero' } = this.props
