@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import Board from './components/Board'
-import UI from './components/UI'
 import GameManager from './components/GameManager'
 
 import './App.css'

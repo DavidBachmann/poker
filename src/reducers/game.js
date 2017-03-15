@@ -1,3 +1,4 @@
+import uuidV1 from 'uuid/v1' // V1 is time based UUID
 import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
 import initializer from '../utils/initializer'
@@ -20,15 +21,18 @@ const initialState = {
     3: { smallBlind: 150, bigBlind: 300 },
     4: { smallBlind: 300, bigBlind: 600 },
     5: { smallBlind: 600, bigBlind: 1200 },
+    6: { smallBlind: 1200, bigBlind: 2400 },
+    7: { smallBlind: 2400, bigBlind: 4800 },
   },
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
-  nextToAct: 0, // Player at index 0 starts (TODO)
+  nextToAct: -1, // Player at index 0 starts (TODO)
   players: [],
   pot: 0, // Chips currently in the pot
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
   started: false, // Game is not started
   totalPlayers: 9, // Players currently connected
   winners: null, // We haven't selected a winner yet
+  handHistory: [] // Empty hand history
 }
 
 export default (state = initialState, action) => {
@@ -44,12 +48,19 @@ export default (state = initialState, action) => {
     showdown,
     totalPlayers,
     winners,
+    handHistory
   } = state
 
   switch (action.type) {
-    case 'START':
+    case 'START': {
+      const maxHandsPerLevel = 25
+      const newHandId = uuidV1()
+      const newHandHistory = concat(handHistory, newHandId)
+      const shouldChangeLevel = currentLevel < 8 && handHistory.length % maxHandsPerLevel === 0 && handHistory.length !== 0 // Every 25 hands the level should go up
+
       return {
         ...state,
+        currentLevel: shouldChangeLevel ? currentLevel + 1 : currentLevel,
         players: concat(hero, bots),
         deck: generateShuffledDeck(),
         communityCards: {flop: {}, turn: {}, river: {}},
@@ -58,7 +69,10 @@ export default (state = initialState, action) => {
         showdown: false,
         started: true,
         winners: null,
+        nextToAct: nextToAct + 1,
+        handHistory: newHandHistory,
       }
+    }
 
     case 'DETERMINE_WINNER': {
       return {
@@ -121,13 +135,6 @@ export default (state = initialState, action) => {
         ...state,
         pot: pot + smallBlind + bigBlind,
         players,
-      }
-    }
-
-    case 'THROW_AWAY_CARDS': {
-      return {
-        ...state,
-        players: []
       }
     }
 

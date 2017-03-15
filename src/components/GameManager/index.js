@@ -9,7 +9,7 @@ import {
  } from '../../actions/game'
 
 export class GameManager extends Component {
-COUNT = 0
+  COUNT = 0
 
   componentDidMount() {
     const { dispatch } = this.props
@@ -30,7 +30,6 @@ COUNT = 0
         this.COUNT += 1
       } else if (this.COUNT === 6) {
         this.COUNT = 0
-        dispatch(throwAwayCards())
         dispatch(start())
       }
     }, 2000)

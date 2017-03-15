@@ -1,4 +1,4 @@
-import guid from '../guid'
+import uuidV4 from 'uuid/v4'
 import generateRandomName from '../generateRandomName'
 
 const initalizer = (totalPlayers, startingStack) =>
@@ -9,7 +9,7 @@ const initalizer = (totalPlayers, startingStack) =>
       hand: [],
       name: generateRandomName(),
       chips: startingStack,
-      id: guid(),
+      id: uuidV4(),
     })
   )
 

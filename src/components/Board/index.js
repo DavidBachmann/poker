@@ -75,11 +75,11 @@ export class Board extends PureComponent {
       winners,
     } = this.props
 
-    const { winnersHaveBeenDetermined, bb, sb, dealer } = this.state
-
     if (!started) {
       return null
     }
+
+    const { winnersHaveBeenDetermined, bb, sb, dealer } = this.state
 
     const getListOfWinnerNames = (winners) => {
       if (!winners) {
@@ -165,4 +165,4 @@ const mapStateToProps = (state, ownProps) => ({
   winners: state.winners,
 })
 
-export default connect(mapStateToProps)(Board)
+export default connect(state => state)(Board)

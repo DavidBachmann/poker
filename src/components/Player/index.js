@@ -27,7 +27,6 @@ class Player extends Component {
         isLoser && 'is-loser',
         isNextToAct && 'is-next-to-act',
         isWinner && 'is-winner',
-        name && stripSpaces(name),
       )}>
         <div className="Player-panel">
           <div className="Player-avatar"></div>
@@ -36,7 +35,7 @@ class Player extends Component {
             <p className="Player-chipCount">${chips}</p>
           </div>
         </div>
-        {cards && (
+        {cards && !isLoser && (
           <div className="Player-cards">
             {cards.map((card, i) => (
               <Card
