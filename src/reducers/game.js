@@ -3,7 +3,8 @@ import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
 import initializer from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
-import { concat, find } from 'lodash'
+import { concat, find, pullAt, findIndex } from 'lodash'
+import generateLevels from '../utils/generateLevels'
 
 const STARTING_STACK = 1500
 const TOTAL_BOTS = 8
@@ -13,24 +14,15 @@ const hero = initializer(1, STARTING_STACK)
 
 const initialState = {
   communityCards: {}, // Object of dealt community cards
-  currentLevel: 1, // Starting level
+  currentLevel: 8, // Starting level
   deck: [], // Current deck of cards
-  level: { // Temp levels (TODO)
-    1: { smallBlind: 25, bigBlind: 50 },
-    2: { smallBlind: 50, bigBlind: 100 },
-    3: { smallBlind: 150, bigBlind: 300 },
-    4: { smallBlind: 300, bigBlind: 600 },
-    5: { smallBlind: 600, bigBlind: 1200 },
-    6: { smallBlind: 1200, bigBlind: 2400 },
-    7: { smallBlind: 2400, bigBlind: 4800 },
-  },
+  level: generateLevels(),
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
-  nextToAct: -1, // Player at index 0 starts (TODO)
-  players: [],
+  nextToAct: 0, // Player at index 0 starts (TODO)
+  players: concat(hero, bots),
   pot: 0, // Chips currently in the pot
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
   started: false, // Game is not started
-  totalPlayers: 9, // Players currently connected
   winners: null, // We haven't selected a winner yet
   handHistory: [] // Empty hand history
 }
@@ -46,7 +38,6 @@ export default (state = initialState, action) => {
     players,
     pot,
     showdown,
-    totalPlayers,
     winners,
     handHistory
   } = state
@@ -56,12 +47,11 @@ export default (state = initialState, action) => {
       const maxHandsPerLevel = 25
       const newHandId = uuidV1()
       const newHandHistory = concat(handHistory, newHandId)
-      const shouldChangeLevel = currentLevel < 8 && handHistory.length % maxHandsPerLevel === 0 && handHistory.length !== 0 // Every 25 hands the level should go up
+      const shouldChangeLevel = currentLevel < 19 && handHistory.length % maxHandsPerLevel === 0 && handHistory.length !== 0 // Every 25 hands the level should go up
 
       return {
         ...state,
         currentLevel: shouldChangeLevel ? currentLevel + 1 : currentLevel,
-        players: concat(hero, bots),
         deck: generateShuffledDeck(),
         communityCards: {flop: {}, turn: {}, river: {}},
         street: 0,
@@ -69,7 +59,7 @@ export default (state = initialState, action) => {
         showdown: false,
         started: true,
         winners: null,
-        nextToAct: nextToAct + 1,
+        nextToAct: nextToAct >= players.length - 1 ? 0 : nextToAct + 1,
         handHistory: newHandHistory,
       }
     }
@@ -78,7 +68,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         showdown: true,
-        winners: winnerDetermination(players, communityCards, totalPlayers),
+        winners: winnerDetermination(players, communityCards),
       }
     }
 
@@ -86,7 +76,17 @@ export default (state = initialState, action) => {
       if (!showdown) {
         return null
       }
+      const checkIfAnyoneIsBroke = () => {
+        let newPlayers = players
 
+        const playerWithoutChips = find(players, (player) => player.chips <= 0)
+
+        if (playerWithoutChips) {
+          pullAt(newPlayers, findIndex(newPlayers, ((player) => player.id === playerWithoutChips.id )))
+        }
+
+        return newPlayers
+      }
       const totalWinners = winners.length
 
       winners.forEach((winner) => {
@@ -96,6 +96,7 @@ export default (state = initialState, action) => {
 
       return {
         ...state,
+        players: checkIfAnyoneIsBroke()
       }
     }
 
@@ -111,7 +112,7 @@ export default (state = initialState, action) => {
       }
       return {
         ...state,
-        ...dealCards(deck, players, street, communityCards, totalPlayers),
+        ...dealCards(deck, players, street, communityCards),
         street: street + 1,
       }
     }
@@ -123,6 +124,7 @@ export default (state = initialState, action) => {
       }
 
     case 'POST_BLINDS': {
+      const totalPlayers = players.length
       const bbPosition = (nextToAct + totalPlayers - 1) % totalPlayers
       const sbPosition = (nextToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]

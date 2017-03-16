@@ -5,7 +5,6 @@ import {
   dealNext,
   determineWinner,
   payOutChips,
-  throwAwayCards,
  } from '../../actions/game'
 
 export class GameManager extends Component {
@@ -13,14 +12,11 @@ export class GameManager extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props
-    console.log(this.props)
-
     dispatch(start())
 
     this.timer = setInterval(() => {
       if (this.COUNT < 4) {
         dispatch(dealNext())
-        console.log(this.props.street)
         this.COUNT += 1
       } else if (this.COUNT === 4) {
         dispatch(determineWinner())
@@ -32,7 +28,7 @@ export class GameManager extends Component {
         this.COUNT = 0
         dispatch(start())
       }
-    }, 2000)
+    }, 500)
   }
 
   componentWillUnmount() {

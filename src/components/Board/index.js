@@ -25,7 +25,8 @@ export class Board extends PureComponent {
   }
 
   calculatePositions() {
-    const { nextToAct, totalPlayers } = this.props
+    const { nextToAct, players } = this.props
+    const totalPlayers = players.length
 
     this.setState({
       bb: (nextToAct + totalPlayers - 1) % totalPlayers,

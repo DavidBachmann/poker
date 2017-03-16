@@ -12,7 +12,7 @@ const dealCardsToPlayers = (deck, players) => {
 
 const dealFlop = (deck, communityCards) => {
   communityCards.flop = deck.splice(0, 3)
-  console.log('dealt flop')
+
   return {
     deck,
     communityCards
@@ -37,18 +37,14 @@ const dealRiver = (deck, communityCards) => {
   }
 }
 
-const dealCards = (deck, players, street, communityCards, totalPlayers) => {
+const dealCards = (deck, players, street, communityCards) => {
   if (street === 0) {
-    console.log('Dealing cards to players')
     return dealCardsToPlayers(deck, players)
   } else if (street === 1) {
-    console.log('Dealing flop')
     return dealFlop(deck, communityCards)
   } else if (street === 2) {
-    console.log('Dealing turn')
     return dealTurn(deck, communityCards)
   } else if (street === 3) {
-    console.log('Dealing river')
     return dealRiver(deck, communityCards)
   }
 }
