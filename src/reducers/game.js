@@ -7,7 +7,7 @@ import { concat, find, pullAt, findIndex } from 'lodash'
 import generateLevels from '../utils/generateLevels'
 
 const STARTING_STACK = 1500
-const TOTAL_BOTS = 8
+const TOTAL_BOTS = 1
 
 const bots = initializer(TOTAL_BOTS, STARTING_STACK)
 const hero = initializer(1, STARTING_STACK)
@@ -19,12 +19,14 @@ const initialState = {
   level: generateLevels(),
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   nextToAct: 0, // Player at index 0 starts (TODO)
-  players: concat(hero, bots),
+  players: concat(hero, bots), // Initialized players
   pot: 0, // Chips currently in the pot
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
   started: false, // Game is not started
-  winners: null, // We haven't selected a winner yet
-  handHistory: [] // Empty hand history
+  paused: false, // Game is not paused
+  handWinners: null, // We haven't selected a winner yet
+  handHistory: [], // Empty hand history
+  tournamentWinner: null, // Who won the tournament
 }
 
 export default (state = initialState, action) => {
@@ -38,8 +40,8 @@ export default (state = initialState, action) => {
     players,
     pot,
     showdown,
-    winners,
-    handHistory
+    handWinners,
+    handHistory,
   } = state
 
   switch (action.type) {
@@ -58,17 +60,22 @@ export default (state = initialState, action) => {
         pot: 0,
         showdown: false,
         started: true,
-        winners: null,
+        handWinners: null,
         nextToAct: nextToAct >= players.length - 1 ? 0 : nextToAct + 1,
         handHistory: newHandHistory,
       }
     }
 
+    case 'PAUSE':
+      return {
+        paused: true,
+      }
+
     case 'DETERMINE_WINNER': {
       return {
         ...state,
         showdown: true,
-        winners: winnerDetermination(players, communityCards),
+        handWinners: winnerDetermination(players, communityCards),
       }
     }
 
@@ -76,6 +83,7 @@ export default (state = initialState, action) => {
       if (!showdown) {
         return null
       }
+
       const checkIfAnyoneIsBroke = () => {
         let newPlayers = players
 
@@ -87,16 +95,26 @@ export default (state = initialState, action) => {
 
         return newPlayers
       }
-      const totalWinners = winners.length
 
-      winners.forEach((winner) => {
+      const checkIfTournamentIsOver = () => {
+        if (players.length > 1) {
+          return null
+        }
+
+        return players[0].id
+      }
+
+      const totalWinners = handWinners.length
+
+      handWinners.forEach((winner) => {
         const playerThatWon = find(players, (player) => player.name === winner.name)
         playerThatWon.chips += pot/totalWinners
       })
 
       return {
         ...state,
-        players: checkIfAnyoneIsBroke()
+        players: checkIfAnyoneIsBroke(),
+        tournamentWinner: checkIfTournamentIsOver(),
       }
     }
 

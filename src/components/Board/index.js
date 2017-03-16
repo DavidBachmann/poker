@@ -40,10 +40,10 @@ export class Board extends PureComponent {
   }
 
   componentWillReceiveProps(props) {
-    const { winners } = props
+    const { handWinners } = props
     this.calculatePositions()
 
-    if (winners == null) {
+    if (handWinners == null) {
       // Set or Reset
       this.cachedWinners = []
       this.setState({
@@ -73,7 +73,7 @@ export class Board extends PureComponent {
       pot,
       showdown,
       started,
-      winners,
+      handWinners,
     } = this.props
 
     if (!started) {
@@ -82,20 +82,20 @@ export class Board extends PureComponent {
 
     const { winnersHaveBeenDetermined, bb, sb, dealer } = this.state
 
-    const getListOfWinnerNames = (winners) => {
-      if (!winners) {
+    const getListOfWinnerNames = (handWinners) => {
+      if (!handWinners) {
         return
-      } else if (winners.length === 0) {
+      } else if (handWinners.length === 0) {
         return null
       } else {
-        winners.map((winner) => {
+        handWinners.map((winner) => {
           return this.cachedWinners.push(winner.id)
         })
       }
     }
 
     if (winnersHaveBeenDetermined) {
-      getListOfWinnerNames(winners)
+      getListOfWinnerNames(handWinners)
     }
 
     return (
@@ -132,19 +132,19 @@ export class Board extends PureComponent {
         <p className="Board-potInfo">
           Pot: <strong>${pot}</strong>
         </p>
-        {winners && (
+        {handWinners && (
           <div className="Board-winnerInfo">
-            {winners.length === 1 && winners.map((winner) => (
+            {handWinners.length === 1 && handWinners.map((winner) => (
               <span key={winner.name}>
                 <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
             </span>
             ))}
-            {winners.length > 1 && (
+            {handWinners.length > 1 && (
               <div>
-                {winners.map((winner) => (
+                {handWinners.map((winner) => (
                   <strong key={winner.name}>{winner.name}, </strong>
                 ))}
-                <p>tie for the hand with <strong>{winners[0].handDetails.descr}</strong></p>
+                <p>tie for the hand with <strong>{handWinners[0].handDetails.descr}</strong></p>
               </div>
             )}
           </div>
@@ -163,7 +163,7 @@ const mapStateToProps = (state, ownProps) => ({
   pot: state.pot,
   showdown: state.showdown,
   started: state.started,
-  winners: state.winners,
+  handWinners: state.handWinners,
 })
 
 export default connect(state => state)(Board)

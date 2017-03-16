@@ -31,18 +31,28 @@ export class GameManager extends Component {
     }, 500)
   }
 
+  componentWillReceiveProps() {
+    const { tournamentWinner } = this.props
+    if (tournamentWinner) {
+      clearInterval(this.timer)
+    }
+  }
+
   componentWillUnmount() {
     clearInterval(this.timer)
   }
 
   render() {
     const {
-      children
+      children,
+      tournamentWinner,
     } = this.props
+
+    const whatToReturn = tournamentWinner ? <p>AND THE WINNER IS {tournamentWinner}</p> : children
 
     return (
       <div>
-        {children}
+          {whatToReturn}
       </div>
     )
   }

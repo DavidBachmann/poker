@@ -4,6 +4,7 @@ function startGame() {
   }
 }
 
+
 function nextPlayerToAct() {
   return {
     type: 'NEXT_TO_ACT'
@@ -20,6 +21,12 @@ function deal(street,) {
 function postBlinds() {
   return {
     type: 'POST_BLINDS'
+  }
+}
+
+export const pause = () => {
+  return {
+    type: 'PAUSE',
   }
 }
 
