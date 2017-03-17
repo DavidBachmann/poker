@@ -63,7 +63,7 @@ export default (state = initialState, action) => {
         showdown: false,
         started: true,
         handWinners: null,
-        nextToAct: nextToAct >= players.length - 1 ? 0 : nextToAct + 1,
+        nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
         handHistory: newHandHistory,
       }
     }
