@@ -3,8 +3,9 @@ import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
 import initializer from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
-import { concat, find, pullAt, findIndex, round } from 'lodash'
+import { concat, find, pullAt, findIndex } from 'lodash'
 import generateLevels from '../utils/generateLevels'
+import payPlayer from '../utils/payPlayer'
 
 const STARTING_STACK = 1500
 const TOTAL_BOTS = 8
@@ -40,7 +41,6 @@ export default (state = initialState, action) => {
     nextToAct,
     players,
     pot,
-    showdown,
     handWinners,
     handHistory,
   } = state
@@ -81,14 +81,9 @@ export default (state = initialState, action) => {
     }
 
     case 'PAY_OUT_CHIPS': {
-      if (!showdown) {
-        return null
-      }
-
-      const checkIfAnyoneIsBroke = () => {
+      const checkIfAnyoneIsBrokeAndReturnNewPlayerArray = () => {
         let newPlayers = players
-
-        const playerWithoutChips = find(players, (player) => player.chips <= 0)
+        const playerWithoutChips = find(newPlayers, (player) => player.chips <= 0)
 
         if (playerWithoutChips) {
           pullAt(newPlayers, findIndex(newPlayers, ((player) => player.id === playerWithoutChips.id )))
@@ -109,13 +104,14 @@ export default (state = initialState, action) => {
 
       handWinners.forEach((winner) => {
         const playerThatWon = find(players, (player) => player.name === winner.name)
-        const amountWon = round(pot/totalWinners, 2)
-        playerThatWon.chips += amountWon
+        const amountWon = pot/totalWinners
+
+        payPlayer(playerThatWon, amountWon)
       })
 
       return {
         ...state,
-        players: checkIfAnyoneIsBroke(),
+        players: checkIfAnyoneIsBrokeAndReturnNewPlayerArray(),
         tournamentWinner: checkIfTournamentIsOver(),
       }
     }
@@ -153,6 +149,7 @@ export default (state = initialState, action) => {
       const amountTakenFromBlindedPlayers = (position, blindLevel) => {
         let amountTaken = 0
         const blindedPlayer = players[position]
+
         // Pay the blind if the player can afford it
         if (blindedPlayer.chips >= blindLevel) {
           amountTaken = blindLevel
@@ -162,6 +159,7 @@ export default (state = initialState, action) => {
           amountTaken = blindedPlayer.chips
           blindedPlayer.chips = 0
         }
+
         return amountTaken
       }
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
+import { round } from 'lodash'
 import Card from '../Card'
 import './styles.css'
-
 class Player extends Component {
 
   render() {
@@ -31,7 +31,7 @@ class Player extends Component {
           <div className="Player-avatar"></div>
           <div className="Player-details">
             <p className="Player-name">{name}</p>
-            <p className="Player-chipCount">${chips}</p>
+            <p className="Player-chipCount">${round(chips, 2)}</p>
           </div>
         </div>
         {cards && !isLoser && (
