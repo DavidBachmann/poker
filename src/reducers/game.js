@@ -3,24 +3,25 @@ import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
 import initializer from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
-import { concat, find, pullAt, findIndex } from 'lodash'
+import { concat, find, pullAt, findIndex, round } from 'lodash'
 import generateLevels from '../utils/generateLevels'
 
 const STARTING_STACK = 1500
-const TOTAL_BOTS = 1
+const TOTAL_BOTS = 8
 
 const bots = initializer(TOTAL_BOTS, STARTING_STACK)
 const hero = initializer(1, STARTING_STACK)
 
 const initialState = {
   communityCards: {}, // Object of dealt community cards
-  currentLevel: 8, // Starting level
+  currentLevel: 1, // Starting level
   deck: [], // Current deck of cards
   level: generateLevels(),
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   nextToAct: 0, // Player at index 0 starts (TODO)
   players: concat(hero, bots), // Initialized players
   pot: 0, // Chips currently in the pot
+  sidepot: [], // Array of sidepots
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
   started: false, // Game is not started
   paused: false, // Game is not paused
@@ -108,7 +109,8 @@ export default (state = initialState, action) => {
 
       handWinners.forEach((winner) => {
         const playerThatWon = find(players, (player) => player.name === winner.name)
-        playerThatWon.chips += pot/totalWinners
+        const amountWon = round(pot/totalWinners, 2)
+        playerThatWon.chips += amountWon
       })
 
       return {
@@ -148,12 +150,24 @@ export default (state = initialState, action) => {
       const { smallBlind, bigBlind } = level[currentLevel]
 
       // Remove chips from relevant players
-      players[bbPosition].chips -= bigBlind
-      players[sbPosition].chips -= smallBlind
+      const amountTakenFromBlindedPlayers = (position, blindLevel) => {
+        let amountTaken = 0
+        const blindedPlayer = players[position]
+        // Pay the blind if the player can afford it
+        if (blindedPlayer.chips >= bigBlind) {
+          amountTaken = bigBlind
+          blindedPlayer.chips -= bigBlind
+        } else {
+          // else pay all his chips
+          amountTaken = blindedPlayer.chips
+          blindedPlayer.chips = 0
+        }
+        return amountTaken
+      }
 
       return {
         ...state,
-        pot: pot + smallBlind + bigBlind,
+        pot: pot + amountTakenFromBlindedPlayers(sbPosition, smallBlind) + amountTakenFromBlindedPlayers(bbPosition, bigBlind),
         players,
       }
     }

@@ -28,7 +28,7 @@ export class GameManager extends Component {
         this.COUNT = 0
         dispatch(start())
       }
-    }, 500)
+    }, 1000)
   }
 
   componentWillReceiveProps() {
