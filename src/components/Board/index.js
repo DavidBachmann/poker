@@ -1,17 +1,11 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { isEqual } from 'lodash'
-import Bot from '../Bot'
-import Hero from '../Hero'
+import Player from '../Player'
 import Community from '../Community'
+import playerActions from '../../utils/playerActions'
 import './styles.css'
 
-import {
-  start,
-  dealNext,
-  determineWinner,
- } from '../../actions/game'
-
+import { playerAction } from '../../actions/game'
 
 export class Board extends PureComponent {
 
@@ -27,16 +21,11 @@ export class Board extends PureComponent {
   calculatePositions() {
     const { nextToAct, players } = this.props
     const totalPlayers = players.length
-
-    this.setState({
+    this.setState(() => ({
       bb: (nextToAct + totalPlayers - 1) % totalPlayers,
       sb: (nextToAct + totalPlayers - 2) % totalPlayers,
       dealer: (nextToAct + totalPlayers - 3) % totalPlayers,
-    })
-  }
-
-  componentDidMount() {
-    this.calculatePositions()
+    }))
   }
 
   componentWillReceiveProps(props) {
@@ -56,33 +45,26 @@ export class Board extends PureComponent {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (isEqual(this.props, nextProps)) {
-      return false
-    } else {
-      return true
-    }
-  }
-
   render() {
     const {
-      players,
       communityCards,
-      street,
+      dealerMessage,
+      handWinners,
       nextToAct,
+      players,
       pot,
       showdown,
       started,
-      handWinners,
+      street,
     } = this.props
 
     if (!started) {
       return null
     }
 
-    const { winnersHaveBeenDetermined, bb, sb, dealer } = this.state
+    const { winnersHaveBeenDetermined, sb, bb, dealer } = this.state
 
-    const getListOfWinnerNames = (handWinners) => {
+    const getListOfWinnerNames = () => {
       if (!handWinners) {
         return
       } else if (handWinners.length === 0) {
@@ -99,26 +81,29 @@ export class Board extends PureComponent {
     }
 
     return (
-      <div className="Board" onClick={this.handlePostBlinds}>
+      <div className="Board">
         {players && players.map((player, index) => {
-          const PlayerType = index === 0 ? Hero : Bot
           const isWinner = this.cachedWinners.includes(player.id)
+          const isDealer = index === dealer
+          const isSB = index === sb
+          const isBB = index === bb
 
           return (
-            <PlayerType
+            <Player
               cards={player.cards && player.cards}
               chips={player.chips}
               id={player.id}
-              isBB={index === bb}
-              isDealer={index === dealer}
+              isBB={isBB}
+              isDealer={isDealer}
               isLoser={this.cachedWinners.length > 0 && !isWinner}
-              isSB={index === sb}
+              isSB={isSB}
               isWinner={isWinner}
               key={player.id}
               name={player && player.name}
               isNextToAct={nextToAct === index}
               position={index}
               visibleCards={showdown ? true : false}
+              {...this.props}
             />
           )
         })}
@@ -149,21 +134,19 @@ export class Board extends PureComponent {
             )}
           </div>
         )}
+        {dealerMessage && (
+        <p className="Board-dealerMessage">
+          <strong>{dealerMessage}</strong>
+        </p>)}
       </div>
     )
   }
 
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  players: state.players,
-  communityCards: state.communityCards,
-  street: state.street,
-  nextToAct: state.nextToAct,
-  pot: state.pot,
-  showdown: state.showdown,
-  started: state.started,
-  handWinners: state.handWinners,
+const mapStateToProps = (state) => state
+const mapDispatchToProps = (dispatch) => ({
+    onPlayerClicksAllIn: () => dispatch(playerAction(playerActions.ALL_IN)),
 })
 
-export default connect(state => state)(Board)
+export default connect(mapStateToProps, mapDispatchToProps)(Board)

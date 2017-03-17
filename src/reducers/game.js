@@ -6,28 +6,29 @@ import generateShuffledDeck from '../utils/generateShuffledDeck'
 import { concat, find, pullAt, findIndex } from 'lodash'
 import generateLevels from '../utils/generateLevels'
 import payPlayer from '../utils/payPlayer'
+import playerActions from '../utils/playerActions'
 
 const STARTING_STACK = 1500
-const TOTAL_BOTS = 8
+const TOTAL_PLAYERS = 9
 
-const bots = initializer(TOTAL_BOTS, STARTING_STACK)
-const hero = initializer(1, STARTING_STACK)
+const players = initializer(TOTAL_PLAYERS, STARTING_STACK)
 
 const initialState = {
   communityCards: {}, // Object of dealt community cards
   currentLevel: 1, // Starting level
+  dealerMessage: '', // Dealer message displayed to players on table
   deck: [], // Current deck of cards
-  level: generateLevels(),
-  street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
-  nextToAct: 0, // Player at index 0 starts (TODO)
-  players: concat(hero, bots), // Initialized players
-  pot: 0, // Chips currently in the pot
-  sidepot: [], // Array of sidepots
-  showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
-  started: false, // Game is not started
-  paused: false, // Game is not paused
-  handWinners: null, // We haven't selected a winner yet
   handHistory: [], // Empty hand history
+  handWinners: null, // We haven't selected a winner yet
+  level: generateLevels(),
+  nextToAct: 0, // Player at index 0 starts (TODO)
+  paused: false, // Game is not paused
+  players, // Initialized players
+  pot: 0, // Chips currently in the pot
+  showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
+  sidepot: [], // Array of sidepots
+  started: false, // Game is not started
+  street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   tournamentWinner: null, // Who won the tournament
 }
 
@@ -116,12 +117,6 @@ export default (state = initialState, action) => {
       }
     }
 
-    case 'NEXT_TO_ACT':
-      return {
-        ...state,
-        nextToAct: nextToAct === players.length - 1 ? 0 : nextToAct + 1,
-      }
-
     case 'DEAL': {
       if (street >= 4) {
         return
@@ -149,7 +144,6 @@ export default (state = initialState, action) => {
       const amountTakenFromBlindedPlayers = (position, blindLevel) => {
         let amountTaken = 0
         const blindedPlayer = players[position]
-
         // Pay the blind if the player can afford it
         if (blindedPlayer.chips >= blindLevel) {
           amountTaken = blindLevel
@@ -167,6 +161,29 @@ export default (state = initialState, action) => {
         ...state,
         pot: pot + amountTakenFromBlindedPlayers(sbPosition, smallBlind) + amountTakenFromBlindedPlayers(bbPosition, bigBlind),
         players,
+      }
+    }
+
+    case 'PLAYER_ACTION': {
+      // Player chose All-In
+      if (action.actionString === playerActions.ALL_IN) {
+        let player = players[nextToAct]
+        let chipsToTake = player.chips
+        player.chips = 0
+
+        return {
+          ...state,
+          pot: pot + chipsToTake,
+        }
+      } else {
+        break
+      }
+    }
+
+    case 'WAITING_FOR_PLAYER_TO_ACT': {
+      return {
+        ...state,
+        dealerMessage: `Waiting for ${players[nextToAct].name} to act.`
       }
     }
 

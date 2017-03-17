@@ -4,14 +4,14 @@ function startGame() {
   }
 }
 
-
-function nextPlayerToAct() {
+export function waitingForPlayerToAct() {
   return {
-    type: 'NEXT_TO_ACT'
+    type: 'WAITING_FOR_PLAYER_TO_ACT',
   }
 }
 
-function deal(street,) {
+
+function deal(street) {
   return {
     type: 'DEAL',
     street
@@ -21,6 +21,12 @@ function deal(street,) {
 function postBlinds() {
   return {
     type: 'POST_BLINDS'
+  }
+}
+
+function _playerFunction() {
+  return {
+    type: 'PLAYER_FUNCTION'
   }
 }
 
@@ -42,6 +48,13 @@ export const determineWinner = () => {
   }
 }
 
+export const playerAction = (actionString) => {
+  return {
+    type: 'PLAYER_ACTION',
+    actionString
+  }
+}
+
 export const start = () => dispatch => {
   dispatch(startGame())
   dispatch(postBlinds())
@@ -49,4 +62,8 @@ export const start = () => dispatch => {
 
 export const dealNext = () => dispatch => {
   dispatch(deal())
+}
+
+export const dispatchPlayerFunction = () => dispatch => {
+  dispatch(_playerFunction())
 }

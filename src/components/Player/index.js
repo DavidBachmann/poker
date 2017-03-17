@@ -1,16 +1,16 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import classNames from 'classnames'
 import { round } from 'lodash'
 import Card from '../Card'
 import './styles.css'
-class Player extends Component {
+
+class Player extends PureComponent {
 
   render() {
     const {
       cards,
       chips,
       isDealer,
-      isHero,
       isLoser,
       isNextToAct,
       isWinner,
@@ -22,7 +22,6 @@ class Player extends Component {
       <div className={classNames(
         'Player',
         isDealer && 'is-dealer',
-        isHero ? 'Hero' : 'Bot',
         isLoser && 'is-loser',
         isNextToAct && 'is-next-to-act',
         isWinner && 'is-winner',
@@ -47,7 +46,7 @@ class Player extends Component {
           </div>
         )}
       <div className="test-buttons">
-        <button disabled={!isNextToAct}>Bet/Raise</button>
+        <button disabled={!isNextToAct} onClick={this.props.onPlayerClicksAllIn}>Bet/Raise</button>
         <button disabled={!isNextToAct}>Call</button>
         <button disabled={!isNextToAct}>Fold</button>
       </div>
