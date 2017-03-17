@@ -154,9 +154,9 @@ export default (state = initialState, action) => {
         let amountTaken = 0
         const blindedPlayer = players[position]
         // Pay the blind if the player can afford it
-        if (blindedPlayer.chips >= bigBlind) {
-          amountTaken = bigBlind
-          blindedPlayer.chips -= bigBlind
+        if (blindedPlayer.chips >= blindLevel) {
+          amountTaken = blindLevel
+          blindedPlayer.chips -= blindLevel
         } else {
           // else pay all his chips
           amountTaken = blindedPlayer.chips
