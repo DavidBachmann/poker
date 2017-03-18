@@ -14,22 +14,21 @@ const STARTING_STACK = 1500
 const TOTAL_PLAYERS = 9
 
 const initialState = {
-  communityCards: {}, // Object of dealt community cards
-  currentLevel: 1, // Starting level
+  communityCards: {},
+  currentLevel: 1,
   dealerMessage: '', // Dealer message displayed to players on table
-  deck: [], // Current deck of cards
-  handHistory: [], // Empty hand history
-  handWinners: null, // We haven't selected a winner yet
-  howMuchToCall: 0, // how much does a player have to pay to be able to call the current bet
+  deck: [],
+  handHistory: [],
+  handWinners: null,
+  howMuchToCall: 0, // how much does a player have to put out to be able to call the current bet
   level: generateLevels(),
   nextToAct: 0, // Player at index 0 starts (TODO)
-  paused: false, // Game is not paused
-  playerPots: initializePlayerPots(TOTAL_PLAYERS), // Chips each player has bet and will be going into the pot
+  paused: false,
+  playerPots: initializePlayerPots(TOTAL_PLAYERS), // Containing the chips each player has bet this round, that will be going into the pot
   players: initializePlayers(TOTAL_PLAYERS, STARTING_STACK), // Initialized players
-  pot: 0, // Chips currently in the pot
+  pot: 0,
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands
-  sidepot: [], // Array of sidepots
-  started: false, // Game is not started
+  sidepot: [], // Array of sidepots (TODO)
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   tournamentWinner: null, // Who won the tournament
   waitingForPlayer: false,
@@ -71,7 +70,6 @@ export default (state = initialState, action) => {
         nextToAct: nextToActCheck,
         pot: 0,
         showdown: false,
-        started: true,
         street: 0,
       }
     }

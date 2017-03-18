@@ -54,13 +54,8 @@ export class Board extends PureComponent {
       players,
       pot,
       showdown,
-      started,
       street,
     } = this.props
-
-    if (!started) {
-      return null
-    }
 
     const { winnersHaveBeenDetermined, sb, bb, dealer } = this.state
 
