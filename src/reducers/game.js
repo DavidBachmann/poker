@@ -52,6 +52,7 @@ export default (state = initialState, action) => {
   } = state
 
   const isFirstToAct = (nextToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
+  const nextToActCheck = nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1
 
   switch (action.type) {
     case 'START': {
@@ -66,7 +67,7 @@ export default (state = initialState, action) => {
         deck: generateShuffledDeck(),
         handHistory: newHandHistory,
         handWinners: null,
-        nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
+        nextToAct: nextToActCheck,
         pot: 0,
         showdown: false,
         started: true,
@@ -138,7 +139,7 @@ export default (state = initialState, action) => {
 
       return {
         ...state,
-        nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
+        nextToAct: nextToActCheck,
         howMuchToCall: chipsBetByPlayer
       }
     }
@@ -161,7 +162,7 @@ export default (state = initialState, action) => {
 
         return {
           ...state,
-          nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
+          nextToAct: nextToActCheck,
           howMuchToCall: chipsBetByPlayer
         }
       } else {
@@ -191,7 +192,7 @@ export default (state = initialState, action) => {
         player.cards = []
         return {
           ...state,
-          nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
+          nextToAct: nextToActCheck,
         }
       }
 
