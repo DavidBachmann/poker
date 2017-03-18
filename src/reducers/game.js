@@ -1,11 +1,14 @@
 import uuidV1 from 'uuid/v1' // V1 is time based UUID
-import winnerDetermination from '../utils/winnerDetermination'
+import determineWinner from '../utils/determineWinner'
 import dealCards from '../utils/dealCards'
 import { initializePlayers, initializePlayerPots } from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
-import { concat, find, pullAt, findIndex } from 'lodash'
+import { concat } from 'lodash'
 import generateLevels from '../utils/generateLevels'
-import { payPlayer, takeChipsFromPlayer } from '../utils/playerTransactions'
+import payOutChips from '../utils/payOutChips'
+import checkForPlayerElimination from '../utils/checkForPlayerElimination'
+import checkIfTournamentIsOver from '../utils/checkIfTournamentIsOver'
+import getAmountTakenFromBlindedPlayers from '../utils/getAmountTakenFromBlindedPlayers'
 
 const STARTING_STACK = 1500
 const TOTAL_PLAYERS = 9
@@ -56,7 +59,6 @@ export default (state = initialState, action) => {
       const newHandId = uuidV1()
       const newHandHistory = concat(handHistory, newHandId)
       const shouldChangeLevel = currentLevel < 19 && handHistory.length % maxHandsPerLevel === 0 && handHistory.length !== 0 // Every 25 hands the level should go up
-
       return {
         ...state,
         communityCards: {flop: {}, turn: {}, river: {}},
@@ -78,50 +80,27 @@ export default (state = initialState, action) => {
       }
 
     case 'DETERMINE_WINNER': {
+
       return {
         ...state,
         showdown: true,
-        handWinners: winnerDetermination(players, communityCards),
+        handWinners: determineWinner(players, communityCards),
       }
     }
 
     case 'PAY_OUT_CHIPS': {
-      const checkIfAnyoneIsBrokeAndReturnNewPlayerArray = () => {
-        let newPlayers = players
-        const playerWithoutChips = find(newPlayers, (player) => player.chips <= 0)
-
-        if (playerWithoutChips) {
-          pullAt(newPlayers, findIndex(newPlayers, ((player) => player.id === playerWithoutChips.id )))
-        }
-
-        return newPlayers
-      }
-
-      const checkIfTournamentIsOver = () => {
-        if (players.length > 1) {
-          return null
-        }
-
-        return players[0].id
-      }
-
-      const totalWinners = handWinners.length
-
-      handWinners.forEach((winner) => {
-        const playerThatWon = find(players, (player) => player.name === winner.name)
-        const amountWon = pot/totalWinners
-
-        payPlayer(playerThatWon, amountWon)
-      })
-
+      payOutChips(players, handWinners, pot)
+      console.log(checkIfTournamentIsOver(players))
       return {
         ...state,
-        players: checkIfAnyoneIsBrokeAndReturnNewPlayerArray(),
-        tournamentWinner: checkIfTournamentIsOver(),
+        players: checkForPlayerElimination(players),
+        tournamentWinner: checkIfTournamentIsOver(players),
       }
     }
 
     case 'DEAL': {
+      console.log(checkIfTournamentIsOver(players))
+
       if (street >= 4) {
         return
       }
@@ -144,26 +123,11 @@ export default (state = initialState, action) => {
       const sbPosition = (nextToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
 
-      // Remove chips from relevant players
-      const amountTakenFromBlindedPlayers = (position, blindLevel) => {
-        let amountTaken = 0
-        const blindedPlayer = players[position]
-        // Pay the blind if the player can afford it
-        if (blindedPlayer.chips >= blindLevel) {
-          amountTaken = blindLevel
-          blindedPlayer.chips -= blindLevel
-        } else {
-          // else pay all his chips
-          amountTaken = blindedPlayer.chips
-          blindedPlayer.chips = 0
-        }
 
-        return amountTaken
-      }
 
       return {
         ...state,
-        pot: pot + amountTakenFromBlindedPlayers(sbPosition, smallBlind) + amountTakenFromBlindedPlayers(bbPosition, bigBlind),
+        pot: pot + getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind) + getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind),
         players,
       }
     }
