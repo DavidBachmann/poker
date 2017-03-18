@@ -1,7 +1,7 @@
 import uuidV1 from 'uuid/v1' // V1 is time based UUID
 import winnerDetermination from '../utils/winnerDetermination'
 import dealCards from '../utils/dealCards'
-import initializer from '../utils/initializer'
+import { initializePlayers, initializePlayerPots } from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
 import { concat, find, pullAt, findIndex } from 'lodash'
 import generateLevels from '../utils/generateLevels'
@@ -11,8 +11,6 @@ import playerActions from '../utils/playerActions'
 const STARTING_STACK = 1500
 const TOTAL_PLAYERS = 9
 
-const players = initializer(TOTAL_PLAYERS, STARTING_STACK)
-
 const initialState = {
   communityCards: {}, // Object of dealt community cards
   currentLevel: 1, // Starting level
@@ -20,16 +18,19 @@ const initialState = {
   deck: [], // Current deck of cards
   handHistory: [], // Empty hand history
   handWinners: null, // We haven't selected a winner yet
+  howMuchToCall: 0, // how much does a player have to pay to be able to call the current bet
   level: generateLevels(),
   nextToAct: 0, // Player at index 0 starts (TODO)
   paused: false, // Game is not paused
-  players, // Initialized players
+  playerPots: initializePlayerPots(TOTAL_PLAYERS), // Chips each player has bet and will be going into the pot
+  players: initializePlayers(TOTAL_PLAYERS, STARTING_STACK), // Initialized players
   pot: 0, // Chips currently in the pot
-  showdown: false, // Showdown means the round is over and all remaining players should reveal their hands.
+  showdown: false, // Showdown means the round is over and all remaining players should reveal their hands
   sidepot: [], // Array of sidepots
   started: false, // Game is not started
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   tournamentWinner: null, // Who won the tournament
+  waitingForPlayer: false,
 }
 
 export default (state = initialState, action) => {
@@ -37,13 +38,15 @@ export default (state = initialState, action) => {
     communityCards,
     currentLevel,
     deck,
+    handHistory,
+    handWinners,
+    howMuchToCall,
     level,
-    street,
     nextToAct,
+    playerPots,
     players,
     pot,
-    handWinners,
-    handHistory,
+    street,
   } = state
 
   switch (action.type) {
@@ -55,16 +58,16 @@ export default (state = initialState, action) => {
 
       return {
         ...state,
+        communityCards: {flop: {}, turn: {}, river: {}},
         currentLevel: shouldChangeLevel ? currentLevel + 1 : currentLevel,
         deck: generateShuffledDeck(),
-        communityCards: {flop: {}, turn: {}, river: {}},
-        street: 0,
+        handHistory: newHandHistory,
+        handWinners: null,
+        nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
         pot: 0,
         showdown: false,
         started: true,
-        handWinners: null,
-        nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
-        handHistory: newHandHistory,
+        street: 0,
       }
     }
 
@@ -166,24 +169,59 @@ export default (state = initialState, action) => {
 
     case 'PLAYER_ACTION': {
       // Player chose All-In
-      if (action.actionString === playerActions.ALL_IN) {
+      if (action.actionString === playerActions.RAISE) {
         let player = players[nextToAct]
-        let chipsToTake = player.chips
-        player.chips = 0
+        let chipsBetByPlayer = player.chips
+        player.chips -= chipsBetByPlayer
+        player.currentAction = playerActions.RAISE
+        playerPots[nextToAct] = chipsBetByPlayer
+        return {
+          ...state,
+          waitingForPlayer: false,
+          nextToAct: nextToAct + 1,
+          howMuchToCall: chipsBetByPlayer
+        }
+      }
+      // Player chose Raise
+      else if (action.actionString === playerActions.RAISEx) {
+        let player = players[nextToAct]
 
         return {
           ...state,
-          pot: pot + chipsToTake,
+          nextToAct: nextToAct + 1,
+        }
+      }
+      // Player chose Call
+      else if (action.actionString === playerActions.CALL) {
+        let player = players[nextToAct]
+        let chipsBetByPlayer = howMuchToCall
+        player.chips -= chipsBetByPlayer
+        player.currentAction = playerActions.CALL
+        playerPots[nextToAct] = chipsBetByPlayer
+        return {
+          ...state,
+          nextToAct: nextToAct + 1,
+        }
+      }
+      // Player chose Fold
+      else if (action.actionString === playerActions.FOLD) {
+        let player = players[nextToAct]
+        player.cards = []
+
+        return {
+          ...state,
+          nextToAct: nextToAct + 1,
         }
       } else {
-        break
+        throw new Error('Player Action String not recognized.')
       }
     }
 
     case 'WAITING_FOR_PLAYER_TO_ACT': {
       return {
         ...state,
-        dealerMessage: `Waiting for ${players[nextToAct].name} to act.`
+        dealerMessage: `Waiting for ${players[nextToAct].name} to act.`,
+        waitingForPlayer: true,
       }
     }
 

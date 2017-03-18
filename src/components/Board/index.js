@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
+import { mapValues } from 'lodash'
 import Player from '../Player'
 import Community from '../Community'
 import playerActions from '../../utils/playerActions'
@@ -51,6 +52,7 @@ export class Board extends PureComponent {
       dealerMessage,
       handWinners,
       nextToAct,
+      playerPots,
       players,
       pot,
       showdown,
@@ -115,19 +117,19 @@ export class Board extends PureComponent {
           />
         </div>
         <p className="Board-potInfo">
-          Pot: <strong>${pot}</strong>
+          Pot: <strong>${pot} (${playerPots.reduce((acc, value) => acc + value, 0)})</strong>
         </p>
         {handWinners && (
           <div className="Board-winnerInfo">
             {handWinners.length === 1 && handWinners.map((winner) => (
-              <span key={winner.name}>
+              <span key={winner.id}>
                 <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
-            </span>
+              </span>
             ))}
             {handWinners.length > 1 && (
               <div>
                 {handWinners.map((winner) => (
-                  <strong key={winner.name}>{winner.name}, </strong>
+                  <strong key={winner.id}>{winner.name}, </strong>
                 ))}
                 <p>tie for the hand with <strong>{handWinners[0].handDetails.descr}</strong></p>
               </div>
@@ -146,7 +148,9 @@ export class Board extends PureComponent {
 
 const mapStateToProps = (state) => state
 const mapDispatchToProps = (dispatch) => ({
-    onPlayerClicksAllIn: () => dispatch(playerAction(playerActions.ALL_IN)),
+  onPlayerClicksRaise: () => dispatch(playerAction(playerActions.RAISE)),
+  onPlayerClicksCall: () => dispatch(playerAction(playerActions.CALL)),
+  onPlayerClicksFold: () => dispatch(playerAction(playerActions.FOLD)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board)

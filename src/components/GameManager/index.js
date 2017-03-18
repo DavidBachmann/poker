@@ -12,12 +12,16 @@ export class GameManager extends Component {
   // COUNT = 0
 
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch, waitingForPlayer } = this.props
     dispatch(start())
     dispatch(dealNext())
     dispatch(waitingForPlayerToAct())
-    //
-    //
+
+    if (!waitingForPlayer) {
+      dispatch(waitingForPlayerToAct())
+    }
+
+
     // this.timer = setInterval(() => {
     //   if (this.COUNT < 4) {
     //     dispatch(dealNext())

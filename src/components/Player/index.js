@@ -15,6 +15,9 @@ class Player extends PureComponent {
       isNextToAct,
       isWinner,
       name,
+      onPlayerClicksCall,
+      onPlayerClicksFold,
+      onPlayerClicksRaise,
       visibleCards,
      } = this.props
 
@@ -46,9 +49,9 @@ class Player extends PureComponent {
           </div>
         )}
       <div className="test-buttons">
-        <button disabled={!isNextToAct} onClick={this.props.onPlayerClicksAllIn}>Bet/Raise</button>
-        <button disabled={!isNextToAct}>Call</button>
-        <button disabled={!isNextToAct}>Fold</button>
+        <button disabled={!isNextToAct} onClick={onPlayerClicksRaise}>Raise</button>
+        <button disabled={!isNextToAct} onClick={onPlayerClicksCall}>Call</button>
+        <button disabled={!isNextToAct} onClick={onPlayerClicksFold}>Fold</button>
       </div>
       </div>
     )
