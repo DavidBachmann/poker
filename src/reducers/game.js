@@ -60,6 +60,7 @@ export default (state = initialState, action) => {
       const newHandId = uuidV1()
       const newHandHistory = concat(handHistory, newHandId)
       const shouldChangeLevel = currentLevel < 19 && handHistory.length % maxHandsPerLevel === 0 && handHistory.length !== 0 // Every 25 hands the level should go up
+
       return {
         ...state,
         communityCards: {flop: {}, turn: {}, river: {}},
@@ -81,7 +82,6 @@ export default (state = initialState, action) => {
       }
 
     case 'DETERMINE_WINNER': {
-
       return {
         ...state,
         showdown: true,
@@ -92,6 +92,7 @@ export default (state = initialState, action) => {
     case 'PAY_OUT_CHIPS': {
       payOutChips(players, handWinners, pot)
       console.log(checkIfTournamentIsOver(players))
+
       return {
         ...state,
         players: checkForPlayerElimination(players),
@@ -103,6 +104,7 @@ export default (state = initialState, action) => {
       if (street >= 4) {
         return
       }
+
       return {
         ...state,
         ...dealCards(deck, players, street, communityCards),
@@ -110,11 +112,12 @@ export default (state = initialState, action) => {
       }
     }
 
-    case 'NEXT_LEVEL':
+    case 'NEXT_LEVEL': {
       return {
         ...state,
         currentLevel: currentLevel + 1,
       }
+    }
 
     case 'POST_BLINDS': {
       const totalPlayers = players.length
@@ -131,7 +134,6 @@ export default (state = initialState, action) => {
     }
 
     // Player actions, todo: refactor into its own reducer
-
     case 'PLAYER_ACTION_ALL_IN': {
       let currentPlayer = players[nextToAct]
       let chipsBetByPlayer = currentPlayer.chips
@@ -191,6 +193,7 @@ export default (state = initialState, action) => {
       // Can only fold if not first to act.
       if (firstToActCheck !== player.index) {
         player.cards = []
+
         return {
           ...state,
           nextToAct: nextToActCheck,
