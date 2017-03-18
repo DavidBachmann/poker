@@ -1,6 +1,6 @@
 const random = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
-const generateRandomName = () => {
+const randomNameGenerator = () => {
   let first = ['Daniel', 'Phil', 'Ole', 'Jason', 'Tom', 'Phil', 'Viktor', 'Vanessa', 'JC', 'Vanessa', 'Dan', 'Scott', 'Liv' ]
 
   let last = ['Negreanu', 'Ivey', 'Schemion', 'Mercier', 'Dwan', 'Hellmuth', 'Blom', 'Selbst', 'Tran', 'Rousso', 'Smith', 'Seiver', 'Boeree']
@@ -8,4 +8,4 @@ const generateRandomName = () => {
   return `${random(first)} ${random(last)}`
 }
 
-export default generateRandomName
+export default randomNameGenerator

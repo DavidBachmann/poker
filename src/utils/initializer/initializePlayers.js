@@ -1,16 +1,16 @@
 import uuidV4 from 'uuid/v4'
-import generateRandomName from '../generateRandomName'
+import randomNameGenerator from '../randomNameGenerator'
 
-const initalizePlayers = (totalPlayers, startingStack) =>
+const initalizePlayers = (totalPlayers, startingStack, generateRandomName = true, generateRandomId = true) =>
   Array.from({
     length: totalPlayers
-  }, (_ ,index) => ({
+  }, (_, index) => ({
       index,
       cards: [],
       hand: [],
-      name: generateRandomName(),
+      name: generateRandomName ? randomNameGenerator() : null,
       chips: startingStack,
-      id: uuidV4(),
+      id: generateRandomId ? uuidV4() : null,
     })
   )
 

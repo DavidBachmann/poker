@@ -5,6 +5,7 @@ import { formatHand } from '../formatHand'
 
 const determineWinner = (players, communityCards) => {
   let winners = []
+  debugger
 
   /*
     Note: Format Hand means taking an array with with objects that look like:
