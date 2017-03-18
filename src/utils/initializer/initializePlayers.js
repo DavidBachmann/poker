@@ -1,12 +1,11 @@
 import uuidV4 from 'uuid/v4'
 import generateRandomName from '../generateRandomName'
-import playerActions from '../playerActions'
 
 const initalizePlayers = (totalPlayers, startingStack) =>
   Array.from({
     length: totalPlayers
-  }, () => ({
-      currentAction: playerActions.THINKING,
+  }, (_ ,index) => ({
+      index,
       cards: [],
       hand: [],
       name: generateRandomName(),

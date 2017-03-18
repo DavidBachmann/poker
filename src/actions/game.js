@@ -4,12 +4,6 @@ function startGame() {
   }
 }
 
-export function waitingForPlayerToAct() {
-  return {
-    type: 'WAITING_FOR_PLAYER_TO_ACT',
-  }
-}
-
 
 function deal(street) {
   return {
@@ -21,12 +15,6 @@ function deal(street) {
 function postBlinds() {
   return {
     type: 'POST_BLINDS'
-  }
-}
-
-function _playerFunction() {
-  return {
-    type: 'PLAYER_FUNCTION'
   }
 }
 
@@ -48,22 +36,54 @@ export const determineWinner = () => {
   }
 }
 
-export const playerAction = (actionString) => {
+const _playerBets = (amountRequested) => {
   return {
-    type: 'PLAYER_ACTION',
-    actionString
+    type: 'PLAYER_ACTION_BET',
+    amountRequested
+  }
+}
+
+const _playerCalls = () => {
+  return {
+    type: 'PLAYER_ACTION_CALL'
+  }
+}
+
+
+const _playerFolds = () => {
+  return {
+    type: 'PLAYER_ACTION_FOLD',
+  }
+}
+
+
+export const _waitingForNextPlayerToAct = () => {
+  return {
+    type: 'WAITING_FOR_PLAYER_TO_ACT',
   }
 }
 
 export const start = () => dispatch => {
   dispatch(startGame())
   dispatch(postBlinds())
+  dispatch(_waitingForNextPlayerToAct())
+}
+
+export const playerBets = (amount) => dispatch => {
+  dispatch(_playerBets(amount))
+  dispatch(_waitingForNextPlayerToAct())
+}
+
+export const playerCalls = () => dispatch => {
+  dispatch(_playerCalls())
+  dispatch(_waitingForNextPlayerToAct())
+}
+
+export const playerFolds = () => dispatch => {
+  dispatch(_playerFolds())
+  dispatch(_waitingForNextPlayerToAct())
 }
 
 export const dealNext = () => dispatch => {
   dispatch(deal())
-}
-
-export const dispatchPlayerFunction = () => dispatch => {
-  dispatch(_playerFunction())
 }

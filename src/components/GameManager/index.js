@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import {
   start,
-  waitingForPlayerToAct,
   dealNext,
   // determineWinner,
   // payOutChips,
@@ -12,15 +11,9 @@ export class GameManager extends Component {
   // COUNT = 0
 
   componentDidMount() {
-    const { dispatch, waitingForPlayer } = this.props
+    const { dispatch } = this.props
     dispatch(start())
     dispatch(dealNext())
-    dispatch(waitingForPlayerToAct())
-
-    if (!waitingForPlayer) {
-      dispatch(waitingForPlayerToAct())
-    }
-
 
     // this.timer = setInterval(() => {
     //   if (this.COUNT < 4) {
@@ -39,16 +32,16 @@ export class GameManager extends Component {
     // }, 1000)
   }
 
-  componentWillReceiveProps() {
-    const { tournamentWinner } = this.props
-    if (tournamentWinner) {
-      clearInterval(this.timer)
-    }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer)
-  }
+  // componentWillReceiveProps() {
+  //   const { tournamentWinner } = this.props
+  //   if (tournamentWinner) {
+  //     clearInterval(this.timer)
+  //   }
+  // }
+  //
+  // componentWillUnmount() {
+  //   clearInterval(this.timer)
+  // }
 
   render() {
     const {
@@ -60,7 +53,7 @@ export class GameManager extends Component {
 
     return (
       <div>
-          {whatToReturn}
+        {whatToReturn}
       </div>
     )
   }

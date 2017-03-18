@@ -1,12 +1,10 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { mapValues } from 'lodash'
 import Player from '../Player'
 import Community from '../Community'
-import playerActions from '../../utils/playerActions'
 import './styles.css'
 
-import { playerAction } from '../../actions/game'
+import { playerBets, playerCalls, playerFolds } from '../../actions/game'
 
 export class Board extends PureComponent {
 
@@ -137,20 +135,21 @@ export class Board extends PureComponent {
           </div>
         )}
         {dealerMessage && (
-        <p className="Board-dealerMessage">
-          <strong>{dealerMessage}</strong>
-        </p>)}
+          <p className="Board-dealerMessage">
+            <strong>{dealerMessage}</strong>
+          </p>
+        )}
       </div>
     )
   }
 
 }
 
-const mapStateToProps = (state) => state
+const mapStateToProps = state => state
 const mapDispatchToProps = (dispatch) => ({
-  onPlayerClicksRaise: () => dispatch(playerAction(playerActions.RAISE)),
-  onPlayerClicksCall: () => dispatch(playerAction(playerActions.CALL)),
-  onPlayerClicksFold: () => dispatch(playerAction(playerActions.FOLD)),
+  onPlayerClicksBet: (amount) => dispatch(playerBets(amount)),
+  onPlayerClicksCall: () => dispatch(playerCalls()),
+  onPlayerClicksFold: () => dispatch(playerFolds()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board)

@@ -5,8 +5,7 @@ import { initializePlayers, initializePlayerPots } from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
 import { concat, find, pullAt, findIndex } from 'lodash'
 import generateLevels from '../utils/generateLevels'
-import payPlayer from '../utils/payPlayer'
-import playerActions from '../utils/playerActions'
+import { payPlayer, takeChipsFromPlayer } from '../utils/playerTransactions'
 
 const STARTING_STACK = 1500
 const TOTAL_PLAYERS = 9
@@ -48,6 +47,8 @@ export default (state = initialState, action) => {
     pot,
     street,
   } = state
+
+  const isFirstToAct = (nextToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
 
   switch (action.type) {
     case 'START': {
@@ -167,53 +168,75 @@ export default (state = initialState, action) => {
       }
     }
 
-    case 'PLAYER_ACTION': {
-      // Player chose All-In
-      if (action.actionString === playerActions.RAISE) {
-        let player = players[nextToAct]
-        let chipsBetByPlayer = player.chips
-        player.chips -= chipsBetByPlayer
-        player.currentAction = playerActions.RAISE
+    // Player actions, todo: refactor into its own reducer
+
+    case 'PLAYER_ACTION_ALL_IN': {
+      let currentPlayer = players[nextToAct]
+      let chipsBetByPlayer = currentPlayer.chips
+      currentPlayer.chips -= chipsBetByPlayer
+      playerPots[nextToAct] = chipsBetByPlayer
+
+      return {
+        ...state,
+        nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
+        howMuchToCall: chipsBetByPlayer
+      }
+    }
+
+    case 'PLAYER_ACTION_BET': {
+      let currentPlayer = players[nextToAct]
+      const MIN_AMOUNT = level[currentLevel].bigBlind
+
+      // Player has to bet >= bigBlind
+      if (action.amountRequested >= howMuchToCall & action.amountRequested >= MIN_AMOUNT) {
+        // Use the amount in currentPlayer's input field
+        // -- if he can afford it. Else he's All-In.
+        let chipsBetByPlayer = action.amountRequested <= currentPlayer.chips
+        ? action.amountRequested
+        : currentPlayer.chips
+        // Remove the amount from currentPlayer's stack
+        currentPlayer.chips -= chipsBetByPlayer
+        // Put it into currentPlayer's playerPot
         playerPots[nextToAct] = chipsBetByPlayer
+
         return {
           ...state,
-          waitingForPlayer: false,
-          nextToAct: nextToAct + 1,
+          nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
           howMuchToCall: chipsBetByPlayer
         }
-      }
-      // Player chose Raise
-      else if (action.actionString === playerActions.RAISEx) {
-        let player = players[nextToAct]
-
-        return {
-          ...state,
-          nextToAct: nextToAct + 1,
-        }
-      }
-      // Player chose Call
-      else if (action.actionString === playerActions.CALL) {
-        let player = players[nextToAct]
-        let chipsBetByPlayer = howMuchToCall
-        player.chips -= chipsBetByPlayer
-        player.currentAction = playerActions.CALL
-        playerPots[nextToAct] = chipsBetByPlayer
-        return {
-          ...state,
-          nextToAct: nextToAct + 1,
-        }
-      }
-      // Player chose Fold
-      else if (action.actionString === playerActions.FOLD) {
-        let player = players[nextToAct]
-        player.cards = []
-
-        return {
-          ...state,
-          nextToAct: nextToAct + 1,
-        }
       } else {
-        throw new Error('Player Action String not recognized.')
+        return {
+          ...state
+        }
+      }
+    }
+
+    case 'PLAYER_ACTION_CALL': {
+      let player = players[nextToAct]
+      let chipsBetByPlayer = howMuchToCall
+      player.chips -= chipsBetByPlayer
+      playerPots[nextToAct] = chipsBetByPlayer
+
+      return {
+        ...state,
+        nextToAct: nextToAct + 1,
+      }
+    }
+
+    case 'PLAYER_ACTION_FOLD': {
+      let player = players[nextToAct]
+
+      //Can only fold if not first to act.
+      if (isFirstToAct !== player.index) {
+        player.cards = []
+        return {
+          ...state,
+          nextToAct: nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1,
+        }
+      }
+
+      return {
+        ...state,
       }
     }
 

@@ -5,6 +5,29 @@ import Card from '../Card'
 import './styles.css'
 
 class Player extends PureComponent {
+  state = {
+    value: 0
+  }
+
+
+  componentDidMount() {
+    this.setState(() => ({
+      value: this.props.pot * 2
+    }))
+  }
+
+  componentWillReceiveProps() {
+    // Reset input field after any action
+    this.setState({
+      value: 0
+    })
+  }
+
+  handleInput = (event) => {
+    this.setState({
+      value: Number(event.target.value)
+    })
+  }
 
   render() {
     const {
@@ -17,7 +40,7 @@ class Player extends PureComponent {
       name,
       onPlayerClicksCall,
       onPlayerClicksFold,
-      onPlayerClicksRaise,
+      onPlayerClicksBet,
       visibleCards,
      } = this.props
 
@@ -48,10 +71,11 @@ class Player extends PureComponent {
             ))}
           </div>
         )}
-      <div className="test-buttons">
-        <button disabled={!isNextToAct} onClick={onPlayerClicksRaise}>Raise</button>
+      <div className="Player-actionButtons">
+        <button disabled={!isNextToAct} onClick={() => onPlayerClicksBet(this.state.value)}>Raise</button>
         <button disabled={!isNextToAct} onClick={onPlayerClicksCall}>Call</button>
         <button disabled={!isNextToAct} onClick={onPlayerClicksFold}>Fold</button>
+        <input disabled={!isNextToAct} type="number" value={this.state.value} onChange={this.handleInput}/>
       </div>
       </div>
     )
