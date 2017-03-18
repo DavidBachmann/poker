@@ -51,7 +51,7 @@ export default (state = initialState, action) => {
     street,
   } = state
 
-  const isFirstToAct = (nextToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
+  const firstToActCheck = (nextToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
   const nextToActCheck = nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1
 
   switch (action.type) {
@@ -121,10 +121,11 @@ export default (state = initialState, action) => {
       const bbPosition = (nextToAct + totalPlayers - 1) % totalPlayers
       const sbPosition = (nextToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
+      const newPot = pot + getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind) + getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind)
 
       return {
         ...state,
-        pot: pot + getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind) + getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind),
+        pot: newPot,
         players,
       }
     }
@@ -188,7 +189,7 @@ export default (state = initialState, action) => {
       let player = players[nextToAct]
 
       // Can only fold if not first to act.
-      if (isFirstToAct !== player.index) {
+      if (firstToActCheck !== player.index) {
         player.cards = []
         return {
           ...state,
