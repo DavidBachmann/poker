@@ -99,8 +99,6 @@ export default (state = initialState, action) => {
     }
 
     case 'DEAL': {
-      console.log(checkIfTournamentIsOver(players))
-
       if (street >= 4) {
         return
       }
@@ -122,8 +120,6 @@ export default (state = initialState, action) => {
       const bbPosition = (nextToAct + totalPlayers - 1) % totalPlayers
       const sbPosition = (nextToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
-
-
 
       return {
         ...state,
@@ -190,7 +186,7 @@ export default (state = initialState, action) => {
     case 'PLAYER_ACTION_FOLD': {
       let player = players[nextToAct]
 
-      //Can only fold if not first to act.
+      // Can only fold if not first to act.
       if (isFirstToAct !== player.index) {
         player.cards = []
         return {
