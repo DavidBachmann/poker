@@ -43,9 +43,20 @@
   color: #222;
   font-weight: 300;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
-  display: block;
   position: absolute;
   text-align: center;
   top: 35%;
-  width: 100%;
+}
+
+.Board-dealerMessage {
+  border-radius: 3px;
+  color: #222;
+  font-size: 14px;
+  font-weight: 300;
+  padding: 6px 12px;
+  position: absolute;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+  top: 60%;
+  background: #FFF;
 }

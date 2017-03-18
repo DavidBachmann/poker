@@ -1,20 +1,46 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import classNames from 'classnames'
+import { round } from 'lodash'
 import Card from '../Card'
 import './styles.css'
 
-class Player extends Component {
+class Player extends PureComponent {
+  state = {
+    value: 0
+  }
+
+
+  componentDidMount() {
+    this.setState(() => ({
+      value: this.props.pot * 2
+    }))
+  }
+
+  componentWillReceiveProps() {
+    // Reset input field after any action
+    this.setState({
+      value: 0
+    })
+  }
+
+  handleInput = (event) => {
+    this.setState({
+      value: Number(event.target.value)
+    })
+  }
 
   render() {
     const {
       cards,
       chips,
       isDealer,
-      isHero,
       isLoser,
       isNextToAct,
       isWinner,
       name,
+      onPlayerClicksCall,
+      onPlayerClicksFold,
+      onPlayerClicksBet,
       visibleCards,
      } = this.props
 
@@ -22,7 +48,6 @@ class Player extends Component {
       <div className={classNames(
         'Player',
         isDealer && 'is-dealer',
-        isHero ? 'Hero' : 'Bot',
         isLoser && 'is-loser',
         isNextToAct && 'is-next-to-act',
         isWinner && 'is-winner',
@@ -31,7 +56,7 @@ class Player extends Component {
           <div className="Player-avatar"></div>
           <div className="Player-details">
             <p className="Player-name">{name}</p>
-            <p className="Player-chipCount">${chips}</p>
+            <p className="Player-chipCount">${round(chips, 2)}</p>
           </div>
         </div>
         {cards && !isLoser && (
@@ -46,10 +71,11 @@ class Player extends Component {
             ))}
           </div>
         )}
-      <div className="test-buttons">
-        <button disabled={!isNextToAct}>Bet/Raise</button>
-        <button disabled={!isNextToAct}>Call</button>
-        <button disabled={!isNextToAct}>Fold</button>
+      <div className="Player-actionButtons">
+        <button disabled={!isNextToAct} onClick={() => onPlayerClicksBet(this.state.value)}>Raise</button>
+        <button disabled={!isNextToAct} onClick={onPlayerClicksCall}>Call</button>
+        <button disabled={!isNextToAct} onClick={onPlayerClicksFold}>Fold</button>
+        <input disabled={!isNextToAct} type="number" value={this.state.value} onChange={this.handleInput}/>
       </div>
       </div>
     )

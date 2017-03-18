@@ -23,7 +23,7 @@ export class UI extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  street: state.street,
+  ...state,
   onClickDeal: () => dispatch => {
     dispatch(dealNext())
   }

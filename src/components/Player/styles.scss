@@ -23,6 +23,13 @@
   // }
 }
 
+.Player-actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+  width: 130px;
+}
+
 $panelHeight: 55; //px
 
 .Player-panel {
