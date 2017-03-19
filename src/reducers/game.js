@@ -50,10 +50,8 @@ export default (state = initialState, action) => {
     street,
   } = state
 
-  const firstToActCheck = (nextPlayerToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
-
   const getNextPlayerToAct = () => {
-    if (nextPlayerToAct >= players.length - 1 || handHistory.length === 0) {
+    if (nextPlayerToAct === TOTAL_PLAYERS - 1 || handHistory.length === 0) {
       return 0
     } else {
       return nextPlayerToAct + 1
@@ -106,26 +104,35 @@ export default (state = initialState, action) => {
     }
 
     case 'DEAL': {
-      if (street >= 4) {
-        return
-      }
+      // Combine playerPots amounts and combine it with the pot
+      const newPot = playerPots.reduce((acc, value) => acc + value, 0) + pot
+
+      players.forEach((player) => {
+        player.hasActedThisTurn = false
+      })
+
+      const nextStreet = street + 1
 
       return {
         ...state,
         ...dealCards(deck, players, street, communityCards),
-        street: street + 1,
+        street: nextStreet,
+        pot: newPot,
+        players,
       }
     }
 
     case 'NEXT_LEVEL': {
+      const nextLevel = currentLevel + 1
+
       return {
         ...state,
-        currentLevel: currentLevel + 1,
+        currentLevel: nextLevel,
       }
     }
 
     case 'POST_BLINDS': {
-      const totalPlayers = players.length
+      const totalPlayers = TOTAL_PLAYERS
       const bbPosition = (nextPlayerToAct + totalPlayers - 1) % totalPlayers
       const sbPosition = (nextPlayerToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
@@ -135,20 +142,6 @@ export default (state = initialState, action) => {
         ...state,
         pot: newPot,
         players,
-      }
-    }
-
-    // Player actions, todo: refactor into its own reducer
-    case 'PLAYER_ACTION_ALL_IN': {
-      let currentPlayer = players[nextPlayerToAct]
-      let chipsBetByPlayer = currentPlayer.chips
-      currentPlayer.chips -= chipsBetByPlayer
-      playerPots[nextPlayerToAct] = chipsBetByPlayer
-
-      return {
-        ...state,
-        nextPlayerToAct: getNextPlayerToAct(),
-        howMuchToCall: chipsBetByPlayer
       }
     }
 
@@ -167,6 +160,7 @@ export default (state = initialState, action) => {
         currentPlayer.chips -= chipsBetByPlayer
         // Put it into currentPlayer's playerPot
         playerPots[nextPlayerToAct] = chipsBetByPlayer
+        currentPlayer.hasActedThisTurn = true
 
         return {
           ...state,
@@ -176,29 +170,30 @@ export default (state = initialState, action) => {
       }
 
       __DEBUG__(`${currentPlayer.name} bets invalid amount`)
-      return {
-        ...state
-      }
+      return state
     }
 
     case 'PLAYER_ACTION_CALL': {
-      let player = players[nextPlayerToAct]
+      let currentPlayer = players[nextPlayerToAct]
       let chipsBetByPlayer = howMuchToCall
-      player.chips -= chipsBetByPlayer
+      currentPlayer.chips -= chipsBetByPlayer
       playerPots[nextPlayerToAct] = chipsBetByPlayer
+      currentPlayer.hasActedThisTurn = true
 
       return {
         ...state,
-        nextPlayerToAct: nextPlayerToAct + 1,
+        nextPlayerToAct: getNextPlayerToAct(),
       }
     }
 
     case 'PLAYER_ACTION_FOLD': {
       let currentPlayer = players[nextPlayerToAct]
-      console.log(firstToActCheck)
+
       // Can only fold if not first to act.
-      if (firstToActCheck !== currentPlayer.index) {
+      const temporaryFirstToActIndex = 0 // Todo
+      if (currentPlayer.index !== temporaryFirstToActIndex) {
         currentPlayer.cards = []
+        currentPlayer.hasActedThisTurn = true
 
         return {
           ...state,
@@ -207,9 +202,7 @@ export default (state = initialState, action) => {
       }
 
       __DEBUG__(`${currentPlayer.name} tried to fold when first to act`)
-      return {
-        ...state,
-      }
+      return state
     }
 
     default:

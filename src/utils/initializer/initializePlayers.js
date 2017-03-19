@@ -11,6 +11,7 @@ const initalizePlayers = (totalPlayers, startingStack, generateRandomName = true
       name: generateRandomName ? randomNameGenerator() : null,
       chips: startingStack,
       id: generateRandomId ? uuidV4() : null,
+      hasActedThisTurn: false,
     })
   )
 
