@@ -30,6 +30,19 @@
   width: 130px;
 }
 
+.Player-playerPot {
+  // styles for debugging
+  font-size: 12px;
+  background: white;
+  text-align: center;
+  padding: 2px;
+
+  strong {
+    text-decoration: underline;
+    font-weight: bold;
+  }
+}
+
 $panelHeight: 55; //px
 
 .Player-panel {

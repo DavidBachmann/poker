@@ -1,30 +1,24 @@
-function startGame() {
+const _startGame = () => {
   return {
     type: 'START',
   }
 }
 
 
-function deal(street) {
+const _deal = (street) => {
   return {
     type: 'DEAL',
     street
   }
 }
 
-function postBlinds() {
+const _postBlinds = () => {
   return {
     type: 'POST_BLINDS'
   }
 }
 
-export const pause = () => {
-  return {
-    type: 'PAUSE',
-  }
-}
-
-export const payOutChips = () => {
+export const _payOutChips = () => {
   return {
     type: 'PAY_OUT_CHIPS'
   }
@@ -57,33 +51,23 @@ const _playerFolds = () => {
 }
 
 
-export const _waitingForNextPlayerToAct = () => {
-  return {
-    type: 'WAITING_FOR_PLAYER_TO_ACT',
-  }
-}
-
 export const start = () => dispatch => {
-  dispatch(startGame())
-  dispatch(postBlinds())
-  dispatch(_waitingForNextPlayerToAct())
+  dispatch(_startGame())
+  dispatch(_postBlinds())
 }
 
 export const playerBets = (amount) => dispatch => {
   dispatch(_playerBets(amount))
-  dispatch(_waitingForNextPlayerToAct())
 }
 
 export const playerCalls = () => dispatch => {
   dispatch(_playerCalls())
-  dispatch(_waitingForNextPlayerToAct())
 }
 
 export const playerFolds = () => dispatch => {
   dispatch(_playerFolds())
-  dispatch(_waitingForNextPlayerToAct())
 }
 
 export const dealNext = () => dispatch => {
-  dispatch(deal())
+  dispatch(_deal())
 }

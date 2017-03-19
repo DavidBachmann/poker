@@ -1,9 +1,10 @@
 import uuidV1 from 'uuid/v1' // V1 is time based UUID
+import { concat } from 'lodash'
+import __DEBUG__ from '../utils/__DEBUG__'
 import determineWinner from '../utils/determineWinner'
 import dealCards from '../utils/dealCards'
 import { initializePlayers, initializePlayerPots } from '../utils/initializer'
 import generateShuffledDeck from '../utils/generateShuffledDeck'
-import { concat } from 'lodash'
 import generateLevels from '../utils/generateLevels'
 import payOutChips from '../utils/payOutChips'
 import checkForPlayerElimination from '../utils/checkForPlayerElimination'
@@ -22,7 +23,7 @@ const initialState = {
   handWinners: null,
   howMuchToCall: 0, // how much does a player have to put out to be able to call the current bet
   level: generateLevels(),
-  nextToAct: 0, // Player at index 0 starts (TODO)
+  nextPlayerToAct: 0, // Player at index 0 starts (TODO)
   paused: false,
   playerPots: initializePlayerPots(TOTAL_PLAYERS), // Containing the chips each player has bet this round, that will be going into the pot
   players: initializePlayers(TOTAL_PLAYERS, STARTING_STACK), // Initialized players
@@ -31,7 +32,6 @@ const initialState = {
   sidepot: [], // Array of sidepots (TODO)
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
   tournamentWinner: null, // Who won the tournament
-  waitingForPlayer: false,
 }
 
 export default (state = initialState, action) => {
@@ -43,15 +43,22 @@ export default (state = initialState, action) => {
     handWinners,
     howMuchToCall,
     level,
-    nextToAct,
+    nextPlayerToAct,
     playerPots,
     players,
     pot,
     street,
   } = state
 
-  const firstToActCheck = (nextToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
-  const nextToActCheck = nextToAct >= players.length -1 ? 0 : handHistory.length === 0 ? 0 : nextToAct + 1
+  const firstToActCheck = (nextPlayerToAct + TOTAL_PLAYERS) % TOTAL_PLAYERS
+
+  const getNextPlayerToAct = () => {
+    if (nextPlayerToAct >= players.length - 1 || handHistory.length === 0) {
+      return 0
+    } else {
+      return nextPlayerToAct + 1
+    }
+  }
 
   switch (action.type) {
     case 'START': {
@@ -67,7 +74,7 @@ export default (state = initialState, action) => {
         deck: generateShuffledDeck(),
         handHistory: newHandHistory,
         handWinners: null,
-        nextToAct: nextToActCheck,
+        nextPlayerToAct: getNextPlayerToAct(),
         pot: 0,
         showdown: false,
         street: 0,
@@ -119,8 +126,8 @@ export default (state = initialState, action) => {
 
     case 'POST_BLINDS': {
       const totalPlayers = players.length
-      const bbPosition = (nextToAct + totalPlayers - 1) % totalPlayers
-      const sbPosition = (nextToAct + totalPlayers - 2) % totalPlayers
+      const bbPosition = (nextPlayerToAct + totalPlayers - 1) % totalPlayers
+      const sbPosition = (nextPlayerToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
       const newPot = pot + getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind) + getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind)
 
@@ -133,20 +140,20 @@ export default (state = initialState, action) => {
 
     // Player actions, todo: refactor into its own reducer
     case 'PLAYER_ACTION_ALL_IN': {
-      let currentPlayer = players[nextToAct]
+      let currentPlayer = players[nextPlayerToAct]
       let chipsBetByPlayer = currentPlayer.chips
       currentPlayer.chips -= chipsBetByPlayer
-      playerPots[nextToAct] = chipsBetByPlayer
+      playerPots[nextPlayerToAct] = chipsBetByPlayer
 
       return {
         ...state,
-        nextToAct: nextToActCheck,
+        nextPlayerToAct: getNextPlayerToAct(),
         howMuchToCall: chipsBetByPlayer
       }
     }
 
     case 'PLAYER_ACTION_BET': {
-      let currentPlayer = players[nextToAct]
+      let currentPlayer = players[nextPlayerToAct]
       const MIN_AMOUNT = level[currentLevel].bigBlind
 
       // Player has to bet >= bigBlind
@@ -159,55 +166,49 @@ export default (state = initialState, action) => {
         // Remove the amount from currentPlayer's stack
         currentPlayer.chips -= chipsBetByPlayer
         // Put it into currentPlayer's playerPot
-        playerPots[nextToAct] = chipsBetByPlayer
+        playerPots[nextPlayerToAct] = chipsBetByPlayer
 
         return {
           ...state,
-          nextToAct: nextToActCheck,
+          nextPlayerToAct: getNextPlayerToAct(),
           howMuchToCall: chipsBetByPlayer
         }
-      } else {
-        return {
-          ...state
-        }
+      }
+
+      __DEBUG__(`${currentPlayer.name} bets invalid amount`)
+      return {
+        ...state
       }
     }
 
     case 'PLAYER_ACTION_CALL': {
-      let player = players[nextToAct]
+      let player = players[nextPlayerToAct]
       let chipsBetByPlayer = howMuchToCall
       player.chips -= chipsBetByPlayer
-      playerPots[nextToAct] = chipsBetByPlayer
+      playerPots[nextPlayerToAct] = chipsBetByPlayer
 
       return {
         ...state,
-        nextToAct: nextToAct + 1,
+        nextPlayerToAct: nextPlayerToAct + 1,
       }
     }
 
     case 'PLAYER_ACTION_FOLD': {
-      let player = players[nextToAct]
-
+      let currentPlayer = players[nextPlayerToAct]
+      console.log(firstToActCheck)
       // Can only fold if not first to act.
-      if (firstToActCheck !== player.index) {
-        player.cards = []
+      if (firstToActCheck !== currentPlayer.index) {
+        currentPlayer.cards = []
 
         return {
           ...state,
-          nextToAct: nextToActCheck,
+          nextPlayerToAct: getNextPlayerToAct(),
         }
       }
 
+      __DEBUG__(`${currentPlayer.name} tried to fold when first to act`)
       return {
         ...state,
-      }
-    }
-
-    case 'WAITING_FOR_PLAYER_TO_ACT': {
-      return {
-        ...state,
-        dealerMessage: `Waiting for ${players[nextToAct].name} to act.`,
-        waitingForPlayer: true,
       }
     }
 

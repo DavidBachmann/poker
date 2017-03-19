@@ -18,12 +18,12 @@ export class Board extends PureComponent {
   }
 
   calculatePositions() {
-    const { nextToAct, players } = this.props
+    const { nextPlayerToAct, players } = this.props
     const totalPlayers = players.length
     this.setState(() => ({
-      bb: (nextToAct + totalPlayers - 1) % totalPlayers,
-      sb: (nextToAct + totalPlayers - 2) % totalPlayers,
-      dealer: (nextToAct + totalPlayers - 3) % totalPlayers,
+      bb: (nextPlayerToAct + totalPlayers - 1) % totalPlayers,
+      sb: (nextPlayerToAct + totalPlayers - 2) % totalPlayers,
+      dealer: (nextPlayerToAct + totalPlayers - 3) % totalPlayers,
     }))
   }
 
@@ -49,7 +49,7 @@ export class Board extends PureComponent {
       communityCards,
       dealerMessage,
       handWinners,
-      nextToAct,
+      nextPlayerToAct,
       playerPots,
       players,
       pot,
@@ -89,13 +89,14 @@ export class Board extends PureComponent {
               chips={player.chips}
               id={player.id}
               isBB={isBB}
+              playerPot={playerPots[index]}
               isDealer={isDealer}
               isLoser={this.cachedWinners.length > 0 && !isWinner}
               isSB={isSB}
               isWinner={isWinner}
               key={player.id}
               name={player && player.name}
-              isNextToAct={nextToAct === index}
+              isNextToAct={nextPlayerToAct === index}
               position={index}
               visibleCards={showdown ? true : false}
               {...this.props}

@@ -38,9 +38,10 @@ class Player extends PureComponent {
       isNextToAct,
       isWinner,
       name,
+      onPlayerClicksBet,
       onPlayerClicksCall,
       onPlayerClicksFold,
-      onPlayerClicksBet,
+      playerPot,
       visibleCards,
      } = this.props
 
@@ -71,8 +72,9 @@ class Player extends PureComponent {
             ))}
           </div>
         )}
+      <div className="Player-playerPot">Player pot debugger: <strong>{playerPot}</strong></div>
       <div className="Player-actionButtons">
-        <button disabled={!isNextToAct} onClick={() => onPlayerClicksBet(this.state.value)}>Raise</button>
+        <button disabled={!isNextToAct} onClick={() => onPlayerClicksBet(this.state.value)}>Bet</button>
         <button disabled={!isNextToAct} onClick={onPlayerClicksCall}>Call</button>
         <button disabled={!isNextToAct} onClick={onPlayerClicksFold}>Fold</button>
         <input disabled={!isNextToAct} type="number" value={this.state.value} onChange={this.handleInput}/>
