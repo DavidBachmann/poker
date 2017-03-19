@@ -99,6 +99,7 @@ export class Board extends PureComponent {
               isLoser={this.cachedWinners.length > 0 && !isWinner}
               isSB={isSB}
               isWinner={isWinner}
+              hasFolded={player.cards.length === 0}
               key={player.id}
               name={player && player.name}
               isNextToAct={nextPlayerIndexToAct === index}

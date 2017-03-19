@@ -38,6 +38,7 @@ class Player extends PureComponent {
       isNextToAct,
       isWinner,
       name,
+      hasFolded,
       onPlayerClicksBet,
       onPlayerClicksCall,
       onPlayerClicksCheck,
@@ -75,6 +76,7 @@ class Player extends PureComponent {
           </div>
         )}
       <div className="Player-playerPot">Player pot debugger: <strong>{playerPot}</strong></div>
+      <div className="Player-debugger">{hasFolded && 'Player has folded'}</div>
       <div className="Player-actionButtons">
         <button
           disabled={!isNextToAct}
