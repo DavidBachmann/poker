@@ -138,10 +138,16 @@ export default (state = initialState, action) => {
       const bbPosition = (nextPlayerIndexToAct + totalPlayers - 1) % totalPlayers
       const sbPosition = (nextPlayerIndexToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
-      const newPot = pot + getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind) + getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind)
+      const sbAmount = getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind)
+      const bbAmount = getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind)
+      const newPot = pot + sbAmount + bbAmount
+
+      playerPots[sbPosition] = sbAmount
+      playerPots[bbPosition] = bbAmount
 
       return {
         ...state,
+        highestCurrentBet: bbAmount,
         pot: newPot,
         players,
       }
@@ -185,13 +191,24 @@ export default (state = initialState, action) => {
       // Get the amount he has invested in this round
       let currentPlayerAlreadyInvested = playerPots[nextPlayerIndexToAct]
       // Let the player bet the difference of how much he has already invested minus how much the pot is.
-      // This is so if the player has already bet, and facing a raise, he doesn't have to pay the whole raised amount but only the difference.
+      // This is so if the player has already bet, and facing a raise,
+      // he doesn't have to pay the whole raised amount but only the difference.
       let chipsBetByPlayer = highestCurrentBet - currentPlayerAlreadyInvested
       // Take the chips from his stack
       currentPlayer.chips -= chipsBetByPlayer
       // currentPlayerAlreadyInvested = chipsBetByPlayer
       currentPlayer.hasActedThisTurn = true
 
+      return {
+        ...state,
+        nextPlayerIndexToAct: getNextPlayerIndexToAct(),
+      }
+    }
+
+    case 'PLAYER_ACTION_CHECK': {
+      let currentPlayer = players[nextPlayerIndexToAct]
+
+      __DEBUG__(`${currentPlayer.name} checks. HasActedThisTurn set to ${currentPlayer.hasActedThisTurn}`)
       return {
         ...state,
         nextPlayerIndexToAct: getNextPlayerIndexToAct(),

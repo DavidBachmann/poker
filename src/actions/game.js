@@ -43,6 +43,12 @@ const _playerCalls = () => {
   }
 }
 
+const _playerChecks = () => {
+  return {
+    type: 'PLAYER_ACTION_CHECK'
+  }
+}
+
 
 const _playerFolds = () => {
   return {
@@ -63,6 +69,11 @@ export const playerBets = (amount) => dispatch => {
 export const playerCalls = () => dispatch => {
   dispatch(_playerCalls())
 }
+
+export const playerChecks = () => dispatch => {
+  dispatch(_playerChecks())
+}
+
 
 export const playerFolds = () => dispatch => {
   dispatch(_playerFolds())

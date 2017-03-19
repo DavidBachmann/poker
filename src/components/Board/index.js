@@ -4,7 +4,12 @@ import Player from '../Player'
 import Community from '../Community'
 import './styles.css'
 
-import { playerBets, playerCalls, playerFolds } from '../../actions/game'
+import {
+  playerBets,
+  playerCalls,
+  playerChecks,
+  playerFolds,
+} from '../../actions/game'
 
 export class Board extends PureComponent {
 
@@ -145,6 +150,7 @@ const mapStateToProps = state => state
 const mapDispatchToProps = (dispatch) => ({
   onPlayerClicksBet: (amount) => dispatch(playerBets(amount)),
   onPlayerClicksCall: () => dispatch(playerCalls()),
+  onPlayerClicksCheck: () => dispatch(playerChecks()),
   onPlayerClicksFold: () => dispatch(playerFolds()),
 })
 
