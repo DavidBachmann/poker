@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import __DEBUG__ from '../../utils/__DEBUG__'
 import {
   start,
   dealNext,
@@ -18,6 +19,7 @@ export class GameManager extends Component {
     // if we can't find a player that hasn't acted this turn
     // it means that everyone has acted and we can continue dealing
     if (!players.find(player => player.hasActedThisTurn === false)) {
+      __DEBUG__(`Found no one that has yet to act. Dealing next street.`)
       dispatch(dealNext())
     }
   }

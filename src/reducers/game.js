@@ -12,7 +12,8 @@ import checkIfTournamentIsOver from '../utils/checkIfTournamentIsOver'
 import getAmountTakenFromBlindedPlayers from '../utils/getAmountTakenFromBlindedPlayers'
 
 const STARTING_STACK = 1500
-const TOTAL_PLAYERS = 9
+const TOTAL_PLAYERS = 3
+const MAX_HANDS_PER_LEVEL = 25
 
 const initialState = {
   communityCards: {},
@@ -21,9 +22,9 @@ const initialState = {
   deck: [],
   handHistory: [],
   handWinners: null,
-  howMuchToCall: 0, // how much does a player have to put out to be able to call the current bet
+  highestCurrentBet: 0, // how much does a player have to put out to be able to call the current bet
   level: generateLevels(),
-  nextPlayerToAct: 0, // Player at index 0 starts (TODO)
+  nextPlayerIndexToAct: 0, // Player at index 0 starts (TODO)
   paused: false,
   playerPots: initializePlayerPots(TOTAL_PLAYERS), // Containing the chips each player has bet this round, that will be going into the pot
   players: initializePlayers(TOTAL_PLAYERS, STARTING_STACK), // Initialized players
@@ -41,29 +42,30 @@ export default (state = initialState, action) => {
     deck,
     handHistory,
     handWinners,
-    howMuchToCall,
+    highestCurrentBet,
     level,
-    nextPlayerToAct,
+    nextPlayerIndexToAct,
     playerPots,
     players,
     pot,
     street,
   } = state
 
-  const getNextPlayerToAct = () => {
-    if (nextPlayerToAct === TOTAL_PLAYERS - 1 || handHistory.length === 0) {
+  const getNextPlayerIndexToAct = () => {
+    if (nextPlayerIndexToAct === TOTAL_PLAYERS - 1 || handHistory.length === 0) {
       return 0
     } else {
-      return nextPlayerToAct + 1
+      return nextPlayerIndexToAct + 1
     }
   }
 
+
   switch (action.type) {
     case 'START': {
-      const maxHandsPerLevel = 25
       const newHandId = uuidV1()
       const newHandHistory = concat(handHistory, newHandId)
-      const shouldChangeLevel = currentLevel < 19 && handHistory.length % maxHandsPerLevel === 0 && handHistory.length !== 0 // Every 25 hands the level should go up
+      // Every {MAX_HANDS_PER_LEVEL} hands the level should go up
+      const shouldChangeLevel = currentLevel < Object.keys(level).length && handHistory.length % MAX_HANDS_PER_LEVEL === 0 && handHistory.length !== 0
 
       return {
         ...state,
@@ -72,7 +74,7 @@ export default (state = initialState, action) => {
         deck: generateShuffledDeck(),
         handHistory: newHandHistory,
         handWinners: null,
-        nextPlayerToAct: getNextPlayerToAct(),
+        nextPlayerIndexToAct: getNextPlayerIndexToAct(),
         pot: 0,
         showdown: false,
         street: 0,
@@ -133,8 +135,8 @@ export default (state = initialState, action) => {
 
     case 'POST_BLINDS': {
       const totalPlayers = TOTAL_PLAYERS
-      const bbPosition = (nextPlayerToAct + totalPlayers - 1) % totalPlayers
-      const sbPosition = (nextPlayerToAct + totalPlayers - 2) % totalPlayers
+      const bbPosition = (nextPlayerIndexToAct + totalPlayers - 1) % totalPlayers
+      const sbPosition = (nextPlayerIndexToAct + totalPlayers - 2) % totalPlayers
       const { smallBlind, bigBlind } = level[currentLevel]
       const newPot = pot + getAmountTakenFromBlindedPlayers(players, sbPosition, smallBlind) + getAmountTakenFromBlindedPlayers(players, bbPosition, bigBlind)
 
@@ -146,26 +148,30 @@ export default (state = initialState, action) => {
     }
 
     case 'PLAYER_ACTION_BET': {
-      let currentPlayer = players[nextPlayerToAct]
+      let currentPlayer = players[nextPlayerIndexToAct]
       const MIN_AMOUNT = level[currentLevel].bigBlind
-
-      // Player has to bet >= bigBlind
-      if (action.amountRequested >= howMuchToCall & action.amountRequested >= MIN_AMOUNT) {
-        // Use the amount in currentPlayer's input field
-        // -- if he can afford it. Else he's All-In.
-        let chipsBetByPlayer = action.amountRequested <= currentPlayer.chips
-        ? action.amountRequested
-        : currentPlayer.chips
+      // Find out what players are still in the hand, e.g. have not folded.
+      const playersStillInTheHand = players.filter(player => player.cards.length > 0)
+      // Player has to bet >= highestCurrentBet and >= bigBlind
+      if (action.amountRequested >= highestCurrentBet & action.amountRequested >= MIN_AMOUNT) {
+        // Use the amount in currentPlayer's input field if he can afford it. Else he's All-In.
+        let chipsBetByPlayer = action.amountRequested <= currentPlayer.chips ? action.amountRequested : currentPlayer.chips
+        // Check if player has raised so we can let other players know they have to act.
+        if (chipsBetByPlayer > highestCurrentBet) {
+            playersStillInTheHand.map((player) => player.hasActedThisTurn = false)
+            __DEBUG__(`${currentPlayer.name} raises to ${action.amountRequested}. Previous highest bet was ${highestCurrentBet} `)
+            __DEBUG__(`Players still in the hand: ${playersStillInTheHand.map(player => player.name)}`)
+        }
         // Remove the amount from currentPlayer's stack
         currentPlayer.chips -= chipsBetByPlayer
         // Put it into currentPlayer's playerPot
-        playerPots[nextPlayerToAct] = chipsBetByPlayer
+        playerPots[nextPlayerIndexToAct] = chipsBetByPlayer
         currentPlayer.hasActedThisTurn = true
 
         return {
           ...state,
-          nextPlayerToAct: getNextPlayerToAct(),
-          howMuchToCall: chipsBetByPlayer
+          nextPlayerIndexToAct: getNextPlayerIndexToAct(),
+          highestCurrentBet: chipsBetByPlayer
         }
       }
 
@@ -174,30 +180,37 @@ export default (state = initialState, action) => {
     }
 
     case 'PLAYER_ACTION_CALL': {
-      let currentPlayer = players[nextPlayerToAct]
-      let chipsBetByPlayer = howMuchToCall
+      // Get player
+      let currentPlayer = players[nextPlayerIndexToAct]
+      // Get the amount he has invested in this round
+      let currentPlayerAlreadyInvested = playerPots[nextPlayerIndexToAct]
+      // Let the player bet the difference of how much he has already invested minus how much the pot is.
+      // This is so if the player has already bet, and facing a raise, he doesn't have to pay the whole raised amount but only the difference.
+      let chipsBetByPlayer = highestCurrentBet - currentPlayerAlreadyInvested
+      // Take the chips from his stack
       currentPlayer.chips -= chipsBetByPlayer
-      playerPots[nextPlayerToAct] = chipsBetByPlayer
+      // currentPlayerAlreadyInvested = chipsBetByPlayer
       currentPlayer.hasActedThisTurn = true
 
       return {
         ...state,
-        nextPlayerToAct: getNextPlayerToAct(),
+        nextPlayerIndexToAct: getNextPlayerIndexToAct(),
       }
     }
 
     case 'PLAYER_ACTION_FOLD': {
-      let currentPlayer = players[nextPlayerToAct]
+      let currentPlayer = players[nextPlayerIndexToAct]
 
       // Can only fold if not first to act.
       const temporaryFirstToActIndex = 0 // Todo
       if (currentPlayer.index !== temporaryFirstToActIndex) {
         currentPlayer.cards = []
         currentPlayer.hasActedThisTurn = true
-
+        currentPlayer.shouldActThisTurn = false
+        __DEBUG__(`${currentPlayer.name} folds. HasActedThisTurn set to ${currentPlayer.hasActedThisTurn}`)
         return {
           ...state,
-          nextPlayerToAct: getNextPlayerToAct(),
+          nextPlayerIndexToAct: getNextPlayerIndexToAct(),
         }
       }
 
