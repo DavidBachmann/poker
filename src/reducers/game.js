@@ -12,7 +12,7 @@ import checkIfTournamentIsOver from '../utils/checkIfTournamentIsOver'
 import getAmountTakenFromBlindedPlayers from '../utils/getAmountTakenFromBlindedPlayers'
 
 const STARTING_STACK = 1500
-const TOTAL_PLAYERS = 3
+const TOTAL_PLAYERS = 9
 const MAX_HANDS_PER_LEVEL = 25
 
 const initialState = {

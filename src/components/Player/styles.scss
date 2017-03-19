@@ -26,8 +26,13 @@
 .Player-actionButtons {
   display: flex;
   flex-wrap: wrap;
-  margin: auto;
-  width: 130px;
+  width: 160px;
+  > button {
+    width: 80px;
+  }
+  > input {
+    width: 100%;
+  }
 }
 
 .Player-playerPot {
