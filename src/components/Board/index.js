@@ -1,43 +1,44 @@
 import React, { PureComponent } from 'react'
-import { connect } from 'react-redux'
 import Player from '../Player'
 import Community from '../Community'
 import './styles.css'
 
-import {
-  playerBets,
-  playerCalls,
-  playerChecks,
-  playerFolds,
-} from '../../actions/game'
-
-export class Board extends PureComponent {
+class Board extends PureComponent {
 
   cachedWinners = []
 
   state = {
     winnersHaveBeenDetermined: false,
-    bb: null,
-    sb: null,
-    dealer: null,
+    positions: {},
   }
 
-  calculatePositions() {
-    const { nextToActCounter, players } = this.props
+  calculatePositions = () => {
+    const { players, nextPlayerToAct } = this.props
     const totalPlayers = players.length
-    this.setState(() => ({
-      bb: (nextToActCounter + totalPlayers - 1) % totalPlayers,
-      sb: (nextToActCounter + totalPlayers - 2) % totalPlayers,
-      dealer: (nextToActCounter + totalPlayers - 3) % totalPlayers,
-    }))
+
+    this.setState({
+      positions: {
+        cutoff: (nextPlayerToAct + totalPlayers - 1) % totalPlayers,
+        hijack: (nextPlayerToAct + totalPlayers - 2) % totalPlayers,
+        mp1: (nextPlayerToAct + totalPlayers - 3) % totalPlayers,
+        mp: (nextPlayerToAct + totalPlayers - 4) % totalPlayers,
+        utg1: (nextPlayerToAct + totalPlayers - 5) % totalPlayers,
+        utg: (nextPlayerToAct + totalPlayers - 6) % totalPlayers,
+        bb: (nextPlayerToAct + totalPlayers - 7) % totalPlayers,
+        sb: (nextPlayerToAct + totalPlayers - 8) % totalPlayers,
+        button: (nextPlayerToAct + totalPlayers - 9) % totalPlayers,
+      }
+    })
+  }
+
+  componentDidMount() {
+    this.calculatePositions()
   }
 
   componentWillReceiveProps(props) {
     const { handWinners } = props
-    this.calculatePositions()
 
     if (handWinners == null) {
-      // Set or Reset
       this.cachedWinners = []
       this.setState({
         winnersHaveBeenDetermined: false
@@ -50,18 +51,18 @@ export class Board extends PureComponent {
   }
 
   render() {
+
     const {
       communityCards,
       dealerMessage,
       handWinners,
-      nextToActCounter,
       players,
       pot,
-      showdown,
       street,
+      nextPlayerToAct
     } = this.props
 
-    const { winnersHaveBeenDetermined, sb, bb, dealer } = this.state
+    const { winnersHaveBeenDetermined, positions } = this.state
 
     const getListOfWinnerNames = () => {
       if (!handWinners) {
@@ -82,30 +83,16 @@ export class Board extends PureComponent {
     return (
       <div className="Board">
         {players && players.map((player, index) => {
-          const isWinner = this.cachedWinners.includes(player.id)
-          const isDealer = index === dealer
-          const isSB = index === sb
-          const isBB = index === bb
           return (
             <Player
-              blindsPaid={player.blindsPaid}
-              cards={player.cards && player.cards}
+              holeCards={player.holeCards}
+              name={player.name}
               chips={player.chips}
-              id={player.id}
-              isBB={isBB}
-              chipsInvested={player.chipsInvested}
-              isDealer={isDealer}
-              isLoser={this.cachedWinners.length > 0 && !isWinner}
-              isSB={isSB}
-              isWinner={isWinner}
-              hasFolded={player.cards.length === 0}
-              hasActedThisTurn={player.hasActedThisTurn}
+              index={index}
               key={player.id}
-              name={player && player.name}
-              isNextToAct={nextToActCounter === index}
-              position={index}
-              visibleCards={showdown ? true : false}
-              {...this.props}
+              positions={positions}
+              canAct={nextPlayerToAct === index}
+              chipsCurrentlyInvested={player.chipsCurrentlyInvested}
             />
           )
         })}
@@ -117,7 +104,7 @@ export class Board extends PureComponent {
           />
         </div>
         <p className="Board-potInfo">
-          Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsInvested + player.blindsPaid + acc, 0)}</strong>)
+          Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}</strong>)
         </p>
         {handWinners && (
           <div className="Board-winnerInfo">
@@ -147,12 +134,5 @@ export class Board extends PureComponent {
 
 }
 
-const mapStateToProps = state => state
-const mapDispatchToProps = (dispatch) => ({
-  onPlayerClicksBet: (amount) => dispatch(playerBets(amount)),
-  onPlayerClicksCall: () => dispatch(playerCalls()),
-  onPlayerClicksCheck: () => dispatch(playerChecks()),
-  onPlayerClicksFold: () => dispatch(playerFolds()),
-})
 
-export default connect(mapStateToProps, mapDispatchToProps)(Board)
+export default Board

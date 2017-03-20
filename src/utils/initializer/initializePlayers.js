@@ -6,17 +6,13 @@ const initalizePlayers = (totalPlayers, startingStack, generateRandomName = true
     length: totalPlayers
   }, (_, index) => ({
       index,
-      cards: [],
+      holeCards: [],
       hand: [],
       name: generateRandomName ? randomNameGenerator() : null,
       chips: startingStack,
-      chipsInvested: 0,
-      blindsPaid: 0,
+      chipsCurrentlyInvested: 0,
       id: generateRandomId ? uuidV4() : null,
-      facingRaise: false,
       hasFolded: false,
-      hasActedThisTurn: false,
-      shouldActThisTurn: true,
     })
   )
 

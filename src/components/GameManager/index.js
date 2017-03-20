@@ -1,44 +1,86 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux'
+import { PureComponent, cloneElement } from 'react'
 import __DEBUG__ from '../../utils/__DEBUG__'
-import {
-  start,
-  dealNext,
- } from '../../actions/game'
+import { initializePlayers, initializeLevels } from '../../utils/initializer'
+import generateShuffledDeck from '../../utils/generateShuffledDeck'
 
-export class GameManager extends Component {
-  componentDidMount() {
-    const { dispatch } = this.props
-    dispatch(start())
-    dispatch(dealNext())
-  }
+class GameManager extends PureComponent {
+  static STARTING_STACK = 1500
+  static TOTAL_PLAYERS = 9
+  static MAX_HANDS_PER_LEVEL = 25
 
-  componentWillReceiveProps() {
-    const { players, dispatch } = this.props
+  players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
+  levels = initializeLevels()
+  deck = this.generateDeck
 
-    // if we can't find a player that hasn't acted this turn
-    // it means that everyone has acted and we can continue dealing
-    if (!players.find(player => player.hasActedThisTurn === false)) {
-      __DEBUG__(`Found no one that has yet to act. Dealing next street.`)
-      dispatch(dealNext())
+  constructor() {
+    super()
+    this.state = {
+      deck: this.deck,
+      players: this.players,
+      levels: this.levels,
+      nextPlayerToAct: 0,
+      currentLevel: 1,
+      currentStreet: 0,
+      communityCards: {flop: {}, turn: {}, river: {}},
     }
   }
 
+
+  generateDeck = () => {
+    const deck = generateShuffledDeck()
+    return deck
+  }
+
+  bootstrapPlayers(deck) {
+    const players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
+
+    players.forEach((player) => {
+      player.holeCards = deck.splice(0, 2)
+    })
+
+    this.setState({
+      deck,
+      players,
+    })
+
+  }
+
+
+  handleDealStreets(street = this.state.currentStreet) {
+    const { deck, communityCards, currentStreet } = this.state
+
+    if (currentStreet === 1) {
+      communityCards.flop = deck.splice(0, 3)
+    }
+    if (currentStreet === 2) {
+      communityCards.turn = deck.splice(0, 1)
+    }
+    if (currentStreet === 3) {
+      communityCards.river = deck.splice(0, 1)
+    }
+
+    return {
+      deck,
+      communityCards
+    }
+  }
+
+  componentWillMount() {
+
+  }
+
   render() {
-    const {
-      children,
-      tournamentWinner,
+    const { children } = this.props
+    const { deck, players, currentLevel, nextPlayerToAct } = this.state
+    return cloneElement(children, {
+      deck,
+      players,
+      currentLevel,
+      nextPlayerToAct,
+      handleDealStreets: this.handleDealStreets
+    })
 
-    } = this.props
-
-    const temporaryRenderLogic = tournamentWinner ? <p>AND THE WINNER IS {tournamentWinner}</p> : children
-
-    return (
-      <div>
-        {temporaryRenderLogic}
-      </div>
-    )
   }
 }
 
-export default connect(state => state)(GameManager)
+export default GameManager

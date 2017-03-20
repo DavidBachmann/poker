@@ -64,7 +64,7 @@ $panelHeight: 55; //px
   overflow: hidden;
   z-index: 10;
 
-  .is-dealer &::before {
+  .is-button &::before {
     $size: 20px;
 
     background: #FFF;

@@ -1,4 +1,4 @@
-import uuidV1 from 'uuid/v1' // V1 is time based UUID
+/* import uuidV1 from 'uuid/v1' // V1 is time based UUID
 import { concat, find } from 'lodash'
 import __DEBUG__ from '../utils/__DEBUG__'
 import determineWinner from '../utils/determineWinner'
@@ -11,9 +11,7 @@ import checkForPlayerElimination from '../utils/checkForPlayerElimination'
 import checkIfTournamentIsOver from '../utils/checkIfTournamentIsOver'
 import getAmountTakenFromBlindedPlayers from '../utils/getAmountTakenFromBlindedPlayers'
 
-const STARTING_STACK = 1500
-const TOTAL_PLAYERS = 9
-const MAX_HANDS_PER_LEVEL = 25
+
 
 const initialState = {
   communityCards: {},
@@ -30,7 +28,6 @@ const initialState = {
   pot: 0,
   showdown: false, // Showdown means the round is over and all remaining players should reveal their hands
   street: 0, // {0: 'preflop', 1: 'flop', 2: 'turn', 3: 'river'} (TODO)
-  tournamentWinner: null, // Who won the tournament
 }
 
 export default (state = initialState, action) => {
@@ -48,68 +45,6 @@ export default (state = initialState, action) => {
     street,
   } = state
 
-  const handleNextToActCounter = (currentPlayer) => {
-    const _nextToActCounter = nextToActCounter
-    if (players[_nextToActCounter] && players[_nextToActCounter].name) {
-      __DEBUG__(`players[_nextToActCounter].name: ${players[_nextToActCounter].name}`)
-    }
-    if (currentPlayer && currentPlayer.name) {
-      __DEBUG__(`currentPlayer.name: ${currentPlayer.name}`)
-    }
-    if (handHistory.length < 1) {
-      __DEBUG__('handHistory.length < 1')
-      return 0
-    }
-
-    // If the counter can't count up further, we would ideally want to reset it to 0
-    if (_nextToActCounter >= TOTAL_PLAYERS - 1) {
-      // If player in index 0 is still in the hand, we can reset the counter and call it a day
-      if (!players[0].hasFolded) {
-        __DEBUG__(`Index 0 is still in the hand: ${players[0].name}`)
-        return 0
-      }
-      // Else if player at index 0 has folded, we have to check for another player
-      else {
-        const nextIdealPlayer = find(players, (player) => !player.hasFolded && !player.hasActedThisTurn)
-        console.log('// Else if player in index 0 has folded, we have to check for the next one')
-        console.log(nextIdealPlayer)
-        return nextIdealPlayer.index
-      }
-    }
-
-    // The counter can count up further
-    else {
-      let nextIdealPlayer = undefined
-      // Ideal player fullfills the following: hasn't folded, hasn't acted this turn, hasn't VP$IP
-      __DEBUG__(`// Ideal player fullfills the following: hasn't folded, hasn't acted this turn, hasn't VP$IP`)
-      nextIdealPlayer = find(players, (player) => !player.hasFolded && !player.hasActedThisTurn && !player.chipsInvested)
-      if (nextIdealPlayer) {
-        __DEBUG__(`Found ${nextIdealPlayer.name}`)
-        return nextIdealPlayer.index
-      } else {
-        // We didn't find anyone, narrowing search to players who haven't folded or acted this turn, and didn't act last. Searching from currentPlayer's index.
-        __DEBUG__(`// We didnt find anyone, narrowing search to players who havent folded or acted this turn, and didn't act last. Searching from currentPlayer's index.`)
-        nextIdealPlayer = find(players, (player) => !player.hasFolded && !player.hasActedThisTurn && player !== currentPlayer)
-        if (nextIdealPlayer) {
-          __DEBUG__(`// Found ${nextIdealPlayer.name}`)
-          return nextIdealPlayer.index
-        } else {
-          // We didn't find anyone, narrowing search to players who haven't folded this turn and didn't act last. Searching from currentPlayer's index.
-           __DEBUG__(`// We didn't find anyone, narrowing search to players who haven't folded this turn and didn't act last. Searching from currentPlayer's index`)
-          nextIdealPlayer = find(players, (player) => !player.hasFolded && player !== currentPlayer, currentPlayer.index)
-          if (nextIdealPlayer) {
-            __DEBUG__(`// Found ${nextIdealPlayer.name}`)
-            return nextIdealPlayer.index
-          } else {
-            __DEBUG__(`// We didn't find anyone, narrowing search to players who haven't folded this turn and didn't act last.`)
-            nextIdealPlayer = find(players, (player) => !player.hasFolded)
-            return currentPlayer.index
-          }
-        }
-      }
-    }
-  }
-
   const nextPlayerToAct = players[nextToActCounter]
 
   switch (action.type) {
@@ -126,7 +61,7 @@ export default (state = initialState, action) => {
         deck: generateShuffledDeck(),
         handHistory: newHandHistory,
         handWinners: null,
-        nextToActCounter: handleNextToActCounter(),
+        nextToActCounter: nextToActCounter + 1,
         pot: 0,
         showdown: false,
         street: 0,
@@ -173,7 +108,7 @@ export default (state = initialState, action) => {
         ...dealCards(deck, players, street, communityCards),
         street: nextStreet,
         pot: _pot,
-        nextToActCounter: handleNextToActCounter(),
+        nextToActCounter: nextToActCounter + 1,
         players,
       }
     }
@@ -234,7 +169,7 @@ export default (state = initialState, action) => {
         __DEBUG__(`${currentPlayer.name} bets a valid amount :)`)
         return {
           ...state,
-          nextToActCounter: handleNextToActCounter(),
+          nextToActCounter: nextToActCounter + 1,
           highestCurrentBet: chipsBetByPlayer
         }
       }
@@ -261,7 +196,7 @@ export default (state = initialState, action) => {
       __DEBUG__(`${currentPlayer.name} calls ${chipsBetByPlayer}`)
       return {
         ...state,
-        nextToActCounter: handleNextToActCounter(),
+        nextToActCounter: nextToActCounter + 1,
       }
     }
 
@@ -271,7 +206,7 @@ export default (state = initialState, action) => {
       __DEBUG__(`${currentPlayer.name} checks. HasActedThisTurn set to ${currentPlayer.hasActedThisTurn}`)
       return {
         ...state,
-        nextToActCounter: handleNextToActCounter(),
+        nextToActCounter: nextToActCounter + 1,
       }
     }
 
@@ -288,7 +223,7 @@ export default (state = initialState, action) => {
         __DEBUG__(`${currentPlayer.name} folds. HasFolded set to ${currentPlayer.hasFolded}. HasActedThisTurn set to ${currentPlayer.hasActedThisTurn}`)
         return {
           ...state,
-          nextToActCounter: handleNextToActCounter(),
+          nextToActCounter: nextToActCounter + 1,
         }
       }
 
@@ -299,4 +234,4 @@ export default (state = initialState, action) => {
     default:
       return state
   }
-}
+}*/
