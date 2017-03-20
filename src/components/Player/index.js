@@ -43,7 +43,8 @@ class Player extends PureComponent {
       onPlayerClicksCall,
       onPlayerClicksCheck,
       onPlayerClicksFold,
-      playerPot,
+      chipsInvested,
+      blindsPaid,
       visibleCards,
       highestCurrentBet,
      } = this.props
@@ -75,7 +76,7 @@ class Player extends PureComponent {
             ))}
           </div>
         )}
-      <div className="Player-playerPot">Player pot debugger: <strong>{playerPot}</strong></div>
+      <div className="Player-chipsInvested">Player pot debugger: <strong>{chipsInvested + blindsPaid}</strong></div>
       <div className="Player-debugger">{hasFolded && 'Player has folded'}</div>
       <div className="Player-actionButtons">
         <button
@@ -86,7 +87,7 @@ class Player extends PureComponent {
         <button
           disabled={!isNextToAct}
           onClick={onPlayerClicksCall}>
-            Call {highestCurrentBet - playerPot > 0 ? highestCurrentBet - playerPot : 0}
+            Call {highestCurrentBet - chipsInvested > 0 ? highestCurrentBet - chipsInvested : 0}
         </button>
         <button
           disabled={!isNextToAct}

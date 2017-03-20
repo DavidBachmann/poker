@@ -23,12 +23,12 @@ export class Board extends PureComponent {
   }
 
   calculatePositions() {
-    const { nextPlayerIndexToAct, players } = this.props
+    const { nextToActCounter, players } = this.props
     const totalPlayers = players.length
     this.setState(() => ({
-      bb: (nextPlayerIndexToAct + totalPlayers - 1) % totalPlayers,
-      sb: (nextPlayerIndexToAct + totalPlayers - 2) % totalPlayers,
-      dealer: (nextPlayerIndexToAct + totalPlayers - 3) % totalPlayers,
+      bb: (nextToActCounter + totalPlayers - 1) % totalPlayers,
+      sb: (nextToActCounter + totalPlayers - 2) % totalPlayers,
+      dealer: (nextToActCounter + totalPlayers - 3) % totalPlayers,
     }))
   }
 
@@ -54,8 +54,7 @@ export class Board extends PureComponent {
       communityCards,
       dealerMessage,
       handWinners,
-      nextPlayerIndexToAct,
-      playerPots,
+      nextToActCounter,
       players,
       pot,
       showdown,
@@ -87,22 +86,23 @@ export class Board extends PureComponent {
           const isDealer = index === dealer
           const isSB = index === sb
           const isBB = index === bb
-
           return (
             <Player
+              blindsPaid={player.blindsPaid}
               cards={player.cards && player.cards}
               chips={player.chips}
               id={player.id}
               isBB={isBB}
-              playerPot={playerPots[index]}
+              chipsInvested={player.chipsInvested}
               isDealer={isDealer}
               isLoser={this.cachedWinners.length > 0 && !isWinner}
               isSB={isSB}
               isWinner={isWinner}
               hasFolded={player.cards.length === 0}
+              hasActedThisTurn={player.hasActedThisTurn}
               key={player.id}
               name={player && player.name}
-              isNextToAct={nextPlayerIndexToAct === index}
+              isNextToAct={nextToActCounter === index}
               position={index}
               visibleCards={showdown ? true : false}
               {...this.props}
@@ -117,7 +117,7 @@ export class Board extends PureComponent {
           />
         </div>
         <p className="Board-potInfo">
-          Pot: <strong>${pot} (${playerPots.reduce((acc, value) => acc + value, 0)})</strong>
+          Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsInvested + player.blindsPaid + acc, 0)}</strong>)
         </p>
         {handWinners && (
           <div className="Board-winnerInfo">
