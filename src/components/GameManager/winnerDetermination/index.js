@@ -1,11 +1,10 @@
 import { Hand } from 'pokersolver'
 import { concat, valuesIn, flatten } from 'lodash'
-import { stripSpaces } from '../'
-import { formatHand } from '../formatHand'
+import { stripSpaces } from '../../../utils'
+import { formatHand } from '../../../utils/formatHand'
 
 const determineWinner = (players, communityCards) => {
   let winners = []
-  debugger
 
   /*
     Note: Format Hand means taking an array with with objects that look like:
@@ -18,7 +17,7 @@ const determineWinner = (players, communityCards) => {
   const formattedCommunityCards = formatHand(flatten(valuesIn(communityCards)))
 
   players.forEach((player) => {
-      player.hand = concat(formatHand(player.cards), formattedCommunityCards)
+      player.hand = concat(formatHand(player.holeCards), formattedCommunityCards)
   })
 
   const formattedPlayerHandsSolved = players.map((player) => {

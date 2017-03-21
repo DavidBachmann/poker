@@ -6,13 +6,11 @@ import './styles.css'
 
 class Player extends Component {
   state = {
-    value: 0,
+    betValue: 0,
   }
 
   componentDidMount() {
-    this.setState(() => ({
-      betValue: this.props.pot * 2
-    }))
+
   }
 
   componentWillReceiveProps() {
@@ -30,17 +28,19 @@ class Player extends Component {
 
   render() {
     const {
-      holeCards,
-      name,
-      index,
+      canAct,
       chips,
+      chipsCurrentlyInvested,
+      hasFolded,
+      holeCards,
+      index,
       isLoser,
       isNextToAct,
       isWinner,
-      canAct,
-      hasFolded,
-      chipsCurrentlyInvested,
-      positions
+      name,
+      showCards,
+      positions,
+      betHandler,
      } = this.props
 
     const isButton = positions.button === index
@@ -67,14 +67,14 @@ class Player extends Component {
           <div className="Player-avatar"></div>
           <div className="Player-details">
             <p className="Player-name">{name}</p>
-            <p className="Player-chipCount">${round(chips, 2)}</p>
+            <p className="Player-chipCount">${chips}</p>
           </div>
         </div>
-        {holeCards && !isLoser && (
+        {holeCards && (
           <div className="Player-cards">
             {holeCards.map((card, i) => (
               <Card
-                visible={false}
+                visible={showCards}
                 suit={card.suit}
                 rank={card.rank}
                 key={i}
@@ -83,10 +83,11 @@ class Player extends Component {
           </div>
         )}
         <div className="Player-chipsInvested">
-          {chipsCurrentlyInvested}
+          Invested: {chipsCurrentlyInvested}
         </div>
       {/* Debug */}
         <div className="Player-debugger">
+          Position:{' '}
           {isButton && 'button'}
           {isSB && 'sb'}
           {isBB && 'bb'}
@@ -102,7 +103,7 @@ class Player extends Component {
       <div className="Player-actionButtons">
         <button
           disabled={!canAct}
-          onClick={() => {}}>
+          onClick={() => betHandler(this.state.betValue)}>
             Bet
         </button>
         <button
@@ -124,7 +125,7 @@ class Player extends Component {
           disabled={!canAct}
           type="number"
           value={this.state.value}
-          onChange={this.handleInput}/>
+          onChange={this.handleInput} />
       </div>
       </div>
     )

@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import Player from '../Player'
 import Community from '../Community'
 import './styles.css'
 
-class Board extends PureComponent {
+class Board extends Component {
 
   cachedWinners = []
 
@@ -16,29 +16,23 @@ class Board extends PureComponent {
     const { players, nextPlayerToAct } = this.props
     const totalPlayers = players.length
 
-    this.setState({
-      positions: {
-        cutoff: (nextPlayerToAct + totalPlayers - 1) % totalPlayers,
-        hijack: (nextPlayerToAct + totalPlayers - 2) % totalPlayers,
-        mp1: (nextPlayerToAct + totalPlayers - 3) % totalPlayers,
-        mp: (nextPlayerToAct + totalPlayers - 4) % totalPlayers,
-        utg1: (nextPlayerToAct + totalPlayers - 5) % totalPlayers,
-        utg: (nextPlayerToAct + totalPlayers - 6) % totalPlayers,
-        bb: (nextPlayerToAct + totalPlayers - 7) % totalPlayers,
-        sb: (nextPlayerToAct + totalPlayers - 8) % totalPlayers,
-        button: (nextPlayerToAct + totalPlayers - 9) % totalPlayers,
+    this.setState((state) => {
+      return {
+        positions: {
+          bb: (nextPlayerToAct + totalPlayers - 1) % totalPlayers,
+          sb: (nextPlayerToAct + totalPlayers - 2) % totalPlayers,
+          button: (nextPlayerToAct + totalPlayers - 3) % totalPlayers,
+        }
       }
     })
   }
 
-  componentDidMount() {
-    this.calculatePositions()
-  }
-
   componentWillReceiveProps(props) {
+    this.calculatePositions()
+
     const { handWinners } = props
 
-    if (handWinners == null) {
+    if (handWinners == null || handWinners.length === 0) {
       this.cachedWinners = []
       this.setState({
         winnersHaveBeenDetermined: false
@@ -58,8 +52,14 @@ class Board extends PureComponent {
       handWinners,
       players,
       pot,
-      street,
-      nextPlayerToAct
+      currentStreet,
+      nextPlayerToAct,
+
+      // Passed down functions:
+      handleDealing,
+      handlePostBlinds,
+      handlePlayerBets,
+      handleNextPlayerToAct,
     } = this.props
 
     const { winnersHaveBeenDetermined, positions } = this.state
@@ -93,6 +93,9 @@ class Board extends PureComponent {
               positions={positions}
               canAct={nextPlayerToAct === index}
               chipsCurrentlyInvested={player.chipsCurrentlyInvested}
+              betHandler={handlePlayerBets}
+              showCards={winnersHaveBeenDetermined}
+              isWinner={this.cachedWinners && this.cachedWinners.includes(player.id)}
             />
           )
         })}
@@ -100,13 +103,13 @@ class Board extends PureComponent {
         <div className="Board-communityCards">
           <Community
             communityCards={communityCards}
-            street={street}
+            street={currentStreet}
           />
         </div>
         <p className="Board-potInfo">
           Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}</strong>)
         </p>
-        {handWinners && (
+        {handWinners && handWinners.length > 0 && (
           <div className="Board-winnerInfo">
             {handWinners.length === 1 && handWinners.map((winner) => (
               <span key={winner.id}>
@@ -128,6 +131,11 @@ class Board extends PureComponent {
             <strong>{dealerMessage}</strong>
           </p>
         )}
+        <div className="DEBUG" style={{position: "absolute", left: -150, bottom: 0, maxWidth: 200}}>
+          <button onClick={() => handleDealing()}>Deal</button>
+          <button onClick={() => handleNextPlayerToAct()}>Next player</button>
+          <button onClick={() => handlePostBlinds()}>Post blinds</button>
+        </div>
       </div>
     )
   }
