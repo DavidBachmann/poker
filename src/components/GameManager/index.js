@@ -73,6 +73,9 @@ class GameManager extends Component {
     })
   }
 
+  /**
+   * Handles winner determination and paying out chips in the pot
+   */
   _handleDetermineAndPayWinners = () => {
     this.setState((state) => {
       const { players, communityCards, pot  } = state
@@ -83,7 +86,7 @@ class GameManager extends Component {
         const winnerObj = find(players, (player) => player.id === winner.id)
         const currentWinnerChips = winnerObj.chips
         winnerObj.chips = round(currentWinnerChips + amountWon)
-        console.log(`${winnerObj.name } wins ${amountWon} and has ${winnerObj.chips}`)
+        __DEBUG__(`${winnerObj.name } wins ${amountWon} and has ${winnerObj.chips}`)
         return winnerObj
       })
 
@@ -95,6 +98,9 @@ class GameManager extends Component {
     })
   }
 
+  /**
+   * Handles resetting state to prepare for a new hand
+   */
   handleResetting = () => {
     this.handleNextPlayerToAct()
     this.setState((state) => {
@@ -254,6 +260,9 @@ class GameManager extends Component {
     })
   }
 
+  /**
+   * Handles player's folding
+   */
   handlePlayerFolds = () => {
     this.setState((state) => {
       const { players, nextPlayerToAct } = state

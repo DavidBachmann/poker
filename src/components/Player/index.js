@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { round } from 'lodash'
 import Card from '../Card'
 import './styles.css'
 
