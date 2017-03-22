@@ -184,8 +184,8 @@ class GameManager extends Component {
     this.setState((state) => {
       const { levels, currentLevel, nextPlayerToAct, players } = state
       const { TOTAL_PLAYERS } = GameManager
-      const smallBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 8) % TOTAL_PLAYERS
-      const bigBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 7) % TOTAL_PLAYERS
+      const bigBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 1) % TOTAL_PLAYERS
+      const smallBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 2) % TOTAL_PLAYERS
       const { smallBlind, bigBlind } = levels[currentLevel]
 
       const amountTakenFromSmallBlindPlayer = getAmountTakenFromBlindedPlayers(players, smallBlindPosition, smallBlind)
