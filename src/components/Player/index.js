@@ -87,7 +87,6 @@ class Player extends Component {
         <div className="Player-chipsInvested">
           Invested: {chipsCurrentlyInvested}
         </div>
-      {/* Debug */}
         <div className="Player-debugger">
           Position:{' '}
           {isButton && 'button'}
@@ -100,9 +99,7 @@ class Player extends Component {
           {isHijack && 'hijack'}
           {isCutOff && 'cutoff'}
           {hasFolded && 'Player has folded'}
-          {console.log(holeCards)}
         </div>
-      {/* /Debug */}
       <div className="Player-actionButtons">
         <button
           disabled={!canAct || !holeCards.length}

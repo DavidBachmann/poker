@@ -229,10 +229,13 @@ class GameManager extends Component {
       // else we'll honor the requested amount.
       const amountOfChipsToBet = amountRequested <= currentPlayer.chips ? amountRequested : currentPlayer.chips
       // Check if the player is betting the mininum required
-      let TEMP_MIN_REQ = levels[currentLevel].bigBlind * 2
+      // By default that's 2xBB
+      const defaultMinAmount = levels[currentLevel].bigBlind * 2
+      // Unless someone has bet higher
+      const actualMinAmount = highestCurrentBet > defaultMinAmount ? highestCurrentBet : defaultMinAmount
 
       // The bet has to be higher than the mininum allowed
-      if (amountOfChipsToBet >= TEMP_MIN_REQ) {
+      if (amountOfChipsToBet >= actualMinAmount) {
         // Remove the amount requested from the player,
         currentPlayer.chips -= amountOfChipsToBet
         // and put into chipsCurrentlyInvested
@@ -246,7 +249,7 @@ class GameManager extends Component {
           highestCurrentBet: newHighestCurrentBet ? newHighestCurrentBet : highestCurrentBet
         }
       } else {
-        __DEBUG__(`${currentPlayer.name} bets illegal amount: ${amountOfChipsToBet}. Minimum bet is ${TEMP_MIN_REQ}`)
+        __DEBUG__(`${currentPlayer.name} bets illegal amount: ${amountRequested}. Minimum bet is ${actualMinAmount}`)
       }
     })
   }
