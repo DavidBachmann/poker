@@ -40,7 +40,9 @@ class Player extends Component {
       name,
       showCards,
       positions,
+      foldHandler,
       betHandler,
+      highestCurrentBet,
      } = this.props
 
     const isButton = positions.button === index
@@ -98,27 +100,28 @@ class Player extends Component {
           {isHijack && 'hijack'}
           {isCutOff && 'cutoff'}
           {hasFolded && 'Player has folded'}
+          {console.log(holeCards)}
         </div>
       {/* /Debug */}
       <div className="Player-actionButtons">
         <button
-          disabled={!canAct}
+          disabled={!canAct || !holeCards.length}
           onClick={() => betHandler(this.state.betValue)}>
             Bet
         </button>
         <button
-          disabled={!canAct}
-          onClick={() => {}}>
+          disabled={!canAct || !holeCards.length || highestCurrentBet === 0}
+          onClick={() => betHandler(highestCurrentBet)}>
             Call
         </button>
         <button
-          disabled={!canAct}
+          disabled={!canAct || !holeCards.length || highestCurrentBet === 0 || highestCurrentBet > chipsCurrentlyInvested}
           onClick={() => {}}>
             Check
         </button>
         <button
-          disabled={!canAct}
-          onClick={() => {}}>
+          disabled={!canAct || !holeCards.length || highestCurrentBet === 0}
+          onClick={() => foldHandler()}>
           Fold
         </button>
         <input

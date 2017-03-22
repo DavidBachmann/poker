@@ -22,6 +22,12 @@ class Board extends Component {
           bb: (nextPlayerToAct + totalPlayers - 1) % totalPlayers,
           sb: (nextPlayerToAct + totalPlayers - 2) % totalPlayers,
           button: (nextPlayerToAct + totalPlayers - 3) % totalPlayers,
+          cutoff: (nextPlayerToAct + totalPlayers - 4) % totalPlayers,
+          hijack: (nextPlayerToAct + totalPlayers - 5) % totalPlayers,
+          mp1: (nextPlayerToAct + totalPlayers - 6) % totalPlayers,
+          mp: (nextPlayerToAct + totalPlayers - 7) % totalPlayers,
+          utg1: (nextPlayerToAct + totalPlayers - 8) % totalPlayers,
+          utg: (nextPlayerToAct + totalPlayers - 9) % totalPlayers,
         }
       }
     })
@@ -54,11 +60,13 @@ class Board extends Component {
       pot,
       currentStreet,
       nextPlayerToAct,
+      highestCurrentBet,
 
       // Passed down functions:
       handleDealing,
       handlePostBlinds,
       handlePlayerBets,
+      handlePlayerFolds,
       handleNextPlayerToAct,
     } = this.props
 
@@ -85,17 +93,19 @@ class Board extends Component {
         {players && players.map((player, index) => {
           return (
             <Player
-              holeCards={player.holeCards}
+              key={player.id}
               name={player.name}
               chips={player.chips}
               index={index}
-              key={player.id}
-              positions={positions}
               canAct={nextPlayerToAct === index}
-              chipsCurrentlyInvested={player.chipsCurrentlyInvested}
-              betHandler={handlePlayerBets}
-              showCards={winnersHaveBeenDetermined}
               isWinner={this.cachedWinners && this.cachedWinners.includes(player.id)}
+              holeCards={player.holeCards}
+              positions={positions}
+              showCards={winnersHaveBeenDetermined}
+              betHandler={handlePlayerBets}
+              foldHandler={handlePlayerFolds}
+              highestCurrentBet={highestCurrentBet}
+              chipsCurrentlyInvested={player.chipsCurrentlyInvested}
             />
           )
         })}
