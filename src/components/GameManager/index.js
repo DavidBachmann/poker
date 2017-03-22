@@ -18,33 +18,34 @@ class GameManager extends Component {
   constructor() {
     super()
     this.state = {
+      pot: 0,
       deck: [],
-      players: this.players,
-      playersInTheHand: [],
-      handWinners: [],
       levels: this.levels,
-      nextPlayerToAct: 0,
+      players: this.players,
+      handWinners: [],
       currentLevel: 1,
       currentStreet: 0,
-      pot: 0,
+      nextPlayerToAct: 0,
+      playersInTheHand: [],
+      highestCurrentBet: 0,
       communityCards: {flop: {}, turn: {}, river: {}},
     }
   }
 
   ROBOT_DEALER_9000() {
-      this.counter = 0
-      setInterval(() => {
-        if (this.counter <= 3) {
-          this.handleDealing()
-          this.counter += 1
-        } else if (this.counter === 4) {
-          this._handleDetermineWinnersAndPayPlayers()
-          this.counter += 1
-        } else {
-          this.counter = 0
-          this.handleResetting()
-        }
-      }, 1000)
+    this.counter = 0
+    setInterval(() => {
+      if (this.counter <= 3) {
+        this.handleDealing()
+        this.counter += 1
+      } else if (this.counter === 4) {
+        this._handleDetermineAndPayWinners()
+        this.counter += 1
+      } else {
+        this.counter = 0
+        this.handleResetting()
+      }
+    }, 1000)
   }
 
   componentDidMount() {
@@ -72,7 +73,7 @@ class GameManager extends Component {
     })
   }
 
-  _handleDetermineWinnersAndPayPlayers = () => {
+  _handleDetermineAndPayWinners = () => {
     this.setState((state) => {
       const { players, communityCards, pot  } = state
       const winners = winnerDetermination(players, communityCards)
@@ -183,8 +184,8 @@ class GameManager extends Component {
     this.setState((state) => {
       const { levels, currentLevel, nextPlayerToAct, players } = state
       const { TOTAL_PLAYERS } = GameManager
-      const smallBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 8) % TOTAL_PLAYERS
-      const bigBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 7) % TOTAL_PLAYERS
+      const bigBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 1) % TOTAL_PLAYERS
+      const smallBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 2) % TOTAL_PLAYERS
       const { smallBlind, bigBlind } = levels[currentLevel]
 
       const amountTakenFromSmallBlindPlayer = getAmountTakenFromBlindedPlayers(players, smallBlindPosition, smallBlind)
@@ -215,38 +216,60 @@ class GameManager extends Component {
   }
 
   /**
-   * Handles player's betting (call, raise, push)
+   * Handles player's betting (bet, raise, push)
    */
   handlePlayerBets = (amountRequested) => {
+    let newHighestCurrentBet = null
+
     this.setState((state) => {
-      const { players, nextPlayerToAct, levels, currentLevel } = state
+      const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBet } = state
       const currentPlayer = players[nextPlayerToAct]
       // If the player is betting more than he can afford
       // we put him all in and bet his whole stack
       // else we'll honor the requested amount.
       const amountOfChipsToBet = amountRequested <= currentPlayer.chips ? amountRequested : currentPlayer.chips
       // Check if the player is betting the mininum required
-      let TEMP_MIN_REQ = levels[currentLevel].bigBlind * 2
+      // By default that's 2xBB
+      const defaultMinAmount = levels[currentLevel].bigBlind * 2
+      // Unless someone has bet higher
+      const actualMinAmount = highestCurrentBet > defaultMinAmount ? highestCurrentBet : defaultMinAmount
 
-      if (amountOfChipsToBet >= TEMP_MIN_REQ) {
+      // The bet has to be higher than the mininum allowed
+      if (amountOfChipsToBet >= actualMinAmount) {
         // Remove the amount requested from the player,
         currentPlayer.chips -= amountOfChipsToBet
         // and put into chipsCurrentlyInvested
         currentPlayer.chipsCurrentlyInvested += amountOfChipsToBet
-
+        if (amountOfChipsToBet > highestCurrentBet) {
+          newHighestCurrentBet = amountOfChipsToBet
+        }
         return {
           players,
-          nextPlayerToAct: this.handleNextPlayerToAct()
+          nextPlayerToAct: this.handleNextPlayerToAct(),
+          highestCurrentBet: newHighestCurrentBet ? newHighestCurrentBet : highestCurrentBet
         }
       } else {
-        __DEBUG__(`${currentPlayer.name} bets illegal amount: ${amountOfChipsToBet}. Minimum bet is ${TEMP_MIN_REQ}`)
+        __DEBUG__(`${currentPlayer.name} bets illegal amount: ${amountRequested}. Minimum bet is ${actualMinAmount}`)
+      }
+    })
+  }
+
+  handlePlayerFolds = () => {
+    this.setState((state) => {
+      const { players, nextPlayerToAct } = state
+      const currentPlayer = players[nextPlayerToAct]
+      currentPlayer.holeCards = []
+
+      return {
+        players,
+        nextPlayerToAct: this.handleNextPlayerToAct(),
       }
     })
   }
 
   render() {
     const { children } = this.props
-    const { deck, players, currentLevel, handWinners, currentStreet, communityCards, nextPlayerToAct, pot } = this.state
+    const { deck, players, currentLevel, handWinners, currentStreet, highestCurrentBet, communityCards, nextPlayerToAct, pot } = this.state
 
     return cloneElement(children, {
       pot,
@@ -257,9 +280,11 @@ class GameManager extends Component {
       currentStreet,
       communityCards,
       nextPlayerToAct,
+      highestCurrentBet,
       handleDealing: this.handleDealing,
       handlePostBlinds: this.handlePostBlinds,
       handlePlayerBets: this.handlePlayerBets,
+      handlePlayerFolds: this.handlePlayerFolds,
       handleNextPlayerToAct: this.handleNextPlayerToAct,
     })
 
