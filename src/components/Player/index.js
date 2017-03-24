@@ -42,6 +42,7 @@ class Player extends Component {
       foldHandler,
       betHandler,
       highestCurrentBet,
+      highestCurrentBettor,
      } = this.props
 
     const isButton = positions.button === index
@@ -53,6 +54,7 @@ class Player extends Component {
     const isMP1 = positions.mp1 === index
     const isHijack = positions.hijack === index
     const isCutOff = positions.cutoff === index
+    const isHighestBettor = highestCurrentBettor && highestCurrentBettor.index === index
 
     return (
       <div className={classNames(
@@ -107,7 +109,7 @@ class Player extends Component {
         </button>
         <button
           disabled={!canAct || !holeCards.length || highestCurrentBet === 0}
-          onClick={() => betHandler(highestCurrentBet)}>
+          onClick={() => betHandler(highestCurrentBet - chipsCurrentlyInvested)}>
             Call
         </button>
         <button
