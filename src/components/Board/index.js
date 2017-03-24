@@ -5,29 +5,27 @@ import './styles.css'
 
 class Board extends Component {
 
-  cachedWinners = []
-
   state = {
     winnersHaveBeenDetermined: false,
     positions: {},
   }
 
   calculatePositions = () => {
-    const { players, nextPlayerToAct } = this.props
+    const { players } = this.props
     const totalPlayers = players.length
 
     this.setState((state) => {
       return {
         positions: {
-          bb: (nextPlayerToAct + totalPlayers - 1) % totalPlayers,
-          sb: (nextPlayerToAct + totalPlayers - 2) % totalPlayers,
-          button: (nextPlayerToAct + totalPlayers - 3) % totalPlayers,
-          cutoff: (nextPlayerToAct + totalPlayers - 4) % totalPlayers,
-          hijack: (nextPlayerToAct + totalPlayers - 5) % totalPlayers,
-          mp1: (nextPlayerToAct + totalPlayers - 6) % totalPlayers,
-          mp: (nextPlayerToAct + totalPlayers - 7) % totalPlayers,
-          utg1: (nextPlayerToAct + totalPlayers - 8) % totalPlayers,
-          utg: (nextPlayerToAct + totalPlayers - 9) % totalPlayers,
+          bb: (totalPlayers - 1) % totalPlayers,
+          sb: (totalPlayers - 2) % totalPlayers,
+          button: (totalPlayers - 3) % totalPlayers,
+          cutoff: (totalPlayers - 4) % totalPlayers,
+          hijack: (totalPlayers - 5) % totalPlayers,
+          mp1: (totalPlayers - 6) % totalPlayers,
+          mp: (totalPlayers - 7) % totalPlayers,
+          utg1: (totalPlayers - 8) % totalPlayers,
+          utg: (totalPlayers - 9) % totalPlayers,
         }
       }
     })
@@ -37,9 +35,8 @@ class Board extends Component {
     this.calculatePositions()
 
     const { handWinners } = props
-
-    if (handWinners == null || handWinners.length === 0) {
-      this.cachedWinners = []
+    console.log(handWinners)
+    if (handWinners == null || handWinners.length === 0 || !Array.isArray(handWinners)) {
       this.setState({
         winnersHaveBeenDetermined: false
       })
@@ -73,22 +70,6 @@ class Board extends Component {
 
     const { winnersHaveBeenDetermined, positions } = this.state
 
-    const getListOfWinnerNames = () => {
-      if (!handWinners) {
-        return
-      } else if (handWinners.length === 0) {
-        return null
-      } else {
-        handWinners.map((winner) => {
-          return this.cachedWinners.push(winner.id)
-        })
-      }
-    }
-
-    if (winnersHaveBeenDetermined) {
-      getListOfWinnerNames(handWinners)
-    }
-
     return (
       <div className="Board">
         {players && players.map((player, index) => {
@@ -121,7 +102,7 @@ class Board extends Component {
         <p className="Board-potInfo">
           Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}</strong>)
         </p>
-        {handWinners && handWinners.length > 0 && (
+        {/* {handWinners && handWinners.length > 0 && (
           <div className="Board-winnerInfo">
             {handWinners.length === 1 && handWinners.map((winner) => (
               <span key={winner.id}>
@@ -137,7 +118,7 @@ class Board extends Component {
               </div>
             )}
           </div>
-        )}
+        )} */}
         {dealerMessage && (
           <p className="Board-dealerMessage">
             <strong>{dealerMessage}</strong>

@@ -8,7 +8,7 @@ import winnerDetermination from './winnerDetermination'
 
 class GameManager extends Component {
   static STARTING_STACK = 1500
-  static TOTAL_PLAYERS = 3
+  static TOTAL_PLAYERS = 9
   static MAX_HANDS_PER_LEVEL = 25
   static __ROBOT_DEALER_ACTIVATE__ = false
 
@@ -26,11 +26,27 @@ class GameManager extends Component {
       currentLevel: 1,
       currentStreet: 0,
       nextPlayerToAct: 0,
-      playersInTheHand: [],
+      playersInTheHand: this.players,
       highestCurrentBet: 0,
-      highestCurrentBettor: {},
+      highestCurrentBettor: null,
       communityCards: {flop: {}, turn: {}, river: {}},
     }
+  }
+
+  componentDidUpdate() {
+    const { playersInTheHand } = this.state
+
+    // Update the list of players that are still in the hand
+    const alivePlayers = this._handleCheckingAlivePlayers()
+    if (alivePlayers.length !== playersInTheHand.length) {
+      this.setState((state) => {
+        return {
+          playersInTheHand: alivePlayers
+        }
+      })
+    }
+
+
   }
 
   ROBOT_DEALER_9000() {
@@ -75,20 +91,29 @@ class GameManager extends Component {
   }
 
   /**
+   * Handles collecting player pots into the pot
+   */
+  _handleCollectingPlayerPots = (winners) => {
+    this.setState((state) => {
+      const { players, pot } = state
+      const amountsFromPlayerPots = players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)
+      return {
+        pot: amountsFromPlayerPots + pot
+      }
+    })
+  }
+  /**
    * Handles winner determination and paying out chips in the pot
    */
-  _handleDetermineAndPayWinners = (winnerWithoutShowdown) => {
+  _handleDetermineAndPayWinners = (winner) => {
     // If someone won without showdown we skip the winner check
-    if (winnerWithoutShowdown) {
-      console.log(winnerWithoutShowdown)
+    if (winner) {
+      this._handleCollectingPlayerPots(winner)
       this.setState((state) => {
-        const { players, pot } = state
-        const winnerObj = find(players, (player) => player.id === winnerWithoutShowdown.id)
-        const winnerChips = winnerObj.chips
-        winnerObj.chips = round(winnerChips + pot)
-
+        const { players, handWinners, pot } = state
+        winner.chips += pot
         return {
-          handWinners: [...winnerWithoutShowdown],
+          handWinners: handWinners.concat(winner),
           players,
         }
       })
@@ -120,13 +145,24 @@ class GameManager extends Component {
    */
   _handleResetting = () => {
     this.setState((state) => {
-
+      const { players } = state
+      const resetPlayer = (player) => {
+        player.chipsCurrentlyInvested = 0
+        player.holeCards = []
+        player.hand = []
+        player.hasFolded = false
+      }
+      players.map((player) => resetPlayer(player))
       return {
         communityCards: {flop: {}, turn: {}, river: {}},
+        currentStreet: 0,
         handWinners: [],
+        highestCurrentBet: 0,
+        highestCurrentBettor: null,
+        playersInTheHand: this.players,
+        players,
       }
     })
-    this.handleNextPlayerToAct()
   }
 
   /**
@@ -135,14 +171,9 @@ class GameManager extends Component {
   handleDealing = () => {
     const { deck, communityCards, currentStreet } = this.state
 
-    // Get a list of players that haven't folded
-    this.setState((state) => {
-      const { players } = state
-
-    })
-
     // Preflop
     if (currentStreet === 0) {
+      this.handleNextPlayerToAct()
       this._dealPlayerCards()
       this.setState({
         currentStreet: currentStreet + 1
@@ -187,13 +218,11 @@ class GameManager extends Component {
 
   _handleCheckingAlivePlayers = () => {
     const { players } = this.state
-    let alivePlayers = players.filter(player => !player.hasFolded)
+    if (!players) {
+      return
+    }
 
-    this.setState((state) => {
-      return {
-        playersInTheHand: alivePlayers
-      }
-    })
+    let alivePlayers = players.filter(player => !player.hasFolded)
 
     return alivePlayers
   }
@@ -201,17 +230,21 @@ class GameManager extends Component {
   helperNextPlayerToAct = (index) => {
     const { players, highestCurrentBettor } = this.state
     if (!players) {
+      __DEBUG__('No players so we returned false')
       return
     }
     // Checking if player[index] has folded
     if (players[index] && players[index].hasFolded) {
+      __DEBUG__('Player has folded so we returned false')
       return false
       // checking if player[index] is the current highest bettor.
     } else if (players[index] === highestCurrentBettor) {
+      __DEBUG__('player[index] is the current highest bettor so we returned false')
       return false
       // We found nothing that indicates that player[index]
       // shouldn't act so we proceed with the game.
     } else {
+      __DEBUG__(`We found nothing that indicates that players[${[index]}] (${players[index].name}) shouldn't act so we returned true.`)
       return true
     }
   }
@@ -221,12 +254,12 @@ class GameManager extends Component {
    * Handle switching to next player
    */
   handleNextPlayerToAct = (index) => {
-    const { nextPlayerToAct } = this.state
+    const { nextPlayerToAct, players } = this.state
     // First check if there's anyone left to act
     const whosLeft = this._handleCheckingAlivePlayers()
     if (whosLeft.length === 1) {
-      console.log(whosLeft[0])
-      console.log(whosLeft[0].name + ' won')
+      this._handleDetermineAndPayWinners(whosLeft[0])
+      this._handleResetting()
       return
     }
     // The basics — If we are at the end, next should be 0
@@ -248,7 +281,13 @@ class GameManager extends Component {
         return indexToCheck
       } else {
         __DEBUG__('Hit else in lower check')
-        this.handleNextPlayerToAct(indexToCheck+1)
+        if (indexToCheck + 1 !== GameManager.TOTAL_PLAYERS - 1) {
+          __DEBUG__(`indexToCheck+1 is ${indexToCheck+1} which is ${players[indexToCheck+1].name}`)
+          this.handleNextPlayerToAct(indexToCheck+1)
+        } else {
+          __DEBUG__(`I think we should deal now`)
+          this.handleDealing()
+        }
       }
     }
   }
@@ -298,10 +337,11 @@ class GameManager extends Component {
    */
   handlePlayerBets = (amountRequested) => {
     let newHighestCurrentBet = null
-
+    let newHighestCurrentBettor = null
     this.setState((state) => {
-      const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBet } = state
+      const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBet, highestCurrentBettor } = state
       const currentPlayer = players[nextPlayerToAct]
+      const chipsCurrentlyInvested = currentPlayer.chipsCurrentlyInvested
       // If the player is betting more than he can afford
       // we put him all in and bet his whole stack
       // else we'll honor the requested amount.
@@ -310,7 +350,7 @@ class GameManager extends Component {
       // By default that's 2xBB
       const defaultMinAmount = levels[currentLevel].bigBlind * 2
       // Unless someone has bet higher
-      const actualMinAmount = highestCurrentBet > defaultMinAmount ? highestCurrentBet : defaultMinAmount
+      const actualMinAmount = highestCurrentBet > defaultMinAmount ? (highestCurrentBet - chipsCurrentlyInvested) : defaultMinAmount
 
       // The bet has to be higher than the mininum allowed
       if (amountOfChipsToBet >= actualMinAmount) {
@@ -320,12 +360,16 @@ class GameManager extends Component {
         currentPlayer.chipsCurrentlyInvested += amountOfChipsToBet
         if (amountOfChipsToBet > highestCurrentBet) {
           newHighestCurrentBet = amountOfChipsToBet
+          newHighestCurrentBettor = currentPlayer
+          __DEBUG__(`Raise! New highest current bettor is ${newHighestCurrentBettor.name}`)
+        } else {
+          __DEBUG__('No new highest bettor yet.')
         }
         return {
           players,
           nextPlayerToAct: this.handleNextPlayerToAct(),
           highestCurrentBet: newHighestCurrentBet ? newHighestCurrentBet : highestCurrentBet,
-          highestCurrentBettor: currentPlayer,
+          highestCurrentBettor: newHighestCurrentBettor ? newHighestCurrentBettor : highestCurrentBettor,
         }
       } else {
         __DEBUG__(`${currentPlayer.name} bets illegal amount: ${amountRequested}. Minimum bet is ${actualMinAmount}`)
