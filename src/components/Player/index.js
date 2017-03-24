@@ -42,17 +42,19 @@ class Player extends Component {
       foldHandler,
       betHandler,
       highestCurrentBet,
+      highestCurrentBettor,
      } = this.props
 
     const isButton = positions.button === index
     const isSB = positions.sb === index
     const isBB = positions.bb === index
-    const isUTG = positions.utg === index
-    const isUTG1 = positions.utg1 === index
-    const isMP = positions.mp === index
-    const isMP1 = positions.mp1 === index
-    const isHijack = positions.hijack === index
-    const isCutOff = positions.cutoff === index
+    // const isUTG = positions.utg === index
+    // const isUTG1 = positions.utg1 === index
+    // const isMP = positions.mp === index
+    // const isMP1 = positions.mp1 === index
+    // const isHijack = positions.hijack === index
+    // const isCutOff = positions.cutoff === index
+    const isHighestBettor = highestCurrentBettor.index === index
 
     return (
       <div className={classNames(
@@ -91,12 +93,7 @@ class Player extends Component {
           {isButton && 'button'}
           {isSB && 'sb'}
           {isBB && 'bb'}
-          {isUTG && 'utg'}
-          {isUTG1 && 'utg1'}
-          {isMP && 'mp'}
-          {isMP1 && 'mp1'}
-          {isHijack && 'hijack'}
-          {isCutOff && 'cutoff'}
+
           {hasFolded && 'Player has folded'}
         </div>
       <div className="Player-actionButtons">

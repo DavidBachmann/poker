@@ -61,6 +61,7 @@ class Board extends Component {
       currentStreet,
       nextPlayerToAct,
       highestCurrentBet,
+      highestCurrentBettor,
 
       // Passed down functions:
       handleDealing,
@@ -105,6 +106,7 @@ class Board extends Component {
               betHandler={handlePlayerBets}
               foldHandler={handlePlayerFolds}
               highestCurrentBet={highestCurrentBet}
+              highestCurrentBettor={highestCurrentBettor}
               chipsCurrentlyInvested={player.chipsCurrentlyInvested}
             />
           )
