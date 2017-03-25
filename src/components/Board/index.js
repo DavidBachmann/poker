@@ -35,7 +35,7 @@ class Board extends Component {
     this.calculatePositions()
 
     const { handWinners } = props
-    console.log(handWinners)
+
     if (handWinners == null || handWinners.length === 0 || !Array.isArray(handWinners)) {
       this.setState({
         winnersHaveBeenDetermined: false
@@ -65,7 +65,6 @@ class Board extends Component {
       handlePostBlinds,
       handlePlayerBets,
       handlePlayerFolds,
-      handleNextPlayerToAct,
     } = this.props
 
     const { winnersHaveBeenDetermined, positions } = this.state
@@ -126,7 +125,6 @@ class Board extends Component {
         )}
         <div className="DEBUG" style={{position: "absolute", left: -150, bottom: 0, maxWidth: 200}}>
           <button onClick={() => handleDealing()}>Deal</button>
-          <button onClick={() => handleNextPlayerToAct()}>Next player</button>
           <button onClick={() => handlePostBlinds()}>Post blinds</button>
         </div>
       </div>

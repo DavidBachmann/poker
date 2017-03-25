@@ -103,22 +103,22 @@ class Player extends Component {
         </div>
       <div className="Player-actionButtons">
         <button
-          disabled={!canAct || !holeCards.length}
+          disabled={!canAct}
           onClick={() => betHandler(this.state.betValue)}>
             Bet
         </button>
         <button
-          disabled={!canAct || !holeCards.length || highestCurrentBet === 0}
+          disabled={!canAct}
           onClick={() => betHandler(highestCurrentBet - chipsCurrentlyInvested)}>
             Call
         </button>
         <button
-          disabled={!canAct || !holeCards.length || highestCurrentBet === 0 || highestCurrentBet > chipsCurrentlyInvested}
+          disabled={!canAct}
           onClick={() => {}}>
             Check
         </button>
         <button
-          disabled={!canAct || !holeCards.length || highestCurrentBet === 0}
+          disabled={!canAct}
           onClick={() => foldHandler()}>
           Fold
         </button>
