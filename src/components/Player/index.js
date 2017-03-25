@@ -8,17 +8,6 @@ class Player extends Component {
     betValue: 0,
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillReceiveProps() {
-    // Reset input field after any action
-    this.setState({
-      betValue: 0
-    })
-  }
-
   handleInput = (event) => {
     this.setState({
       betValue: Number(event.target.value)
@@ -44,6 +33,8 @@ class Player extends Component {
       highestCurrentBet,
       highestCurrentBettor,
      } = this.props
+
+     const { betValue } = this.state
 
     const isButton = positions.button === index
     const isSB = positions.sb === index
@@ -98,7 +89,7 @@ class Player extends Component {
           {isMP && 'mp'}
           {isMP1 && 'mp1'}
           {isHijack && 'hijack'}
-          {isCutOff && 'cutoff'}
+          {isCutOff && 'cutoff'} 
           {hasFolded && 'Player has folded'}
         </div>
       <div className="Player-actionButtons">
@@ -125,7 +116,8 @@ class Player extends Component {
         <input
           disabled={!canAct}
           type="number"
-          value={this.state.value}
+          value={canAct ? betValue : 0}
+          onSubmit={this.handleSubmit}
           onChange={this.handleInput} />
       </div>
       </div>

@@ -218,14 +218,11 @@ class GameManager extends Component {
 
   checkIfPlayerAtIndexCanAct = (index, currentPlayerIndex, highestCurrentBettor) => {
     const { players } = this.state
-    debugger
     if (index === GameManager.TOTAL_PLAYERS - 1) {
       index = 0
     }
-    // First check if there's anyone left to act
-    const playersInTheHand = this.handleCheckingAlivePlayers()
 
-    if (playersInTheHand[index] === players[currentPlayerIndex] || playersInTheHand[index].hasFolded || playersInTheHand[index] === highestCurrentBettor) {
+    if (players[index] === players[currentPlayerIndex] || players[index].hasFolded || players[index] === highestCurrentBettor) {
       // Can't act
       return false
     } else {
@@ -246,7 +243,7 @@ class GameManager extends Component {
     } else {
       const { players } = this.state
       const playerToReturn = players.find(
-        (element, index, array) => this.checkIfPlayerAtIndexCanAct(element.index, currentPlayerIndex, highestCurrentBettor)
+        (player) => this.checkIfPlayerAtIndexCanAct(player.index, currentPlayerIndex, highestCurrentBettor)
       )
 
       return playerToReturn.index
@@ -304,6 +301,7 @@ class GameManager extends Component {
     this.setState((state) => {
       const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBet, highestCurrentBettor } = state
       const currentPlayer = players[nextPlayerToAct]
+
       const chipsCurrentlyInvested = currentPlayer.chipsCurrentlyInvested
       // If the player is betting more than he can afford
       // we put him all in and bet his whole stack
@@ -320,7 +318,7 @@ class GameManager extends Component {
       if (amountOfChipsToBet >= actualMinAmount) {
         // Remove the amount requested from the player,
         currentPlayer.chips -= amountOfChipsToBet
-        // and put into chipsCurrentlyInvested
+        // and then put into chipsCurrentlyInvested
         currentPlayer.chipsCurrentlyInvested += amountOfChipsToBet
         if (amountOfChipsToBet > highestCurrentBet) {
           newHighestCurrentBet = amountOfChipsToBet
