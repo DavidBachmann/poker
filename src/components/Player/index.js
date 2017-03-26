@@ -23,6 +23,7 @@ class Player extends Component {
       holeCards,
       index,
       isLoser,
+      isAllIn,
       isNextToAct,
       isWinner,
       name,
@@ -61,7 +62,7 @@ class Player extends Component {
           <div className="Player-avatar"></div>
           <div className="Player-details">
             <p className="Player-name">{name}</p>
-            <p className="Player-chipCount">${chips}</p>
+            <p className="Player-chipCount">{isAllIn ? 'ALL-IN' : `$${chips}`}</p>
           </div>
         </div>
         {holeCards && (
@@ -89,7 +90,7 @@ class Player extends Component {
           {isMP && 'mp'}
           {isMP1 && 'mp1'}
           {isHijack && 'hijack'}
-          {isCutOff && 'cutoff'} 
+          {isCutOff && 'cutoff'}
           {hasFolded && 'Player has folded'}
         </div>
       <div className="Player-actionButtons">
@@ -117,7 +118,6 @@ class Player extends Component {
           disabled={!canAct}
           type="number"
           value={canAct ? betValue : 0}
-          onSubmit={this.handleSubmit}
           onChange={this.handleInput} />
       </div>
       </div>

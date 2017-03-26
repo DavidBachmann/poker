@@ -80,6 +80,7 @@ class GameManager extends Component {
       }
     })
   }
+
   /**
    * Handles winner determination and paying out chips in the pot
    */
@@ -129,6 +130,7 @@ class GameManager extends Component {
         player.holeCards = []
         player.hand = []
         player.hasFolded = false
+        player.isAllIn = false
       }
       players.map((player) => resetPlayer(player))
       return {
@@ -222,7 +224,7 @@ class GameManager extends Component {
       index = 0
     }
 
-    if (players[index] === players[currentPlayerIndex] || players[index].hasFolded || players[index] === highestCurrentBettor) {
+    if (players[index] === players[currentPlayerIndex] || players[index].hasFolded || players[index] === highestCurrentBettor || players[index].isAllIn) {
       // Can't act
       return false
     } else {
@@ -246,7 +248,11 @@ class GameManager extends Component {
         (player) => this.checkIfPlayerAtIndexCanAct(player.index, currentPlayerIndex, highestCurrentBettor)
       )
 
-      return playerToReturn.index
+      if (playerToReturn) {
+        return playerToReturn.index
+      } else {
+        this.handleDealing()
+      }
     }
 
   }
@@ -307,6 +313,9 @@ class GameManager extends Component {
       // we put him all in and bet his whole stack
       // else we'll honor the requested amount.
       const amountOfChipsToBet = amountRequested <= currentPlayer.chips ? amountRequested : currentPlayer.chips
+      if (amountRequested >= currentPlayer.chips) {
+        currentPlayer.isAllIn = true
+      }
       // Check if the player is betting the mininum required
       // By default that's 2xBB
       const defaultMinAmount = levels[currentLevel].bigBlind * 2

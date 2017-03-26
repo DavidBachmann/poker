@@ -79,6 +79,7 @@ class Board extends Component {
               chips={player.chips}
               index={index}
               canAct={nextPlayerToAct === index}
+              isAllIn={player.isAllIn}
               isWinner={this.cachedWinners && this.cachedWinners.includes(player.id)}
               holeCards={player.holeCards}
               positions={positions}
