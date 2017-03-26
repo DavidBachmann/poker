@@ -7,33 +7,9 @@ class Board extends Component {
 
   state = {
     winnersHaveBeenDetermined: false,
-    positions: {},
-  }
-
-  calculatePositions = () => {
-    const { players } = this.props
-    const totalPlayers = players.length
-
-    this.setState((state) => {
-      return {
-        positions: {
-          bb: (totalPlayers - 1) % totalPlayers,
-          sb: (totalPlayers - 2) % totalPlayers,
-          button: (totalPlayers - 3) % totalPlayers,
-          cutoff: (totalPlayers - 4) % totalPlayers,
-          hijack: (totalPlayers - 5) % totalPlayers,
-          mp1: (totalPlayers - 6) % totalPlayers,
-          mp: (totalPlayers - 7) % totalPlayers,
-          utg1: (totalPlayers - 8) % totalPlayers,
-          utg: (totalPlayers - 9) % totalPlayers,
-        }
-      }
-    })
   }
 
   componentWillReceiveProps(props) {
-    this.calculatePositions()
-
     const { handWinners } = props
 
     if (handWinners == null || handWinners.length === 0 || !Array.isArray(handWinners)) {
@@ -53,6 +29,7 @@ class Board extends Component {
       communityCards,
       dealerMessage,
       handWinners,
+      positions,
       players,
       pot,
       currentStreet,
@@ -67,7 +44,7 @@ class Board extends Component {
       handlePlayerFolds,
     } = this.props
 
-    const { winnersHaveBeenDetermined, positions } = this.state
+    const { winnersHaveBeenDetermined } = this.state
 
     return (
       <div className="Board">
