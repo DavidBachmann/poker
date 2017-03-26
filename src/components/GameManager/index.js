@@ -224,49 +224,23 @@ class GameManager extends Component {
     }
   }
 
-  checkIfPlayerAtIndexCanAct = (index, currentPlayerIndex, highestCurrentBettor) => {
-    const { players } = this.state
-
-    if (!index || index === GameManager.TOTAL_PLAYERS - 1) {
-      index = 0
-    }
-
-    if (
-      players[index] === players[currentPlayerIndex] ||
-      players[index].hasFolded ||
-      players[index] === highestCurrentBettor ||
-      players[index].isAllIn
-    ) {
-      // Can't act
-      return false
-    } else {
-      // Can act
-      return true
-    }
-
-  }
-
 
   /**
    * Handle getting the next player capable of acting
    */
-  returnNextPlayerToAct = (currentPlayerIndex, highestCurrentBettor) => {
-    const canNextPlayerAct = this.checkIfPlayerAtIndexCanAct(currentPlayerIndex + 1)
-    if (canNextPlayerAct) {
-      return currentPlayerIndex + 1
-    } else {
-      const { players } = this.state
-      const playerToReturn = players.find(
-        (player) => this.checkIfPlayerAtIndexCanAct(player.index, currentPlayerIndex, highestCurrentBettor)
-      )
+  returnNextPlayerToAct = (players, currentPlayerIndex, highestCurrentBettor) => {
+    const playerCount = players.length
+    const startIndex = (currentPlayerIndex + 1) % playerCount
 
-      if (playerToReturn) {
-        return playerToReturn.index
-      } else {
-        this.handleDealing()
+    for (let index = startIndex; index !== currentPlayerIndex; index = (index + 1) % playerCount) {
+      const player = players[index]
+
+      if (!player.hasFolded && player !== highestCurrentBettor && !player.isAllIn) {
+        return index
       }
     }
 
+    this.handleDealing()
   }
 
   /**
@@ -350,7 +324,7 @@ class GameManager extends Component {
         const _highestCurrentBettor = newHighestCurrentBettor ? newHighestCurrentBettor : highestCurrentBettor
         return {
           players,
-          nextPlayerToAct: this.returnNextPlayerToAct(currentPlayer.index, _highestCurrentBettor),
+          nextPlayerToAct: this.returnNextPlayerToAct(players, currentPlayer.index, _highestCurrentBettor),
           highestCurrentBet: newHighestCurrentBet ? newHighestCurrentBet : highestCurrentBet,
           highestCurrentBettor: _highestCurrentBettor,
         }
@@ -364,15 +338,14 @@ class GameManager extends Component {
    * Handles player's folding
    */
   handlePlayerFolds = () => {
-    this.setState((state) => {
-      const { players, nextPlayerToAct, highestCurrentBettor } = state
+    this.setState(({ players, nextPlayerToAct, highestCurrentBettor }) => {
       const currentPlayer = players[nextPlayerToAct]
       currentPlayer.holeCards = []
       currentPlayer.hasFolded = true
 
       return {
         players,
-        nextPlayerToAct: this.returnNextPlayerToAct(currentPlayer.index, highestCurrentBettor),
+        nextPlayerToAct: this.returnNextPlayerToAct(players, nextPlayerToAct, highestCurrentBettor),
       }
     })
   }
