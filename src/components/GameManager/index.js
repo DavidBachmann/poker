@@ -8,7 +8,7 @@ import winnerDetermination from './winnerDetermination'
 
 class GameManager extends Component {
   static STARTING_STACK = 1500
-  static TOTAL_PLAYERS = 3
+  static TOTAL_PLAYERS = 9
   static MAX_HANDS_PER_LEVEL = 25
 
   players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
@@ -21,6 +21,8 @@ class GameManager extends Component {
       deck: [],
       levels: this.levels,
       players: this.players,
+      positions: {},
+      handHistory: [],
       handWinners: [],
       currentLevel: 1,
       currentStreet: 0,
@@ -33,34 +35,47 @@ class GameManager extends Component {
   }
 
   componentDidUpdate() {
-    const { playersInTheHand, nextPlayerToAct, currentStreet } = this.state
+    const { playersInTheHand, nextPlayerToAct } = this.state
     // Update the list of players that are still in the hand
     const alivePlayers = this.handleCheckingAlivePlayers()
-    if (alivePlayers.length !== playersInTheHand.length) {
-      this.setState((state) => {
+    if (alivePlayers && alivePlayers.length !== playersInTheHand.length) {
+      this.setState((prevState) => {
         return {
           playersInTheHand: alivePlayers
         }
       })
     }
 
-    if (nextPlayerToAct === undefined) {
-      // temp, todo
-      if (currentStreet <= 3) {
-        window.setTimeout(() => {
-          this.handleDealing()
-        }, 1000)
-      } else if (currentStreet === 4) {
-        this.handleDetermineAndPayWinners()
-        this.setState({
-          currentStreet: 5
-        })
-      }
+    if (nextPlayerToAct === null || nextPlayerToAct === undefined) {
+    //this.handleDealing() todo
     }
   }
 
   componentDidMount() {
+    this.handleCalculatingPositions()
     this.handleDealing()
+  }
+
+  handleCalculatingPositions = () => {
+    this.setState((prevState) => {
+      const { players, handHistory } = prevState
+      const totalPlayers = players.length
+
+      return {
+        positions: {
+          bb: (handHistory.length + totalPlayers - 1) % totalPlayers,
+          sb: (handHistory.length + totalPlayers - 2) % totalPlayers,
+          button: (handHistory.length + totalPlayers - 3) % totalPlayers,
+          cutoff: (handHistory.length + totalPlayers - 4) % totalPlayers,
+          hijack: (handHistory.length + totalPlayers - 5) % totalPlayers,
+          mp1: (handHistory.length + totalPlayers - 6) % totalPlayers,
+          mp: (handHistory.length + totalPlayers - 7) % totalPlayers,
+          utg1: (handHistory.length + totalPlayers - 8) % totalPlayers,
+          utg: (handHistory.length + totalPlayers - 9) % totalPlayers,
+        },
+        nextPlayerToAct: (handHistory.length + totalPlayers - 9) % totalPlayers,
+      }
+    })
   }
 
   generateDeck = () => {
@@ -85,10 +100,11 @@ class GameManager extends Component {
   /**
    * Handles collecting player pots into the pot
    */
-  handleCollectingPlayerPots = (winners) => {
-    this.setState((state) => {
-      const { players, pot } = state
+  handleCollectingPlayerPots = () => {
+    this.setState((prevState) => {
+      const { players, pot } = prevState
       const amountsFromPlayerPots = players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)
+      console.log(amountsFromPlayerPots)
       return {
         pot: amountsFromPlayerPots + pot
       }
@@ -98,47 +114,52 @@ class GameManager extends Component {
   /**
    * Handles winner determination and paying out chips in the pot
    */
-  handleDetermineAndPayWinners = (winner) => {
-    // If someone won without showdown we skip the winner check
-    if (winner) {
-      this.handleCollectingPlayerPots(winner)
-      this.setState((state) => {
-        const { players, handWinners, pot } = state
-        return {
-          handWinners: handWinners.concat(winner),
-          players,
-          pot: pot + winner.chips,
-        }
-      })
-    } else {
-      this.setState((state) => {
-        const { players, communityCards, pot  } = state
-        const winners = winnerDetermination(players, communityCards)
-        const amountWon = pot/winners.length
+  handleDetermineAndPayWinnersOnShowdown = () => {
+    this.setState(({ players, communityCards, pot }) => {
+      const winners = winnerDetermination(players, communityCards)
+      const amountWon = pot/winners.length
 
-        winners.forEach((winner) => {
-          const winnerObj = find(players, (player) => player.id === winner.id)
-          const currentWinnerChips = winnerObj.chips
-          winnerObj.chips = round(currentWinnerChips + amountWon)
-          __DEBUG__(`${winnerObj.name } wins ${amountWon} and has ${winnerObj.chips}`)
-          return winnerObj
-        })
-
-        return {
-          handWinners: winners,
-          pot,
-          players,
-        }
+      winners.forEach((winner) => {
+        const currentWinnerChips = winner.chips
+        winner.chips = round(currentWinnerChips + amountWon)
+        __DEBUG__(`${winner.name } wins ${amountWon} and has ${winner.chips}`)
       })
-    }
+
+      return {
+        handWinners: winners,
+        pot,
+        players,
+      }
+    })
   }
+
+  /**
+   * Handles winner determination and paying out chips in the pot
+   */
+  handlePayingWinnerOnNonShowdown = (winner) => {
+    this.handlePuttingChipsInPot()
+    this.setState(({ communityCards, pot, handHistory }) => {
+      const currentWinnerChips = winner[0].chips
+      winner[0].chips = round(currentWinnerChips + pot)
+      __DEBUG__(`${winner[0].name } wins ${pot} and has ${winner[0].chips}`)
+
+      return {
+        handWinners: winner,
+        pot: 0,
+        handHistory: handHistory.concat(winner[0].id),
+      }
+    })
+
+    this.handleResetting()
+  }
+
 
   /**
    * Handles resetting state to prepare for a new hand
    */
   handleResetting = () => {
-    this.setState((state) => {
-      const { players } = state
+    this.setState((prevState) => {
+      const { players, positions } = prevState
       const resetPlayer = (player) => {
         player.chipsCurrentlyInvested = 0
         player.holeCards = []
@@ -153,11 +174,13 @@ class GameManager extends Component {
         handWinners: [],
         highestCurrentBet: 0,
         highestCurrentBettor: null,
+        nextPlayerToAct: positions.bb + 1 === GameManager.TOTAL_PLAYERS ? 0 : positions.bb + 1,
         playersInTheHand: this.players,
-        nextPlayerToAct: this.returnNextPlayerToAct(),
         players,
       }
     })
+
+    this.handleCalculatingPositions()
   }
 
   /**
@@ -174,6 +197,7 @@ class GameManager extends Component {
         highestCurrentBet: 0,
         highestCurrentBettor: null,
       })
+      this.handlePostBlinds()
     }
 
     // Flop
@@ -199,7 +223,6 @@ class GameManager extends Component {
     // River
     else if (currentStreet === 3) {
       this.setState({
-        currentStreet: 4, // todo
         communityCards: {...communityCards, river: deck.splice(0, 1)}
       })
     }
@@ -217,8 +240,7 @@ class GameManager extends Component {
     const alivePlayers = players.filter(player => !player.hasFolded)
 
     if (alivePlayers.length === 1) {
-      this.handleDetermineAndPayWinners(alivePlayers[0])
-      this.handleResetting()
+      this.handlePayingWinnerOnNonShowdown(alivePlayers)
     } else {
       return alivePlayers
     }
@@ -240,7 +262,6 @@ class GameManager extends Component {
       }
     }
 
-    this.handleDealing()
   }
 
   /**
@@ -249,8 +270,8 @@ class GameManager extends Component {
    * If the round continues the chips will be transferred to the pot via handlePuttingChipsInPot
    */
   handlePostBlinds = () => {
-    this.setState((state) => {
-      const { levels, currentLevel, nextPlayerToAct, players } = state
+    this.setState((prevState) => {
+      const { levels, currentLevel, nextPlayerToAct, players } = prevState
       const { TOTAL_PLAYERS } = GameManager
       const bigBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 1) % TOTAL_PLAYERS
       const smallBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 2) % TOTAL_PLAYERS
@@ -273,8 +294,8 @@ class GameManager extends Component {
    * and putting them in the pot
    */
   handlePuttingChipsInPot = () => {
-    this.setState((state) => {
-      const { players, pot } = state
+    this.setState((prevState) => {
+      const { players, pot } = prevState
       const amountOfChipsToTransfer = players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)
       // Empty chipsCurrentlyInvested
       players.map((player) => player.chipsCurrentlyInvested = 0)
@@ -291,8 +312,8 @@ class GameManager extends Component {
     let newHighestCurrentBet = null
     let newHighestCurrentBettor = null
 
-    this.setState((state) => {
-      const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBet, highestCurrentBettor } = state
+    this.setState((prevState) => {
+      const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBet, highestCurrentBettor } = prevState
       const currentPlayer = players[nextPlayerToAct]
 
       const chipsCurrentlyInvested = currentPlayer.chipsCurrentlyInvested
@@ -352,12 +373,13 @@ class GameManager extends Component {
 
   render() {
     const { children } = this.props
-    const { deck, players, currentLevel, handWinners, currentStreet, highestCurrentBet, highestCurrentBettor, communityCards, nextPlayerToAct, pot } = this.state
+    const { deck, players, currentLevel, handWinners, positions, currentStreet, highestCurrentBet, highestCurrentBettor, communityCards, nextPlayerToAct, pot } = this.state
 
     return cloneElement(children, {
       pot,
       deck,
       players,
+      positions,
       handWinners,
       currentLevel,
       currentStreet,

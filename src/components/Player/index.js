@@ -85,12 +85,12 @@ class Player extends Component {
           {isButton && 'button'}
           {isSB && 'sb'}
           {isBB && 'bb'}
-          {/* {isUTG && 'utg'}
+          {isUTG && 'utg'}
           {isUTG1 && 'utg1'}
           {isMP && 'mp'}
           {isMP1 && 'mp1'}
           {isHijack && 'hijack'}
-          {isCutOff && 'cutoff'} */}
+          {isCutOff && 'cutoff'}
           {hasFolded && 'Player has folded'}
         </div>
       <div className="Player-actionButtons">
