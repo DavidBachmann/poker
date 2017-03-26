@@ -33,7 +33,7 @@ class GameManager extends Component {
   }
 
   componentDidUpdate() {
-    const { playersInTheHand } = this.state
+    const { playersInTheHand, nextPlayerToAct, currentStreet } = this.state
     // Update the list of players that are still in the hand
     const alivePlayers = this.handleCheckingAlivePlayers()
     if (alivePlayers.length !== playersInTheHand.length) {
@@ -42,6 +42,20 @@ class GameManager extends Component {
           playersInTheHand: alivePlayers
         }
       })
+    }
+
+    if (nextPlayerToAct === undefined) {
+      // temp, todo
+      if (currentStreet <= 3) {
+        window.setTimeout(() => {
+          this.handleDealing()
+        }, 1000)
+      } else if (currentStreet === 4) {
+        this.handleDetermineAndPayWinners()
+        this.setState({
+          currentStreet: 5
+        })
+      }
     }
   }
 
@@ -90,10 +104,10 @@ class GameManager extends Component {
       this.handleCollectingPlayerPots(winner)
       this.setState((state) => {
         const { players, handWinners, pot } = state
-        winner.chips += pot
         return {
           handWinners: handWinners.concat(winner),
           players,
+          pot: pot + winner.chips,
         }
       })
     } else {
@@ -151,7 +165,7 @@ class GameManager extends Component {
    */
   handleDealing = () => {
     const { deck, communityCards, currentStreet } = this.state
-
+    this.handlePuttingChipsInPot()
     // Preflop
     if (currentStreet === 0) {
       this.dealPlayerCards()
@@ -164,41 +178,33 @@ class GameManager extends Component {
 
     // Flop
     else if (currentStreet === 1) {
-      communityCards.flop = deck.splice(0, 3)
-
       this.setState({
         currentStreet: currentStreet + 1,
         highestCurrentBet: 0,
         highestCurrentBettor: null,
+        communityCards: {...communityCards, flop: deck.splice(0, 3)}
       })
     }
 
     // Turn
     else if (currentStreet === 2) {
-      communityCards.turn = deck.splice(0, 1)
-
       this.setState({
         currentStreet: currentStreet + 1,
         highestCurrentBet: 0,
         highestCurrentBettor: null,
+        communityCards: {...communityCards, turn: deck.splice(0, 1)}
       })
     }
 
     // River
     else if (currentStreet === 3) {
-      communityCards.river = deck.splice(0, 1)
-
       this.setState({
-        currentStreet: 0
+        currentStreet: 4, // todo
+        communityCards: {...communityCards, river: deck.splice(0, 1)}
       })
     }
     else {
       throw new Error(`Invalid street: ${currentStreet}`)
-    }
-
-    return {
-      deck,
-      communityCards
     }
   }
 
@@ -208,7 +214,7 @@ class GameManager extends Component {
       return
     }
 
-    let alivePlayers = players.filter(player => !player.hasFolded)
+    const alivePlayers = players.filter(player => !player.hasFolded)
 
     if (alivePlayers.length === 1) {
       this.handleDetermineAndPayWinners(alivePlayers[0])
@@ -220,11 +226,17 @@ class GameManager extends Component {
 
   checkIfPlayerAtIndexCanAct = (index, currentPlayerIndex, highestCurrentBettor) => {
     const { players } = this.state
-    if (index === GameManager.TOTAL_PLAYERS - 1) {
+
+    if (!index || index === GameManager.TOTAL_PLAYERS - 1) {
       index = 0
     }
 
-    if (players[index] === players[currentPlayerIndex] || players[index].hasFolded || players[index] === highestCurrentBettor || players[index].isAllIn) {
+    if (
+      players[index] === players[currentPlayerIndex] ||
+      players[index].hasFolded ||
+      players[index] === highestCurrentBettor ||
+      players[index].isAllIn
+    ) {
       // Can't act
       return false
     } else {
@@ -290,7 +302,8 @@ class GameManager extends Component {
     this.setState((state) => {
       const { players, pot } = state
       const amountOfChipsToTransfer = players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)
-
+      // Empty chipsCurrentlyInvested
+      players.map((player) => player.chipsCurrentlyInvested = 0)
       return {
         pot: pot + amountOfChipsToTransfer,
       }
