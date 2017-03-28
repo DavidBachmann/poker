@@ -5,14 +5,14 @@ import './styles.css'
 
 class Board extends Component {
 
-  state = {
-    winnersHaveBeenDetermined: false,
-  }
+    state = {
+      winnersHaveBeenDetermined: false,
+    }
 
   componentWillReceiveProps(props) {
     const { handWinners } = props
 
-    if (handWinners == null || handWinners.length === 0 || !Array.isArray(handWinners)) {
+    if (handWinners === null || handWinners.length === 0 || !Array.isArray(handWinners)) {
       this.setState({
         winnersHaveBeenDetermined: false
       })
@@ -38,8 +38,6 @@ class Board extends Component {
       highestCurrentBettor,
 
       // Passed down functions:
-      handleDealing,
-      handlePostBlinds,
       handlePlayerBets,
       handlePlayerFolds,
     } = this.props
@@ -79,8 +77,9 @@ class Board extends Component {
         <p className="Board-potInfo">
           Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}</strong>)
         </p>
-        {/* {handWinners && handWinners.length > 0 && (
+        {handWinners && handWinners.length > 0 && (
           <div className="Board-winnerInfo">
+            {console.log(handWinners)}
             {handWinners.length === 1 && handWinners.map((winner) => (
               <span key={winner.id}>
                 <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
@@ -95,16 +94,12 @@ class Board extends Component {
               </div>
             )}
           </div>
-        )} */}
+        )}
         {dealerMessage && (
           <p className="Board-dealerMessage">
             <strong>{dealerMessage}</strong>
           </p>
         )}
-        <div className="DEBUG" style={{position: "absolute", left: -150, bottom: 0, maxWidth: 200}}>
-          <button onClick={() => handleDealing()}>Deal</button>
-          <button onClick={() => handlePostBlinds()}>Post blinds</button>
-        </div>
       </div>
     )
   }
