@@ -112,20 +112,20 @@ $panelHeight: 55; //px
     left: 50%;
   }
   .Player:nth-child(2) {
-    top: 100%;
-    left: 50%;
-  }
-  .Player:nth-child(3) {
-    top: 80%;
-    left: 0;
-  }
-  .Player:nth-child(4) {
     top: 20%;
     left: 100%;
   }
-  .Player:nth-child(5) {
+  .Player:nth-child(3) {
     top: 80%;
     left: 100%;
+  }
+  .Player:nth-child(4) {
+    top: 100%;
+    left: 50%;
+  }
+  .Player:nth-child(5) {
+    top: 80%;
+    left: 0;
   }
   .Player:nth-child(6) {
     top: 20%;
