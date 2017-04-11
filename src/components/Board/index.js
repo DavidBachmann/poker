@@ -29,6 +29,7 @@ class Board extends Component {
       communityCards,
       dealerMessage,
       handWinners,
+      showdown,
       positions,
       players,
       pot,
@@ -79,10 +80,9 @@ class Board extends Component {
         </p>
         {handWinners && handWinners.length > 0 && (
           <div className="Board-winnerInfo">
-            {console.log(handWinners)}
             {handWinners.length === 1 && handWinners.map((winner) => (
               <span key={winner.id}>
-                <strong>{winner.name}</strong> wins the hand with <strong>{winner.handDetails.descr}</strong>
+                <strong>{winner.name}</strong> wins the hand
               </span>
             ))}
             {handWinners.length > 1 && (

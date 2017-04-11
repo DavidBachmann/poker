@@ -41,11 +41,8 @@ class Player extends Component {
     const isSB = positions.sb === index
     const isBB = positions.bb === index
     const isUTG = positions.utg === index
-    // const isUTG1 = positions.utg1 === index
-    // const isMP = positions.mp === index
-    // const isMP1 = positions.mp1 === index
-    // const isHijack = positions.hijack === index
-    // const isCutOff = positions.cutoff === index
+    const isMP = positions.mp === index
+    const isCutOff = positions.cutoff === index
     const isHighestBettor = highestCurrentBettor && highestCurrentBettor.index === index
 
     return (
@@ -83,11 +80,8 @@ class Player extends Component {
           {isSB && 'sb'}
           {isBB && 'bb'}
           {isUTG && 'utg'}
-          {/* {isUTG1 && 'utg1'}
           {isMP && 'mp'}
-          {isMP1 && 'mp1'}
-          {isHijack && 'hijack'}
-          {isCutOff && 'cutoff'} */}
+          {isCutOff && 'cutoff'}
           {hasFolded && 'Player has folded'}
         </div>
       <div className="Player-actionButtons">

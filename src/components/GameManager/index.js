@@ -13,7 +13,9 @@ class GameManager extends Component {
 
   players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
   levels = initializeLevels()
-  showdown = false
+
+  emergency_stop = false
+  can_deal = true
 
   constructor() {
     super()
@@ -38,7 +40,7 @@ class GameManager extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const { playersInTheHand, nextPlayerToAct, handWinners,  currentStreet } = this.state
+    const { playersInTheHand, nextPlayerToAct, handWinners, currentStreet } = this.state
     // Update the list of players that are still in the hand
     const alivePlayers= this.returnAlivePlayers()
     if (alivePlayers && alivePlayers.length !== playersInTheHand.length) {
@@ -49,20 +51,15 @@ class GameManager extends Component {
       })
     }
 
-    if ((alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) || this.state.showdown) {
-      this.setState(() => {
-        return {
-          currentStreet: null,
-          showdown: false,
-        }
-      }, () => {
-        this.thingsToDoWhenEndingAHand(alivePlayers)
-      })
-
+    if ((!this.emergency_stop && alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) || this.state.showdown) {
+      this.emergency_stop = true
+      this.can_deal = false
+      this.handlePuttingChipsInPot()
+      await this.handleWinnerSelection(alivePlayers)
     }
 
-    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1) {
-        await this.handleDealing()
+    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1 && this.can_deal) {
+      await this.handleDealing()
     }
 
     if (currentStreet === 4 && !this.state.showdown) {
@@ -79,17 +76,17 @@ class GameManager extends Component {
   }
 
   async thingsToDoWhenStartingAHand() {
+    this.emergency_stop = false
+    this.can_deal = true
     await this.handleCalculatingPositions()
     await this.handleDealing()
     await this.handlePostBlinds()
   }
 
   async thingsToDoWhenEndingAHand(alivePlayers) {
-    await this.handlePuttingChipsInPot()
     await this.handleWinnerSelection(alivePlayers)
-    await this.delay(4000)
-    await this.handleResetting()
-    this.thingsToDoWhenStartingAHand()
+    await this.delay(1000)
+    await this.thingsToDoWhenStartingAHand()
   }
 
   delay = (amt) => new Promise(resolve => setTimeout(resolve, amt))
@@ -98,47 +95,57 @@ class GameManager extends Component {
    * Handles winner determination and paying out chips in the pot
    */
   handleWinnerSelection = (players) => {
-    const { communityCards, handWinners, handHistory } = this.state
+    const { communityCards } = this.state
     let winner = null
+
+    if (players.length === 1) {
+      winner = players
+    }
 
     if (players.length > 1) {
       winner = winnerDetermination(players, communityCards)
-    } else {
-      winner = players[0]
     }
-
-    this.setState(() => {
-      return {
-        handWinners: handWinners.concat(winner),
-        handHistory: handHistory.concat(winner.name),
-      }
-    })
 
     this.payWinner(winner)
   }
 
-  // Todo, throws
+  // Todo, gross
   payWinner = (winner) => {
-    this.setState((state) => {
-      const { players, communityCards, pot  } = state
-      const winners = winnerDetermination(winner, communityCards)
-      const amountWon = pot/winners.length
+    this.setState((prevState) => {
+      const { players, communityCards, pot, handWinners  } = prevState
 
-      winners.forEach((each) => {
-        const winnerObj = find(players, (player) => player.id === each.id)
+      if (winner.length && winner.length > 1) {
+        const winners = winnerDetermination(winner, communityCards)
+        const amountWon = pot/winners.length
+
+        winners.forEach((each) => {
+          const winnerObj = find(players, (player) => player.id === each.id)
+          const currentWinnerChips = winnerObj.chips
+          winnerObj.chips = round(currentWinnerChips + amountWon)
+          __DEBUG__(`${winnerObj.name } wins ${amountWon} and has ${winnerObj.chips}`)
+          return winnerObj
+        })
+
+        return {
+          handWinners: winners,
+          players
+        }
+      }
+
+      if (winner.length && winner.length === 1) {
+        const winnerObj = find(players, (player) => player.id === winner[0].id)
         const currentWinnerChips = winnerObj.chips
-        winnerObj.chips = round(currentWinnerChips + amountWon)
-        __DEBUG__(`${winnerObj.name } wins ${amountWon} and has ${winnerObj.chips}`)
-        return winnerObj
-      })
+        winnerObj.chips = round(currentWinnerChips + pot)
+        __DEBUG__(`${winnerObj.name } wins ${pot} and has ${winnerObj.chips}`)
+        console.log(handWinners)
 
-      return {
-        handWinners: winners,
-        pot,
-        players,
+        return {
+          handWinners: handWinners.concat(winner),
+          players
+        }
       }
     })
-}
+  }
 
   handleCalculatingPositions = () => {
     this.setState((prevState) => {
@@ -150,12 +157,9 @@ class GameManager extends Component {
           bb: (handHistory.length + totalPlayers - 1) % totalPlayers,
           sb: (handHistory.length + totalPlayers - 2) % totalPlayers,
           button: (handHistory.length + totalPlayers - 3) % totalPlayers,
-          // cutoff: (handHistory.length + totalPlayers - 4) % totalPlayers,
-          // hijack: (handHistory.length + totalPlayers - 5) % totalPlayers,
-          // mp1: (handHistory.length + totalPlayers - 6) % totalPlayers,
-          // mp: (handHistory.length + totalPlayers - 7) % totalPlayers,
-          // utg1: (handHistory.length + totalPlayers - 8) % totalPlayers,
-          utg: (handHistory.length + totalPlayers - 4) % totalPlayers,
+          cutoff: (handHistory.length + totalPlayers - 4) % totalPlayers,
+          mp: (handHistory.length + totalPlayers - 5) % totalPlayers,
+          utg: (handHistory.length + totalPlayers - 6) % totalPlayers,
         },
         whatPlayerIsDealer: (handHistory.length + totalPlayers - 3) % totalPlayers,
       }
@@ -423,12 +427,13 @@ class GameManager extends Component {
 
   render() {
     const { children } = this.props
-    const { deck, players, currentLevel, handWinners, positions, currentStreet, highestCurrentBet, highestCurrentBettor, communityCards, nextPlayerToAct, pot } = this.state
+    const { deck, players, currentLevel, handWinners, showdown, positions, currentStreet, highestCurrentBet, highestCurrentBettor, communityCards, nextPlayerToAct, pot } = this.state
 
     return cloneElement(children, {
       pot,
       deck,
       players,
+      showdown,
       positions,
       handWinners,
       currentLevel,
