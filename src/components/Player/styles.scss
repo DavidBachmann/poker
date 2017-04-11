@@ -2,7 +2,7 @@
 //I have commented out the sass
 //and I'm just pasting the output from http://www.sassmeister.com/
 //instead of ripping my hair out.
-
+//
 // @mixin circle-position($point, $total_points: 9) {
 //   $deg: 360 / $total-points;
 //   $rad: (($deg * ($point - 1)) - 45) * 3.14 / 180;
@@ -15,7 +15,7 @@
 .Player {
   position: absolute;
   transform: translate(-50%, -50%);
-
+  //
   // @for $i from 1 through 10 {
   //   &:nth-child(#{$i}) {
   //     @include circle-position($i);
@@ -51,8 +51,6 @@
 $panelHeight: 55; //px
 
 .Player-panel {
-  display: flex;
-  align-items: center;
   background: rgba(60, 60, 60, 0.95);
   border-radius: 5px;
   border: 1px solid white;
@@ -61,6 +59,8 @@ $panelHeight: 55; //px
   padding: 5px;
   position: relative;
   width: 160px;
+  color: #FFF;
+  line-height: 1.45;
   overflow: hidden;
   z-index: 10;
 
@@ -85,38 +85,16 @@ $panelHeight: 55; //px
   }
 }
 
-.Player-avatar {
-  background-image: url('/bender-min.png');
-  background-origin: border-box;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: #{$panelHeight}px;
-  height: #{$panelHeight}px;
-  z-index: 20;
-
-  .Hero & {
-    background-image: url('/fry-min.png');
-  }
-}
-
 .Player-cards {
   display: flex;
   position: absolute;
   justify-content: center;
   top: -#{$panelHeight / 2}px;
+  width: 100%;
 
   .Hero & {
     top: -#{$panelHeight}px;
   }
-}
-
-.Player-details {
-  color: #FFF;
-  line-height: 1.45;
 }
 
 .Player-name {
@@ -127,83 +105,30 @@ $panelHeight: 55; //px
   font-size: 14px;
   font-weight: 300;
 }
-.Player:nth-child(1) {
-  top: 14.65874%;
-  left: 85.36941%;
 
-  .Player-avatar {
-    background-color: rebeccapurple;
+.has-6-players {
+  .Player:nth-child(1) {
+    top: 0;
+    left: 50%;
   }
-}
-.Player:nth-child(2) {
-  top: 45.64442%;
-  left: 99.80993%;
-
-  .Player-avatar {
-    background-color: #3BB4C1;
+  .Player:nth-child(2) {
+    top: 100%;
+    left: 50%;
   }
-}
-.Player:nth-child(3) {
-  top: 78.66614%;
-  left: 90.96648%;
-
-  .Player-avatar {
-    background-color: #FF006C;
+  .Player:nth-child(3) {
+    top: 80%;
+    left: 0;
   }
-}
-.Player:nth-child(4) {
-  top: 98.28769%;
-  left: 62.973%;
-
-  .Player-avatar {
-    background-color: #A9E6E6;
+  .Player:nth-child(4) {
+    top: 20%;
+    left: 100%;
   }
-}
-.Player:nth-child(5) {
-  top: 95.33687%;
-  left: 28.91521%;
-
-  .Player-avatar {
-    background-color: #7DCE94;
+  .Player:nth-child(5) {
+    top: 80%;
+    left: 100%;
   }
-}
-.Player:nth-child(6) {
-  top: 71.19304%;
-  left: 4.71363%;
-  .Player-avatar {
-    background-color: #FF5200;
-  }
-}
-.Player:nth-child(7) {
-  top: 37.1424%;
-  left: 1.68145%;
-
-  .Player-avatar {
-    background-color: #402785;
-  }
-}
-.Player:nth-child(8) {
-  top: 9.10212%;
-  left: 21.23608%;
-
-  .Player-avatar {
-    background-color: #FFABE5;
-  }
-}
-.Player:nth-child(9) {
-  top: 0.17981%;
-  left: 54.23658%;
-
-  .Player-avatar {
-    background-color: #FB9935;
-  }
-}
-.Player:nth-child(10) {
-  top: 14.54626%;
-  left: 85.25666%;
-
-
-  .Player-avatar {
-    background-color: #7098DA;
+  .Player:nth-child(6) {
+    top: 20%;
+    left: 0;
   }
 }

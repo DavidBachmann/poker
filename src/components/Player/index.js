@@ -59,11 +59,8 @@ class Player extends Component {
         isWinner && 'is-winner',
       )}>
         <div className="Player-panel">
-          <div className="Player-avatar"></div>
-          <div className="Player-details">
-            <p className="Player-name">{name}</p>
-            <p className="Player-chipCount">{isAllIn ? 'ALL-IN' : `$${chips}`}</p>
-          </div>
+          <p className="Player-name">{name}</p>
+          <p className="Player-chipCount">{isAllIn ? 'ALL-IN' : `$${chips}`}</p>
         </div>
         {holeCards && (
           <div className="Player-cards">

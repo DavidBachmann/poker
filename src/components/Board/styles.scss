@@ -1,18 +1,16 @@
 @import '../../vars';
 
 .Board {
-  $size: 700px;
-
   align-items: center;
   background-image: radial-gradient(#30a07d, #05844c);
   border: 0.375rem solid #095838;
-  border-radius: 50%;
+  border-radius: 200px;
   display: flex;
-  height: $size;
+  height: 430px;
   justify-content: center;
   margin: auto;
   position: relative;
-  width: $size;
+  width: 700px;
   user-select: none;
 }
 

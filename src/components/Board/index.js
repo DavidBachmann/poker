@@ -45,7 +45,7 @@ class Board extends Component {
     const { winnersHaveBeenDetermined } = this.state
 
     return (
-      <div className="Board">
+      <div className="Board has-6-players">
         {players && players.map((player, index) => {
           return (
             <Player

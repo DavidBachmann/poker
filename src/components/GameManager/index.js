@@ -8,7 +8,7 @@ import winnerDetermination from './winnerDetermination'
 
 class GameManager extends Component {
   static STARTING_STACK = 1500
-  static TOTAL_PLAYERS = 4
+  static TOTAL_PLAYERS = 6
   static MAX_HANDS_PER_LEVEL = 25
 
   players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
