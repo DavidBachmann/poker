@@ -40,9 +40,17 @@ class GameManager extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const { playersInTheHand, nextPlayerToAct, handWinners, currentStreet } = this.state
+    const { nextPlayerToAct } = this.state
+
+    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1 && this.can_deal) {
+      await this.handleDealing()
+    }
+  }
+
+  async moveGameForward() {
+    const { playersInTheHand, handWinners } = this.state
     // Update the list of players that are still in the hand
-    const alivePlayers= this.returnAlivePlayers()
+    const alivePlayers = this.returnAlivePlayers()
     if (alivePlayers && alivePlayers.length !== playersInTheHand.length) {
       this.setState(() => {
         return {
@@ -58,21 +66,22 @@ class GameManager extends Component {
       await this.handleWinnerSelection(alivePlayers)
     }
 
-    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1 && this.can_deal) {
-      await this.handleDealing()
-    }
 
-    if (currentStreet === 4 && !this.state.showdown) {
-      this.setState(() => {
-        return {
-          showdown: true
-        }
-      })
+    if (handWinners.length >= 1) {
+      __DEBUG__('handWinners.length >= 1')
+      __DEBUG__('Resetting and stuff from moveGameForward')
+      this.delayAndRestart()
     }
   }
 
   componentDidMount() {
     this.thingsToDoWhenStartingAHand()
+  }
+
+  async delayAndRestart() {
+    await this.delay(1000)
+    await this.handleResetting()
+    await this.thingsToDoWhenStartingAHand()
   }
 
   async thingsToDoWhenStartingAHand() {
@@ -81,28 +90,28 @@ class GameManager extends Component {
     await this.handleCalculatingPositions()
     await this.handleDealing()
     await this.handlePostBlinds()
+    this.moveGameForward()
   }
 
-  async thingsToDoWhenEndingAHand(alivePlayers) {
-    await this.handleWinnerSelection(alivePlayers)
-    await this.delay(1000)
-    await this.thingsToDoWhenStartingAHand()
-  }
-
-  delay = (amt) => new Promise(resolve => setTimeout(resolve, amt))
+  delay = (amount) => new Promise(resolve => setTimeout(resolve, amount))
 
   /**
    * Handles winner determination and paying out chips in the pot
    */
   handleWinnerSelection = (players) => {
+    __DEBUG__('Calling handleWinnerSelection')
     const { communityCards } = this.state
     let winner = null
 
-    if (players.length === 1) {
+    if (!players) {
+      winner = this.returnAlivePlayers()
+    }
+
+    if (players && players.length === 1) {
       winner = players
     }
 
-    if (players.length > 1) {
+    if (players && players.length > 1) {
       winner = winnerDetermination(players, communityCards)
     }
 
@@ -110,9 +119,21 @@ class GameManager extends Component {
   }
 
   // Todo, gross
+  // todo: this really isn't 'winner', but an array of players that are potential winners.
   payWinner = (winner) => {
+
+    if (!winner) {
+      throw new Error('no winner...')
+    }
+
+    if (this.emergency_stop) {
+      return
+    }
+
+    this.emergency_stop = true
+
     this.setState((prevState) => {
-      const { players, communityCards, pot, handWinners  } = prevState
+      const { players, communityCards, pot, handHistory  } = prevState
 
       if (winner.length && winner.length > 1) {
         const winners = winnerDetermination(winner, communityCards)
@@ -128,6 +149,7 @@ class GameManager extends Component {
 
         return {
           handWinners: winners,
+          handHistory: handHistory.concat(winners),
           players
         }
       }
@@ -137,14 +159,16 @@ class GameManager extends Component {
         const currentWinnerChips = winnerObj.chips
         winnerObj.chips = round(currentWinnerChips + pot)
         __DEBUG__(`${winnerObj.name } wins ${pot} and has ${winnerObj.chips}`)
-        console.log(handWinners)
 
         return {
-          handWinners: handWinners.concat(winner),
+          handWinners: [...winner],
+          handHistory: handHistory.concat(winner),
           players
         }
       }
     })
+
+    this.delayAndRestart()
   }
 
   handleCalculatingPositions = () => {
@@ -219,6 +243,7 @@ class GameManager extends Component {
         currentStreet: 0,
         handWinners: [],
         highestCurrentBet: 0,
+        showdown: false,
         whatPlayerIsDealer: whatPlayerIsDealer + 1,
         highestCurrentBettor: null,
         playersInTheHand: this.players,
@@ -247,6 +272,7 @@ class GameManager extends Component {
 
     // Flop
     else if (currentStreet === 1) {
+      __DEBUG__('Currentstreet === 1')
       this.setState({
         currentStreet: currentStreet + 1,
         highestCurrentBet: 0,
@@ -259,6 +285,7 @@ class GameManager extends Component {
 
     // Turn
     else if (currentStreet === 2) {
+      __DEBUG__('Currentstreet === 2')
       this.setState({
         currentStreet: currentStreet + 1,
         highestCurrentBet: 0,
@@ -271,6 +298,7 @@ class GameManager extends Component {
 
     // River
     else if (currentStreet === 3) {
+      __DEBUG__('Currentstreet === 3')
       this.setState({
         currentStreet: currentStreet + 1,
         communityCards: {...communityCards, river: deck.splice(0, 1)},
@@ -282,7 +310,7 @@ class GameManager extends Component {
     }
 
     else {
-      throw new Error(`Invalid street: ${currentStreet}`)
+      this.handleWinnerSelection()
     }
   }
 
@@ -300,10 +328,10 @@ class GameManager extends Component {
    */
   returnNextPlayerToAct = (state) => {
     const { players, nextPlayerToAct: currentPlayerIndex, highestCurrentBettor } = state
-    console.log(highestCurrentBettor)
     const playerCount = players.length
     const startIndex = (currentPlayerIndex + 1) % playerCount
     const _highestCurrentBet = highestCurrentBettor && highestCurrentBettor.chipsCurrentlyInvested
+
     for (let index = startIndex; index !== currentPlayerIndex; index = (index + 1) % playerCount) {
       const player = players[index]
       if (!player.hasFolded && player.chipsCurrentlyInvested !== _highestCurrentBet && !player.isAllIn) {
