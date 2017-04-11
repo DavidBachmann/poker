@@ -14,9 +14,6 @@ class GameManager extends Component {
   players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
   levels = initializeLevels()
 
-  emergency_stop = false
-  can_deal = true
-
   constructor() {
     super()
     this.state = {
@@ -41,8 +38,7 @@ class GameManager extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { nextPlayerToAct } = this.state
-
-    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1 && this.can_deal) {
+    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1) {
       await this.handleDealing()
     }
   }
@@ -59,13 +55,10 @@ class GameManager extends Component {
       })
     }
 
-    if ((!this.emergency_stop && alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) || this.state.showdown) {
-      this.emergency_stop = true
-      this.can_deal = false
+    if ((alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) || this.state.showdown) {
       this.handlePuttingChipsInPot()
       await this.handleWinnerSelection(alivePlayers)
     }
-
 
     if (handWinners.length >= 1) {
       __DEBUG__('handWinners.length >= 1')
@@ -85,8 +78,6 @@ class GameManager extends Component {
   }
 
   async thingsToDoWhenStartingAHand() {
-    this.emergency_stop = false
-    this.can_deal = true
     await this.handleCalculatingPositions()
     await this.handleDealing()
     await this.handlePostBlinds()
@@ -125,12 +116,6 @@ class GameManager extends Component {
     if (!winner) {
       throw new Error('no winner...')
     }
-
-    if (this.emergency_stop) {
-      return
-    }
-
-    this.emergency_stop = true
 
     this.setState((prevState) => {
       const { players, communityCards, pot, handHistory  } = prevState
