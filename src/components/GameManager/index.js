@@ -5,6 +5,7 @@ import { initializePlayers, initializeLevels } from '../../utils/initializer'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import getAmountTakenFromBlindedPlayers from './getAmountTakenFromBlindedPlayers'
 import winnerDetermination from './winnerDetermination'
+import update from 'immutability-helper'
 
 class GameManager extends Component {
   static STARTING_STACK = 1500
@@ -158,19 +159,20 @@ class GameManager extends Component {
 
   handleCalculatingPositions = () => {
     this.setState((prevState) => {
-      const { players, handHistory } = prevState
+      const { players, handHistory, positions } = prevState
       const totalPlayers = players.length
 
+      const $positions = update(positions, {
+        bb: {$set: (handHistory.length + totalPlayers - 1) % totalPlayers},
+        sb: {$set: (handHistory.length + totalPlayers - 2) % totalPlayers},
+        button: {$set: (handHistory.length + totalPlayers - 3) % totalPlayers},
+        cutoff: {$set: (handHistory.length + totalPlayers - 4) % totalPlayers},
+        mp: {$set: (handHistory.length + totalPlayers - 5) % totalPlayers},
+        utg: {$set: (handHistory.length + totalPlayers - 6) % totalPlayers},
+      })
+
       return {
-        positions: {
-          bb: (handHistory.length + totalPlayers - 1) % totalPlayers,
-          sb: (handHistory.length + totalPlayers - 2) % totalPlayers,
-          button: (handHistory.length + totalPlayers - 3) % totalPlayers,
-          cutoff: (handHistory.length + totalPlayers - 4) % totalPlayers,
-          mp: (handHistory.length + totalPlayers - 5) % totalPlayers,
-          utg: (handHistory.length + totalPlayers - 6) % totalPlayers,
-        },
-        whatPlayerIsDealer: (handHistory.length + totalPlayers - 3) % totalPlayers,
+        positions: $positions,
       }
     })
   }

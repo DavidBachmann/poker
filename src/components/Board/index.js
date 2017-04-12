@@ -75,7 +75,7 @@ class Board extends Component {
             street={currentStreet}
           />
         </div>
-        <p className="Board-potInfo">
+        {/* <p className="Board-potInfo">
           Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}</strong>)
         </p>
         {handWinners && handWinners.length > 0 && (
@@ -99,7 +99,7 @@ class Board extends Component {
           <p className="Board-dealerMessage">
             <strong>{dealerMessage}</strong>
           </p>
-        )}
+        )} */}
       </div>
     )
   }
