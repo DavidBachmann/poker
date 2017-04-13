@@ -26,6 +26,8 @@ class Board extends Component {
   render() {
 
     const {
+      playerBets,
+
       communityCards,
       dealerMessage,
       handWinners,
@@ -60,7 +62,7 @@ class Board extends Component {
               holeCards={player.holeCards}
               positions={positions}
               showCards={winnersHaveBeenDetermined}
-              betHandler={handlePlayerBets}
+              betHandler={playerBets}
               foldHandler={handlePlayerFolds}
               highestCurrentBet={highestCurrentBet}
               highestCurrentBettor={highestCurrentBettor}

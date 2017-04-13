@@ -5,6 +5,7 @@ import { initializePlayers, initializeLevels } from '../../utils/initializer'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import getAmountTakenFromBlindedPlayers from './getAmountTakenFromBlindedPlayers'
 import winnerDetermination from './winnerDetermination'
+import deepFreeze from 'deep-freeze'
 import update from 'immutability-helper'
 
 class GameManager extends Component {
