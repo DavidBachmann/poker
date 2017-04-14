@@ -73,7 +73,11 @@
   },
   "eslintConfig": {
     "extends": "react-app",
-    "rules": { "semi": ["error", "never" ] }
+    "rules": {
+      "semi": ["error", "never" ],
+      "object-curly-spacing": ["error", "always"],
+      "array-bracket-spacing": ["error", "never"]
+    }
   },
   "jest": {
     "collectCoverageFrom": [

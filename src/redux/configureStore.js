@@ -1,5 +1,5 @@
-import {createStore} from 'redux'
-import reducer from './modules/test'
+import { createStore } from 'redux'
+import reducer from './modules/gameManager'
 import initialState from './initialState'
 
 const configureStore = createStore(

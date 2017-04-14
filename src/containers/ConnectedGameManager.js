@@ -1,8 +1,8 @@
 // Connected GameManager container
 
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import GameManager from '../components/GameManager'
-import {playerBets} from '../redux/modules/test'
+import { startNewRound, playerBets } from '../redux/modules/gameManager'
 
 function mapStateToProps(state) {
   return {
@@ -12,6 +12,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    startNewRound: () => dispatch(startNewRound()),
     playerBets: value => dispatch(playerBets(value)),
   }
 }

@@ -58,9 +58,7 @@ export default function handlePlayerBets(state, amountRequested) {
     const _highestCurrentBettor = newHighestCurrentBettor
       ? newHighestCurrentBettor
       : highestCurrentBettor
-    return Object.assign({}, state, {
-      highestCurrentBettor: newHighestCurrentBettor,
-    })
+    return state // todo
   } else {
     __DEBUG__(
       `${currentPlayer.name} bets illegal amount: ${amountRequested}. Minimum bet is ${actualMinAmount}`,
