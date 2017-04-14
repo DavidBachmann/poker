@@ -1,9 +1,10 @@
+import deepFreeze from 'deep-freeze'
 import { initializePlayers, initializeLevels } from '../utils/initializer'
 
 const players = initializePlayers(6, 1500)
 const levels = initializeLevels()
 
-const initialState = {
+const initialState = deepFreeze({
   pot: 0,
   deck: [],
   levels: levels,
@@ -20,6 +21,6 @@ const initialState = {
   highestCurrentBet: 0,
   whatPlayerIsDealer: null,
   highestCurrentBettor: null,
-}
+})
 
 export default initialState

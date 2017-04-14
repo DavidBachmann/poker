@@ -45,7 +45,7 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
     case PLAYER_BETS: {
       return Object.assign({}, state, {
-        state: handlePlayerBets(state),
+        players: handlePlayerBets(action.value, state),
       })
     }
     case START_NEW_ROUND: {
@@ -67,7 +67,7 @@ export default function reducer(state = initialState, action) {
 
     case DEAL_CARDS_TO_PLAYERS: {
       return Object.assign({}, state, {
-        players: handleDealingCardsToPlayers(state),
+        players: handleDealingCardsToPlayers(state.players, state.deck),
         deck: update(state.deck, {
           $splice: [[0, state.players.length * 2]],
         }),

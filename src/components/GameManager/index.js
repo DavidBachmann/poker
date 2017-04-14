@@ -3,7 +3,6 @@ import { round, find } from 'lodash'
 import __DEBUG__ from '../../utils/__DEBUG__'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import winnerDetermination from './winnerDetermination'
-import deepFreeze from 'deep-freeze'
 import update from 'immutability-helper'
 
 import handleCalculatingPositions
@@ -56,7 +55,6 @@ class GameManager extends Component {
     this.props.startNewRound()
     this.props.generateNewDeck()
     this.props.dealCardsToPlayers()
-    // this.thingsToDoWhenStartingAHand()
   }
 
   async delayAndRestart() {

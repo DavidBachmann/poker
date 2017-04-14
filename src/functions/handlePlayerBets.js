@@ -1,4 +1,5 @@
 import __DEBUG__ from '../utils/__DEBUG__'
+import update from 'immutability-helper'
 
 /**
  * Handles player's betting (bet, raise, push)
@@ -6,7 +7,7 @@ import __DEBUG__ from '../utils/__DEBUG__'
  * Returns new state
  */
 
-export default function handlePlayerBets(state, amountRequested) {
+export default function handlePlayerBets(amountRequested, state) {
   console.log('handlePlayerBets got state = ')
   console.log(state)
   console.log('and amount requested = ')
@@ -23,17 +24,20 @@ export default function handlePlayerBets(state, amountRequested) {
     highestCurrentBet,
     highestCurrentBettor,
   } = state
-  const currentPlayer = players[nextPlayerToAct]
 
-  const chipsCurrentlyInvested = currentPlayer.chipsCurrentlyInvested
+  // Values we'll be changing and returning
+  let $chips = players[nextPlayerToAct].chips
+  let $isAllIn = players[nextPlayerToAct].isAllIn
+  let $chipsCurrentlyInvested = players[nextPlayerToAct].chipsCurrentlyInvested
+
   // If the player is betting more than he can afford
   // we put him all in and bet his whole stack
   // else we'll honor the requested amount.
-  const amountOfChipsToBet = amountRequested <= currentPlayer.chips
+  const amountOfChipsToBet = amountRequested <= players[nextPlayerToAct].chips
     ? amountRequested
-    : currentPlayer.chips
-  if (amountRequested >= currentPlayer.chips) {
-    currentPlayer.isAllIn = true
+    : players[nextPlayerToAct].chips
+  if (amountRequested >= players[nextPlayerToAct].chips) {
+    $isAllIn = true
   }
   // Check if the player is betting the mininum required
   // By default that's 2xBB
@@ -41,29 +45,31 @@ export default function handlePlayerBets(state, amountRequested) {
   // Unless someone has bet higher
   // If we have chipsCurrentlyInvested, we don't have to pay that amount again to call or raise the current bet.
   const actualMinAmount = highestCurrentBet > defaultMinAmount
-    ? highestCurrentBet - chipsCurrentlyInvested
+    ? highestCurrentBet - players[nextPlayerToAct].chipsCurrentlyInvested
     : defaultMinAmount
 
   // The bet has to be higher than the mininum allowed
   if (amountOfChipsToBet >= actualMinAmount) {
     // Remove the amount requested from the player,
-    currentPlayer.chips -= amountOfChipsToBet
+    $chips -= amountOfChipsToBet
     // and then put into chipsCurrentlyInvested
-    currentPlayer.chipsCurrentlyInvested += amountOfChipsToBet
+    $chipsCurrentlyInvested += amountOfChipsToBet
+
     if (amountOfChipsToBet > highestCurrentBet) {
       newHighestCurrentBet = amountOfChipsToBet
-      newHighestCurrentBettor = currentPlayer
+      newHighestCurrentBettor = players[nextPlayerToAct]
       __DEBUG__(`New highest current bettor is ${newHighestCurrentBettor.name}`)
     }
     const _highestCurrentBettor = newHighestCurrentBettor
       ? newHighestCurrentBettor
       : highestCurrentBettor
-    return state // todo
-  } else {
-    __DEBUG__(
-      `${currentPlayer.name} bets illegal amount: ${amountRequested}. Minimum bet is ${actualMinAmount}`,
-    )
   }
-
+  return update(players, {
+    [nextPlayerToAct]: {
+      chips: { $set: $chips },
+      isAllIn: { $set: $isAllIn },
+      chipsCurrentlyInvested: { $set: $chipsCurrentlyInvested },
+    },
+  })
   // this.setState(this.returnNextPlayerToAct)
 }

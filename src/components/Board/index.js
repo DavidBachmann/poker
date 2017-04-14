@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Player from '../Player'
 import Community from '../Community'
 import './styles.css'
@@ -41,7 +41,7 @@ class Board extends Component {
       handlePlayerFolds,
     } = this.props
 
-    const {winnersHaveBeenDetermined} = this.state
+    const { winnersHaveBeenDetermined } = this.state
 
     return (
       <div className="Board has-6-players">
@@ -60,7 +60,7 @@ class Board extends Component {
                 }
                 holeCards={player.holeCards}
                 positions={positions}
-                showCards={winnersHaveBeenDetermined}
+                showCards={true}
                 betHandler={playerBets}
                 foldHandler={handlePlayerFolds}
                 highestCurrentBet={highestCurrentBet}
