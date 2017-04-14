@@ -6,7 +6,9 @@ import {
   startNewRound,
   generateNewDeck,
   playerBets,
+  playerFolds,
   dealCardsToPlayers,
+  getNextPlayerToAct,
 } from '../redux/modules/gameManager'
 
 function mapStateToProps(state) {
@@ -21,6 +23,8 @@ function mapDispatchToProps(dispatch) {
     generateNewDeck: () => dispatch(generateNewDeck()),
     dealCardsToPlayers: () => dispatch(dealCardsToPlayers()),
     playerBets: value => dispatch(playerBets(value)),
+    playerFolds: () => dispatch(playerFolds()),
+    getNextPlayerToAct: () => dispatch(getNextPlayerToAct()),
   }
 }
 

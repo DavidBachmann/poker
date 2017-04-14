@@ -22,10 +22,24 @@ class Board extends Component {
     // }
   }
 
+  betHandler = value => {
+    const { playerBets, getNextPlayerToAct } = this.props
+
+    playerBets(value)
+    getNextPlayerToAct()
+  }
+
+  foldHandler = () => {
+    const { playerFolds, getNextPlayerToAct } = this.props
+
+    playerFolds()
+    getNextPlayerToAct()
+  }
+
   render() {
     const {
       playerBets,
-
+      playerFolds,
       communityCards,
       dealerMessage,
       handWinners,
@@ -35,9 +49,7 @@ class Board extends Component {
       pot,
       currentStreet,
       nextPlayerToAct,
-      highestCurrentBet,
       highestCurrentBettor,
-      handlePlayerBets,
       handlePlayerFolds,
     } = this.props
 
@@ -61,9 +73,8 @@ class Board extends Component {
                 holeCards={player.holeCards}
                 positions={positions}
                 showCards={true}
-                betHandler={playerBets}
-                foldHandler={handlePlayerFolds}
-                highestCurrentBet={highestCurrentBet}
+                betHandler={this.betHandler}
+                foldHandler={this.foldHandler}
                 highestCurrentBettor={highestCurrentBettor}
                 chipsCurrentlyInvested={player.chipsCurrentlyInvested}
               />

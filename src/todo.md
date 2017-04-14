@@ -1,1 +1,1 @@
-april 11 2017: Betting invalid amount will still trigger returnNextPlayerToAct()
+april 14th: handling betAmount checks in Player component. Need to find a way to check it in handlePlayerBets() 

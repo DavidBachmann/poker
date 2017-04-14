@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import classNames from 'classnames'
 import Card from '../Card'
 import './styles.css'
@@ -16,26 +16,25 @@ class Player extends Component {
 
   render() {
     const {
+      betHandler,
       canAct,
       chips,
       chipsCurrentlyInvested,
+      foldHandler,
       hasFolded,
+      highestCurrentBettor,
       holeCards,
       index,
-      isLoser,
       isAllIn,
+      isLoser,
       isNextToAct,
       isWinner,
       name,
-      showCards,
       positions,
-      foldHandler,
-      betHandler,
-      highestCurrentBet,
-      highestCurrentBettor,
+      showCards,
     } = this.props
 
-    const {betValue} = this.state
+    const { betValue } = this.state
 
     const isButton = positions.button === index
     const isSB = positions.sb === index
@@ -43,8 +42,9 @@ class Player extends Component {
     const isUTG = positions.utg === index
     const isMP = positions.mp === index
     const isCutOff = positions.cutoff === index
-    const isHighestBettor =
-      highestCurrentBettor && highestCurrentBettor.index === index
+    const highestCurrentBet = highestCurrentBettor
+      ? highestCurrentBettor.chipsCurrentlyInvested
+      : 0
 
     return (
       <div
@@ -88,7 +88,7 @@ class Player extends Component {
         </div>
         <div className="Player-actionButtons">
           <button
-            disabled={!canAct}
+            disabled={!canAct || this.state.betValue < highestCurrentBet}
             onClick={() => betHandler(this.state.betValue)}
           >
             Bet

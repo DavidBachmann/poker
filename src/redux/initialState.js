@@ -18,7 +18,6 @@ const initialState = deepFreeze({
   communityCards: { flop: {}, turn: {}, river: {} },
   nextPlayerToAct: 0,
   playersInTheHand: players,
-  highestCurrentBet: 0,
   whatPlayerIsDealer: null,
   highestCurrentBettor: null,
 })

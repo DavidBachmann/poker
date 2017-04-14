@@ -13,15 +13,11 @@ export default function handlePlayerBets(amountRequested, state) {
   console.log('and amount requested = ')
   console.log(amountRequested)
 
-  let newHighestCurrentBet = null
-  let newHighestCurrentBettor = null
-
   const {
     players,
     nextPlayerToAct,
     levels,
     currentLevel,
-    highestCurrentBet,
     highestCurrentBettor,
   } = state
 
@@ -29,6 +25,7 @@ export default function handlePlayerBets(amountRequested, state) {
   let $chips = players[nextPlayerToAct].chips
   let $isAllIn = players[nextPlayerToAct].isAllIn
   let $chipsCurrentlyInvested = players[nextPlayerToAct].chipsCurrentlyInvested
+  let $highestCurrentBettor = highestCurrentBettor
 
   // If the player is betting more than he can afford
   // we put him all in and bet his whole stack
@@ -39,6 +36,12 @@ export default function handlePlayerBets(amountRequested, state) {
   if (amountRequested >= players[nextPlayerToAct].chips) {
     $isAllIn = true
   }
+
+  // Check what the highest current bet is
+  const highestCurrentBet = highestCurrentBettor
+    ? highestCurrentBettor.chipsCurrentlyInvested
+    : 0
+
   // Check if the player is betting the mininum required
   // By default that's 2xBB
   const defaultMinAmount = levels[currentLevel].bigBlind * 2
@@ -56,14 +59,11 @@ export default function handlePlayerBets(amountRequested, state) {
     $chipsCurrentlyInvested += amountOfChipsToBet
 
     if (amountOfChipsToBet > highestCurrentBet) {
-      newHighestCurrentBet = amountOfChipsToBet
-      newHighestCurrentBettor = players[nextPlayerToAct]
-      __DEBUG__(`New highest current bettor is ${newHighestCurrentBettor.name}`)
+      $highestCurrentBettor = players[nextPlayerToAct]
+      __DEBUG__(`New highest current bettor is ${$highestCurrentBettor.name}`)
     }
-    const _highestCurrentBettor = newHighestCurrentBettor
-      ? newHighestCurrentBettor
-      : highestCurrentBettor
   }
+
   return update(players, {
     [nextPlayerToAct]: {
       chips: { $set: $chips },

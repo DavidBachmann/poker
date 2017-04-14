@@ -3,8 +3,6 @@ import { round, find } from 'lodash'
 import __DEBUG__ from '../../utils/__DEBUG__'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import winnerDetermination from './winnerDetermination'
-import update from 'immutability-helper'
-
 import handleCalculatingPositions
   from '../../functions/handleCalculatingPositions'
 import handlePuttingChipsInPot from '../../functions/handlePuttingChipsInPot'
@@ -12,11 +10,7 @@ import handlePostBlinds from '../../functions/handlePostBlinds'
 
 class GameManager extends Component {
   async componentDidUpdate(prevProps, prevState) {
-    const { nextPlayerToAct } = this.props.state
-    if (nextPlayerToAct && nextPlayerToAct === -1) {
-      // await this.handleDealing()
-    }
-    console.log('GameManger state = ')
+    console.log('GameManager state = ')
     console.log(this.props.state)
   }
 
@@ -56,21 +50,6 @@ class GameManager extends Component {
     this.props.generateNewDeck()
     this.props.dealCardsToPlayers()
   }
-
-  async delayAndRestart() {
-    await this.delay(1000)
-    await this.handleResetting()
-    await this.thingsToDoWhenStartingAHand()
-  }
-
-  async thingsToDoWhenStartingAHand() {
-    await handleCalculatingPositions(this.props.state)
-    await this.handleDealing()
-    await handlePostBlinds(this.props.state)
-    this.moveGameForward()
-  }
-
-  delay = amount => new Promise(resolve => setTimeout(resolve, amount))
 
   /**
    * Handles winner determination and paying out chips in the pot
@@ -139,29 +118,6 @@ class GameManager extends Component {
         }
       }
     })
-
-    this.delayAndRestart()
-  }
-
-  handleCheckingHowManyPlayersHaveYetToAct() {
-    const { players } = this.props.state
-    return players.filter(
-      player => player.chipsCurrentlyInvested === 0 && !player.hasFolded,
-    )
-  }
-
-  dealPlayerCards() {
-    const { players } = this.props.state
-    const deck = generateShuffledDeck()
-
-    players.forEach(player => {
-      player.holeCards = deck.splice(0, 2)
-    })
-
-    this.setState({
-      deck,
-      players,
-    })
   }
 
   /**
@@ -214,207 +170,125 @@ class GameManager extends Component {
   /**
    * Handle dealing of all cards
    */
-  handleDealing = () => {
-    const {
-      deck,
-      communityCards,
-      currentStreet,
-      positions,
-      whatPlayerIsDealer,
-    } = this.props.state
-    handlePuttingChipsInPot(this.props.state)
-    // Preflop
-    if (currentStreet === 0) {
-      this.dealPlayerCards()
-      this.setState({
-        currentStreet: currentStreet + 1,
-        highestCurrentBet: 0,
-        nextPlayerToAct: positions.utg,
-        highestCurrentBettor: null,
-      })
-    } else if (currentStreet === 1) {
-      // Flop
-      __DEBUG__('Currentstreet === 1')
-      this.setState({
-        currentStreet: currentStreet + 1,
-        highestCurrentBet: 0,
-        highestCurrentBettor: null,
-        nextPlayerToAct: whatPlayerIsDealer,
-        communityCards: { ...communityCards, flop: deck.splice(0, 3) },
-      })
-      this.setState(this.returnNextPlayerToAct)
-    } else if (currentStreet === 2) {
-      // Turn
-      __DEBUG__('Currentstreet === 2')
-      this.setState({
-        currentStreet: currentStreet + 1,
-        highestCurrentBet: 0,
-        highestCurrentBettor: null,
-        nextPlayerToAct: whatPlayerIsDealer,
-        communityCards: { ...communityCards, turn: deck.splice(0, 1) },
-      })
-      this.setState(this.returnNextPlayerToAct)
-    } else if (currentStreet === 3) {
-      // River
-      __DEBUG__('Currentstreet === 3')
-      this.setState({
-        currentStreet: currentStreet + 1,
-        communityCards: { ...communityCards, river: deck.splice(0, 1) },
-        highestCurrentBet: 0,
-        highestCurrentBettor: null,
-        nextPlayerToAct: whatPlayerIsDealer,
-      })
-      this.setState(this.returnNextPlayerToAct)
-    } else {
-      this.handleWinnerSelection()
-    }
-  }
+  // handleDealing = () => {
+  //   const {
+  //     deck,
+  //     communityCards,
+  //     currentStreet,
+  //     positions,
+  //     whatPlayerIsDealer,
+  //   } = this.props.state
+  //   handlePuttingChipsInPot(this.props.state)
+  //   // Preflop
+  //   if (currentStreet === 0) {
+  //     this.dealPlayerCards()
+  //     this.setState({
+  //       currentStreet: currentStreet + 1,
+  //       highestCurrentBet: 0,
+  //       nextPlayerToAct: positions.utg,
+  //       highestCurrentBettor: null,
+  //     })
+  //   } else if (currentStreet === 1) {
+  //     // Flop
+  //     __DEBUG__('Currentstreet === 1')
+  //     this.setState({
+  //       currentStreet: currentStreet + 1,
+  //       highestCurrentBet: 0,
+  //       highestCurrentBettor: null,
+  //       nextPlayerToAct: whatPlayerIsDealer,
+  //       communityCards: { ...communityCards, flop: deck.splice(0, 3) },
+  //     })
+  //     this.setState(this.returnNextPlayerToAct)
+  //   } else if (currentStreet === 2) {
+  //     // Turn
+  //     __DEBUG__('Currentstreet === 2')
+  //     this.setState({
+  //       currentStreet: currentStreet + 1,
+  //       highestCurrentBet: 0,
+  //       highestCurrentBettor: null,
+  //       nextPlayerToAct: whatPlayerIsDealer,
+  //       communityCards: { ...communityCards, turn: deck.splice(0, 1) },
+  //     })
+  //     this.setState(this.returnNextPlayerToAct)
+  //   } else if (currentStreet === 3) {
+  //     // River
+  //     __DEBUG__('Currentstreet === 3')
+  //     this.setState({
+  //       currentStreet: currentStreet + 1,
+  //       communityCards: { ...communityCards, river: deck.splice(0, 1) },
+  //       highestCurrentBet: 0,
+  //       highestCurrentBettor: null,
+  //       nextPlayerToAct: whatPlayerIsDealer,
+  //     })
+  //     this.setState(this.returnNextPlayerToAct)
+  //   } else {
+  //     this.handleWinnerSelection()
+  //   }
+  // }
 
-  returnAlivePlayers = () => {
-    const { players } = this.props.state
-    if (!players) {
-      return
-    }
-
-    return players.filter(player => !player.hasFolded)
-  }
+  // returnAlivePlayers = () => {
+  //   const { players } = this.props.state
+  //   if (!players) {
+  //     return
+  //   }
+  //
+  //   return players.filter(player => !player.hasFolded)
+  // }
 
   /**
    * Handle getting the next player capable of acting
    */
-  returnNextPlayerToAct = state => {
-    const {
-      players,
-      nextPlayerToAct: currentPlayerIndex,
-      highestCurrentBettor,
-    } = state
-    const playerCount = players.length
-    const startIndex = (currentPlayerIndex + 1) % playerCount
-    const _highestCurrentBet =
-      highestCurrentBettor && highestCurrentBettor.chipsCurrentlyInvested
-
-    for (
-      let index = startIndex;
-      index !== currentPlayerIndex;
-      index = (index + 1) % playerCount
-    ) {
-      const player = players[index]
-      if (
-        !player.hasFolded &&
-        !player.isAllIn &&
-        player.chipsCurrentlyInvested !== _highestCurrentBet
-      ) {
-        return { nextPlayerToAct: index }
-      }
-    }
-
-    return { nextPlayerToAct: -1 }
-  }
+  // returnNextPlayerToAct = state => {
+  //   const {
+  //     players,
+  //     nextPlayerToAct: currentPlayerIndex,
+  //     highestCurrentBettor,
+  //   } = state
+  //   const playerCount = players.length
+  //   const startIndex = (currentPlayerIndex + 1) % playerCount
+  //   const _highestCurrentBet =
+  //     highestCurrentBettor && highestCurrentBettor.chipsCurrentlyInvested
+  //
+  //   for (
+  //     let index = startIndex;
+  //     index !== currentPlayerIndex;
+  //     index = (index + 1) % playerCount
+  //   ) {
+  //     const player = players[index]
+  //     if (
+  //       !player.hasFolded &&
+  //       !player.isAllIn &&
+  //       player.chipsCurrentlyInvested !== _highestCurrentBet
+  //     ) {
+  //       return { nextPlayerToAct: index }
+  //     }
+  //   }
+  //
+  //   return { nextPlayerToAct: -1 }
+  // }
 
   /**
    * Handles player's betting (bet, raise, push)
    */
-  handlePlayerBets = amountRequested => {
-    let newHighestCurrentBet = null
-    let newHighestCurrentBettor = null
 
-    // this.setState(updateBets(amountRequested))
-    // this.setState(moveGameForward())
-
-    this.setState(prevState => {
-      const {
-        players,
-        nextPlayerToAct,
-        levels,
-        currentLevel,
-        highestCurrentBet,
-        highestCurrentBettor,
-      } = prevState
-      const currentPlayer = players[nextPlayerToAct]
-
-      const chipsCurrentlyInvested = currentPlayer.chipsCurrentlyInvested
-      // If the player is betting more than he can afford
-      // we put him all in and bet his whole stack
-      // else we'll honor the requested amount.
-      const amountOfChipsToBet = amountRequested <= currentPlayer.chips
-        ? amountRequested
-        : currentPlayer.chips
-      if (amountRequested >= currentPlayer.chips) {
-        currentPlayer.isAllIn = true
-      }
-      // Check if the player is betting the mininum required
-      // By default that's 2xBB
-      const defaultMinAmount = levels[currentLevel].bigBlind * 2
-      // Unless someone has bet higher
-      // If we have chipsCurrentlyInvested, we don't have to pay that amount again to call or raise the current bet.
-      const actualMinAmount = highestCurrentBet > defaultMinAmount
-        ? highestCurrentBet - chipsCurrentlyInvested
-        : defaultMinAmount
-
-      // The bet has to be higher than the mininum allowed
-      if (amountOfChipsToBet >= actualMinAmount) {
-        // Remove the amount requested from the player,
-        currentPlayer.chips -= amountOfChipsToBet
-        // and then put into chipsCurrentlyInvested
-        currentPlayer.chipsCurrentlyInvested += amountOfChipsToBet
-        if (amountOfChipsToBet > highestCurrentBet) {
-          newHighestCurrentBet = amountOfChipsToBet
-          newHighestCurrentBettor = currentPlayer
-          __DEBUG__(
-            `New highest current bettor is ${newHighestCurrentBettor.name}`,
-          )
-        }
-        const _highestCurrentBettor = newHighestCurrentBettor
-          ? newHighestCurrentBettor
-          : highestCurrentBettor
-        return {
-          players,
-          highestCurrentBet: newHighestCurrentBet
-            ? newHighestCurrentBet
-            : highestCurrentBet,
-          highestCurrentBettor: _highestCurrentBettor,
-        }
-      } else {
-        __DEBUG__(
-          `${currentPlayer.name} bets illegal amount: ${amountRequested}. Minimum bet is ${actualMinAmount}`,
-        )
-      }
-    })
-
-    this.setState(this.returnNextPlayerToAct)
-  }
-
-  /**
-   * Handles player's folding
-   */
-  handlePlayerFolds = () => {
-    this.setState(({ players, nextPlayerToAct }) => {
-      const currentPlayer = players[nextPlayerToAct]
-      currentPlayer.holeCards = []
-      currentPlayer.hasFolded = true
-
-      return {
-        players,
-      }
-    })
-    this.setState(this.returnNextPlayerToAct)
-  }
+  //   this.setState(this.returnNextPlayerToAct)
+  // }
 
   render() {
-    const { children, playerBets } = this.props
+    const { children, playerBets, playerFolds, getNextPlayerToAct } = this.props
     const {
-      deck,
-      players,
+      communityCards,
       currentLevel,
-      handWinners,
-      showdown,
-      positions,
       currentStreet,
+      deck,
+      handWinners,
       highestCurrentBet,
       highestCurrentBettor,
-      communityCards,
       nextPlayerToAct,
+      players,
+      positions,
       pot,
+      showdown,
     } = this.props.state
 
     return cloneElement(children, {
@@ -424,15 +298,16 @@ class GameManager extends Component {
       showdown,
       positions,
       playerBets,
+      playerFolds,
       handWinners,
       currentLevel,
       currentStreet,
       communityCards,
       nextPlayerToAct,
       highestCurrentBet,
+      getNextPlayerToAct,
       highestCurrentBettor,
       handleDealing: this.handleDealing,
-      handlePlayerBets: this.handlePlayerBets,
       handlePlayerFolds: this.handlePlayerFolds,
     })
   }
