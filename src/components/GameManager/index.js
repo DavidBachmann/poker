@@ -54,6 +54,8 @@ class GameManager extends Component {
 
   componentDidMount() {
     this.props.startNewRound()
+    this.props.generateNewDeck()
+    this.props.dealCardsToPlayers()
     // this.thingsToDoWhenStartingAHand()
   }
 

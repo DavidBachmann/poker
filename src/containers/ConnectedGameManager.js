@@ -2,7 +2,12 @@
 
 import { connect } from 'react-redux'
 import GameManager from '../components/GameManager'
-import { startNewRound, playerBets } from '../redux/modules/gameManager'
+import {
+  startNewRound,
+  generateNewDeck,
+  playerBets,
+  dealCardsToPlayers,
+} from '../redux/modules/gameManager'
 
 function mapStateToProps(state) {
   return {
@@ -13,6 +18,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     startNewRound: () => dispatch(startNewRound()),
+    generateNewDeck: () => dispatch(generateNewDeck()),
+    dealCardsToPlayers: () => dispatch(dealCardsToPlayers()),
     playerBets: value => dispatch(playerBets(value)),
   }
 }

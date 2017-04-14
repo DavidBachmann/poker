@@ -1,4 +1,4 @@
-import {initializePlayers, initializeLevels} from '../utils/initializer'
+import { initializePlayers, initializeLevels } from '../utils/initializer'
 
 const players = initializePlayers(6, 1500)
 const levels = initializeLevels()
@@ -14,7 +14,7 @@ const initialState = {
   handWinners: [],
   currentLevel: 1,
   currentStreet: 0,
-  communityCards: {flop: {}, turn: {}, river: {}},
+  communityCards: { flop: {}, turn: {}, river: {} },
   nextPlayerToAct: 0,
   playersInTheHand: players,
   highestCurrentBet: 0,

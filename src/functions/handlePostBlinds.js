@@ -1,3 +1,4 @@
+import update from 'immutability-helper'
 import getAmountTakenFromBlindedPlayers
   from './getAmountTakenFromBlindedPlayers'
 
@@ -18,21 +19,31 @@ export default function handlePostBlinds(state) {
     smallBlindPosition,
     smallBlind,
   )
+
   const amountTakenFromBigBlindPlayer = getAmountTakenFromBlindedPlayers(
     players,
     bigBlindPosition,
     bigBlind,
   )
 
-  players[
-    smallBlindPosition
-  ].chipsCurrentlyInvested = amountTakenFromSmallBlindPlayer
-  players[
-    bigBlindPosition
-  ].chipsCurrentlyInvested = amountTakenFromBigBlindPlayer
+  const $players = update(players, {
+    [smallBlindPosition]: {
+      chipsCurrentlyInvested: {
+        $set: amountTakenFromSmallBlindPlayer,
+      },
+      chips: {
+        $apply: x => x - amountTakenFromSmallBlindPlayer,
+      },
+    },
+    [bigBlindPosition]: {
+      chipsCurrentlyInvested: {
+        $set: amountTakenFromBigBlindPlayer,
+      },
+      chips: {
+        $apply: x => x - amountTakenFromBigBlindPlayer,
+      },
+    },
+  })
 
-  return {
-    ...state,
-    players,
-  }
+  return $players
 }

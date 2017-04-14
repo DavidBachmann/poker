@@ -9,11 +9,9 @@ export default function getAmountTakenFromBlindedPlayers(
   // Pay the blind if the player can afford it
   if (blindedPlayer.chips >= blindLevel) {
     amountTaken = blindLevel
-    blindedPlayer.chips -= blindLevel
   } else {
     // else pay all his chips
     amountTaken = blindedPlayer.chips
-    blindedPlayer.chips = 0
   }
 
   return amountTaken
