@@ -71,5 +71,4 @@ export default function handlePlayerBets(amountRequested, state) {
       chipsCurrentlyInvested: { $set: $chipsCurrentlyInvested },
     },
   })
-  // this.setState(this.returnNextPlayerToAct)
 }

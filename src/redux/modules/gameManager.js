@@ -3,7 +3,7 @@ import update from 'immutability-helper'
 import handlePlayerBets from '../../functions/handlePlayerBets'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
-
+import handleNextPlayerToAct from '../../functions/handleNextPlayerToAct'
 import handleDealingCardsToPlayers
   from '../../functions/handleDealingCardsToPlayers'
 import handleCalculatingPositions
@@ -12,7 +12,6 @@ import initialState from '../initialState'
 
 const PLAYER_BETS = 'PLAYER_BETS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
-const PAY_BLINDS = 'PAY_BLINDS' // valid action?!
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
 
@@ -46,8 +45,10 @@ export default function reducer(state = initialState, action) {
     case PLAYER_BETS: {
       return Object.assign({}, state, {
         players: handlePlayerBets(action.value, state),
+        nextPlayerToAct: handleNextPlayerToAct(state),
       })
     }
+
     case START_NEW_ROUND: {
       return Object.assign({}, state, {
         positions: handleCalculatingPositions(

@@ -301,8 +301,8 @@ class GameManager extends Component {
       const player = players[index]
       if (
         !player.hasFolded &&
-        player.chipsCurrentlyInvested !== _highestCurrentBet &&
-        !player.isAllIn
+        !player.isAllIn &&
+        player.chipsCurrentlyInvested !== _highestCurrentBet
       ) {
         return { nextPlayerToAct: index }
       }
