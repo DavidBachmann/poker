@@ -2,13 +2,13 @@ import React from 'react'
 import Card from '../Card'
 import './styles.css'
 
-const Community = ({communityCards}) => (
+const Community = ({ communityCards }) => (
   <div>
     {communityCards &&
       <div className="CommunityCards">
-        {communityCards.flop &&
-          communityCards.flop.length === 3 &&
-          communityCards.flop.map((card, index) => (
+        {communityCards[0] &&
+          communityCards[0].length &&
+          communityCards[0].map((card, index) => (
             <Card
               visible={true}
               suit={card.suit}
@@ -16,9 +16,9 @@ const Community = ({communityCards}) => (
               key={index}
             />
           ))}
-        {communityCards.turn &&
-          communityCards.turn.length === 1 &&
-          communityCards.turn.map((card, index) => (
+        {communityCards[1] &&
+          communityCards[1].length &&
+          communityCards[1].map((card, index) => (
             <Card
               visible={true}
               suit={card.suit}
@@ -26,9 +26,9 @@ const Community = ({communityCards}) => (
               key={index}
             />
           ))}
-        {communityCards.river &&
-          communityCards.river.length === 1 &&
-          communityCards.river.map((card, index) => (
+        {communityCards[2] &&
+          communityCards[2].length &&
+          communityCards[2].map((card, index) => (
             <Card
               visible={true}
               suit={card.suit}

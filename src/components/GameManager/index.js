@@ -1,17 +1,22 @@
 import { Component, cloneElement } from 'react'
 import { round, find } from 'lodash'
 import __DEBUG__ from '../../utils/__DEBUG__'
-import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import winnerDetermination from './winnerDetermination'
-import handleCalculatingPositions
-  from '../../functions/handleCalculatingPositions'
 import handlePuttingChipsInPot from '../../functions/handlePuttingChipsInPot'
-import handlePostBlinds from '../../functions/handlePostBlinds'
 
 class GameManager extends Component {
-  async componentDidUpdate(prevProps, prevState) {
-    console.log('GameManager state = ')
-    console.log(this.props.state)
+  constructor() {
+    super()
+    this.lock = false
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.state.nextPlayerToAct === -1 && !this.lock) {
+      this.lock = true
+      console.log(this.props.state.currentStreet)
+      console.log('nextPlayerToAct === -1')
+      this.props.dealNextStreet(this.props.state.currentStreet)
+    }
   }
 
   setState(obj) {
@@ -170,61 +175,61 @@ class GameManager extends Component {
   /**
    * Handle dealing of all cards
    */
-  // handleDealing = () => {
-  //   const {
-  //     deck,
-  //     communityCards,
-  //     currentStreet,
-  //     positions,
-  //     whatPlayerIsDealer,
-  //   } = this.props.state
-  //   handlePuttingChipsInPot(this.props.state)
-  //   // Preflop
-  //   if (currentStreet === 0) {
-  //     this.dealPlayerCards()
-  //     this.setState({
-  //       currentStreet: currentStreet + 1,
-  //       highestCurrentBet: 0,
-  //       nextPlayerToAct: positions.utg,
-  //       highestCurrentBettor: null,
-  //     })
-  //   } else if (currentStreet === 1) {
-  //     // Flop
-  //     __DEBUG__('Currentstreet === 1')
-  //     this.setState({
-  //       currentStreet: currentStreet + 1,
-  //       highestCurrentBet: 0,
-  //       highestCurrentBettor: null,
-  //       nextPlayerToAct: whatPlayerIsDealer,
-  //       communityCards: { ...communityCards, flop: deck.splice(0, 3) },
-  //     })
-  //     this.setState(this.returnNextPlayerToAct)
-  //   } else if (currentStreet === 2) {
-  //     // Turn
-  //     __DEBUG__('Currentstreet === 2')
-  //     this.setState({
-  //       currentStreet: currentStreet + 1,
-  //       highestCurrentBet: 0,
-  //       highestCurrentBettor: null,
-  //       nextPlayerToAct: whatPlayerIsDealer,
-  //       communityCards: { ...communityCards, turn: deck.splice(0, 1) },
-  //     })
-  //     this.setState(this.returnNextPlayerToAct)
-  //   } else if (currentStreet === 3) {
-  //     // River
-  //     __DEBUG__('Currentstreet === 3')
-  //     this.setState({
-  //       currentStreet: currentStreet + 1,
-  //       communityCards: { ...communityCards, river: deck.splice(0, 1) },
-  //       highestCurrentBet: 0,
-  //       highestCurrentBettor: null,
-  //       nextPlayerToAct: whatPlayerIsDealer,
-  //     })
-  //     this.setState(this.returnNextPlayerToAct)
-  //   } else {
-  //     this.handleWinnerSelection()
-  //   }
-  // }
+  _handleDealing = () => {
+    const {
+      deck,
+      communityCards,
+      currentStreet,
+      positions,
+      whatPlayerIsDealer,
+    } = this.props.state
+    handlePuttingChipsInPot(this.props.state)
+    // Preflop
+    if (currentStreet === 0) {
+      this.dealPlayerCards()
+      this.setState({
+        currentStreet: currentStreet + 1,
+        highestCurrentBet: 0,
+        nextPlayerToAct: positions.utg,
+        highestCurrentBettor: null,
+      })
+    } else if (currentStreet === 1) {
+      // Flop
+      __DEBUG__('Currentstreet === 1')
+      this.setState({
+        currentStreet: currentStreet + 1,
+        highestCurrentBet: 0,
+        highestCurrentBettor: null,
+        nextPlayerToAct: whatPlayerIsDealer,
+        communityCards: { ...communityCards, flop: deck.splice(0, 3) },
+      })
+      this.setState(this.returnNextPlayerToAct)
+    } else if (currentStreet === 2) {
+      // Turn
+      __DEBUG__('Currentstreet === 2')
+      this.setState({
+        currentStreet: currentStreet + 1,
+        highestCurrentBet: 0,
+        highestCurrentBettor: null,
+        nextPlayerToAct: whatPlayerIsDealer,
+        communityCards: { ...communityCards, turn: deck.splice(0, 1) },
+      })
+      this.setState(this.returnNextPlayerToAct)
+    } else if (currentStreet === 3) {
+      // River
+      __DEBUG__('Currentstreet === 3')
+      this.setState({
+        currentStreet: currentStreet + 1,
+        communityCards: { ...communityCards, river: deck.splice(0, 1) },
+        highestCurrentBet: 0,
+        highestCurrentBettor: null,
+        nextPlayerToAct: whatPlayerIsDealer,
+      })
+      this.setState(this.returnNextPlayerToAct)
+    } else {
+      this.handleWinnerSelection()
+    }
+  }
 
   // returnAlivePlayers = () => {
   //   const { players } = this.props.state
@@ -275,7 +280,13 @@ class GameManager extends Component {
   // }
 
   render() {
-    const { children, playerBets, playerFolds, getNextPlayerToAct } = this.props
+    const {
+      children,
+      state,
+      playerBets,
+      playerFolds,
+      getNextPlayerToAct,
+    } = this.props
     const {
       communityCards,
       currentLevel,
@@ -289,7 +300,7 @@ class GameManager extends Component {
       positions,
       pot,
       showdown,
-    } = this.props.state
+    } = state
 
     return cloneElement(children, {
       pot,

@@ -7,6 +7,7 @@ import {
   generateNewDeck,
   playerBets,
   playerFolds,
+  dealNextStreet,
   dealCardsToPlayers,
   getNextPlayerToAct,
 } from '../redux/modules/gameManager'
@@ -25,6 +26,7 @@ function mapDispatchToProps(dispatch) {
     playerBets: value => dispatch(playerBets(value)),
     playerFolds: () => dispatch(playerFolds()),
     getNextPlayerToAct: () => dispatch(getNextPlayerToAct()),
+    dealNextStreet: currentStreet => dispatch(dealNextStreet(currentStreet)),
   }
 }
 

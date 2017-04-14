@@ -1,10 +1,17 @@
 import uuidV4 from 'uuid/v4'
 import randomNameGenerator from '../randomNameGenerator'
 
-const initalizePlayers = (totalPlayers, startingStack, generateRandomName = true, generateRandomId = true) =>
-  Array.from({
-    length: totalPlayers
-  }, (_, index) => ({
+const initalizePlayers = (
+  totalPlayers,
+  startingStack,
+  generateRandomName = true,
+  generateRandomId = true,
+) =>
+  Array.from(
+    {
+      length: totalPlayers,
+    },
+    (_, index) => ({
       index,
       holeCards: [],
       hand: [],
@@ -14,7 +21,7 @@ const initalizePlayers = (totalPlayers, startingStack, generateRandomName = true
       id: generateRandomId ? uuidV4() : null,
       hasFolded: false,
       isAllIn: false,
-    })
+    }),
   )
 
 export default initalizePlayers

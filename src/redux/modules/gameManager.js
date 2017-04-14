@@ -11,11 +11,13 @@ import handleDealingCardsToPlayers
   from '../../functions/handleDealingCardsToPlayers'
 import handleCalculatingPositions
   from '../../functions/handleCalculatingPositions'
+import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 import initialState from '../initialState'
 
 const PLAYER_BETS = 'PLAYER_BETS'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
+const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
 const GET_NEXT_PLAYER_TO_ACT = 'NEXT_PLAYER_TO_ACT'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
@@ -57,6 +59,13 @@ export function playerBets(value) {
   }
 }
 
+export function dealNextStreet(currentStreet) {
+  return {
+    type: DEAL_NEXT_STREET,
+    currentStreet,
+  }
+}
+
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case PLAYER_BETS: {
@@ -92,6 +101,16 @@ export default function reducer(state = initialState, action) {
     case GENERATE_NEW_DECK: {
       return Object.assign({}, state, {
         deck: generateShuffledDeck(),
+      })
+    }
+
+    case DEAL_NEXT_STREET: {
+      return Object.assign({}, state, {
+        communityCards: handleDealingNextStreet(
+          action.currentStreet,
+          state.communityCards,
+          state.deck,
+        ),
       })
     }
 
