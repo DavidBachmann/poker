@@ -72,7 +72,8 @@
     "test": "node scripts/test.js --env=jsdom"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": { "semi": ["error", "never" ] }
   },
   "jest": {
     "collectCoverageFrom": [

@@ -1,4 +1,8 @@
-const getAmountTakenFromBlindedPlayers = (players, position, blindLevel) => {
+export default function getAmountTakenFromBlindedPlayers(
+  players,
+  position,
+  blindLevel,
+) {
   let amountTaken = 0
   const blindedPlayer = players[position]
 
@@ -14,5 +18,3 @@ const getAmountTakenFromBlindedPlayers = (players, position, blindLevel) => {
 
   return amountTaken
 }
-
-export default getAmountTakenFromBlindedPlayers

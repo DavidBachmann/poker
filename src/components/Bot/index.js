@@ -1,6 +1,6 @@
 // Unused until I figure out how I want to use it.
 
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import Player from '../Player'
 
 class Bot extends Component {
@@ -32,7 +32,6 @@ class Bot extends Component {
         visibleCards={visibleCards}
       />
     )
-
   }
 }
 

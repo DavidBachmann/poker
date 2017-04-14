@@ -1,52 +1,27 @@
 import { Component, cloneElement } from 'react'
 import { round, find } from 'lodash'
 import __DEBUG__ from '../../utils/__DEBUG__'
-import { initializePlayers, initializeLevels } from '../../utils/initializer'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
-import getAmountTakenFromBlindedPlayers from './getAmountTakenFromBlindedPlayers'
 import winnerDetermination from './winnerDetermination'
 import deepFreeze from 'deep-freeze'
 import update from 'immutability-helper'
 
+import handleCalculatingPositions from '../../functions/handleCalculatingPositions'
+import handlePuttingChipsInPot from '../../functions/handlePuttingChipsInPot'
+import handlePostBlinds from '../../functions/handlePostBlinds'
+
 class GameManager extends Component {
-  static STARTING_STACK = 1500
-  static TOTAL_PLAYERS = 6
-  static MAX_HANDS_PER_LEVEL = 25
-
-  players = initializePlayers(GameManager.TOTAL_PLAYERS, GameManager.STARTING_STACK)
-  levels = initializeLevels()
-
-  constructor() {
-    super()
-    this.state = {
-      pot: 0,
-      deck: [],
-      levels: this.levels,
-      players: this.players,
-      showdown: false,
-      positions: {},
-      handHistory: [],
-      handWinners: [],
-      currentLevel: 1,
-      currentStreet: 0,
-      communityCards: {flop: {}, turn: {}, river: {}},
-      nextPlayerToAct: 0,
-      playersInTheHand: this.players,
-      highestCurrentBet: 0,
-      whatPlayerIsDealer: null,
-      highestCurrentBettor: null,
-    }
-  }
-
   async componentDidUpdate(prevProps, prevState) {
-    const { nextPlayerToAct } = this.state
-    if (prevState.nextPlayerToAct !== nextPlayerToAct && nextPlayerToAct === -1) {
+    const { nextPlayerToAct } = this.props.state
+    if (nextPlayerToAct && nextPlayerToAct === -1) {
       await this.handleDealing()
     }
+    console.log('GameManger state = ')
+    console.log(this.props.state)
   }
 
   async moveGameForward() {
-    const { playersInTheHand, handWinners } = this.state
+    const { playersInTheHand, handWinners } = this.props.state
     // Update the list of players that are still in the hand
     const alivePlayers = this.returnAlivePlayers()
     if (alivePlayers && alivePlayers.length !== playersInTheHand.length) {
@@ -57,8 +32,8 @@ class GameManager extends Component {
       })
     }
 
-    if ((alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) || this.state.showdown) {
-      this.handlePuttingChipsInPot()
+    if ((alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) || this.props.state.showdown) {
+      handlePuttingChipsInPot(this.props.state)
       await this.handleWinnerSelection(alivePlayers)
     }
 
@@ -70,6 +45,7 @@ class GameManager extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props)
     this.thingsToDoWhenStartingAHand()
   }
 
@@ -80,9 +56,9 @@ class GameManager extends Component {
   }
 
   async thingsToDoWhenStartingAHand() {
-    await this.handleCalculatingPositions()
+    await handleCalculatingPositions(this.props.state)
     await this.handleDealing()
-    await this.handlePostBlinds()
+    await handlePostBlinds(this.props.state)
     this.moveGameForward()
   }
 
@@ -93,7 +69,7 @@ class GameManager extends Component {
    */
   handleWinnerSelection = (players) => {
     __DEBUG__('Calling handleWinnerSelection')
-    const { communityCards } = this.state
+    const { communityCards } = this.props.state
     let winner = null
 
     if (!players) {
@@ -158,33 +134,13 @@ class GameManager extends Component {
     this.delayAndRestart()
   }
 
-  handleCalculatingPositions = () => {
-    this.setState((prevState) => {
-      const { players, handHistory, positions } = prevState
-      const totalPlayers = players.length
-
-      const $positions = update(positions, {
-        bb: {$set: (handHistory.length + totalPlayers - 1) % totalPlayers},
-        sb: {$set: (handHistory.length + totalPlayers - 2) % totalPlayers},
-        button: {$set: (handHistory.length + totalPlayers - 3) % totalPlayers},
-        cutoff: {$set: (handHistory.length + totalPlayers - 4) % totalPlayers},
-        mp: {$set: (handHistory.length + totalPlayers - 5) % totalPlayers},
-        utg: {$set: (handHistory.length + totalPlayers - 6) % totalPlayers},
-      })
-
-      return {
-        positions: $positions,
-      }
-    })
-  }
-
   handleCheckingHowManyPlayersHaveYetToAct() {
-    const { players } = this.state
+    const { players } = this.props.state
     return players.filter(player => player.chipsCurrentlyInvested === 0 && !player.hasFolded)
   }
 
   dealPlayerCards() {
-    const { players } = this.state
+    const { players } = this.props.state
     const deck = generateShuffledDeck()
 
     players.forEach((player) => {
@@ -245,8 +201,8 @@ class GameManager extends Component {
    * Handle dealing of all cards
    */
   handleDealing = () => {
-    const { deck, communityCards, currentStreet, positions, whatPlayerIsDealer } = this.state
-    this.handlePuttingChipsInPot()
+    const { deck, communityCards, currentStreet, positions, whatPlayerIsDealer } = this.props.state
+    handlePuttingChipsInPot(this.props.state)
     // Preflop
     if (currentStreet === 0) {
       this.dealPlayerCards()
@@ -303,7 +259,7 @@ class GameManager extends Component {
   }
 
   returnAlivePlayers = () => {
-    const { players } = this.state
+    const { players } = this.props.state
     if (!players) {
       return
     }
@@ -328,47 +284,6 @@ class GameManager extends Component {
     }
 
     return { nextPlayerToAct: -1 }
-  }
-
-  /**
-   * Handles collecting blinds from players
-   * Collected blinds go to player's chipsCurrentlyInvested
-   * If the round continues the chips will be transferred to the pot via handlePuttingChipsInPot
-   */
-  handlePostBlinds = () => {
-    this.setState((prevState) => {
-      const { levels, currentLevel, nextPlayerToAct, players } = prevState
-      const { TOTAL_PLAYERS } = GameManager
-      const bigBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 1) % TOTAL_PLAYERS
-      const smallBlindPosition = (nextPlayerToAct + TOTAL_PLAYERS - 2) % TOTAL_PLAYERS
-      const { smallBlind, bigBlind } = levels[currentLevel]
-
-      const amountTakenFromSmallBlindPlayer = getAmountTakenFromBlindedPlayers(players, smallBlindPosition, smallBlind)
-      const amountTakenFromBigBlindPlayer = getAmountTakenFromBlindedPlayers(players, bigBlindPosition, bigBlind)
-
-      players[smallBlindPosition].chipsCurrentlyInvested = amountTakenFromSmallBlindPlayer
-      players[bigBlindPosition].chipsCurrentlyInvested = amountTakenFromBigBlindPlayer
-
-      return {
-        players,
-      }
-    })
-  }
-
-  /**
-   * Handles taking chips from player's chipsCurrentlyInvested
-   * and putting them in the pot
-   */
-  handlePuttingChipsInPot = () => {
-    this.setState((prevState) => {
-      const { players, pot } = prevState
-      const amountOfChipsToTransfer = players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)
-      // Empty chipsCurrentlyInvested
-      players.map((player) => player.chipsCurrentlyInvested = 0)
-      return {
-        pot: pot + amountOfChipsToTransfer,
-      }
-    })
   }
 
   /**
@@ -442,8 +357,8 @@ class GameManager extends Component {
   }
 
   render() {
-    const { children } = this.props
-    const { deck, players, currentLevel, handWinners, showdown, positions, currentStreet, highestCurrentBet, highestCurrentBettor, communityCards, nextPlayerToAct, pot } = this.state
+    const { children, playerBets, } = this.props
+    const { deck, players, currentLevel, handWinners, showdown, positions, currentStreet, highestCurrentBet, highestCurrentBettor, communityCards, nextPlayerToAct, pot } = this.props.state
 
     return cloneElement(children, {
       pot,
@@ -451,6 +366,7 @@ class GameManager extends Component {
       players,
       showdown,
       positions,
+      playerBets,
       handWinners,
       currentLevel,
       currentStreet,
@@ -459,7 +375,6 @@ class GameManager extends Component {
       highestCurrentBet,
       highestCurrentBettor,
       handleDealing: this.handleDealing,
-      handlePostBlinds: this.handlePostBlinds,
       handlePlayerBets: this.handlePlayerBets,
       handlePlayerFolds: this.handlePlayerFolds,
     })

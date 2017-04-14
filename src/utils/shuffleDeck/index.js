@@ -1,8 +1,8 @@
-const shuffleDeck = (deck) => {
+const shuffleDeck = deck => {
   let rnd, temp
 
   for (var i = deck.length - 1; i; i--) {
-    rnd = Math.random() * i | 0
+    rnd = (Math.random() * i) | 0
     temp = deck[i]
     deck[i] = deck[rnd]
     deck[rnd] = temp

@@ -9,7 +9,7 @@ export const availableRanks = [
   },
   {
     value: 4,
-    symbol:  '4',
+    symbol: '4',
   },
   {
     value: 5,
@@ -21,7 +21,7 @@ export const availableRanks = [
   },
   {
     value: 7,
-    symbol: '7'
+    symbol: '7',
   },
   {
     value: 8,
