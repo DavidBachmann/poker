@@ -15,10 +15,11 @@ import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 import initialState from '../initialState'
 
 const PLAYER_BETS = 'PLAYER_BETS'
+const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
 const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
-const GET_NEXT_PLAYER_TO_ACT = 'NEXT_PLAYER_TO_ACT'
+const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
 
@@ -31,6 +32,12 @@ export function startNewRound() {
 export function getNextPlayerToAct() {
   return {
     type: GET_NEXT_PLAYER_TO_ACT,
+  }
+}
+
+export function getHighestCurrentBettor() {
+  return {
+    type: GET_HIGHEST_CURRENT_BETTOR,
   }
 }
 
@@ -80,10 +87,15 @@ export default function reducer(state = initialState, action) {
       })
     }
 
+    case GET_HIGHEST_CURRENT_BETTOR: {
+      return Object.assign({}, state, {
+        highestCurrentBettor: handleSettingHighestCurrentBettor(state.players),
+      })
+    }
+
     case GET_NEXT_PLAYER_TO_ACT: {
       return Object.assign({}, state, {
         nextPlayerToAct: handleNextPlayerToAct(state),
-        highestCurrentBettor: handleSettingHighestCurrentBettor(state.players),
       })
     }
 

@@ -1,7 +1,7 @@
 import update from 'immutability-helper'
 
 /**
- * Handles dealing community cards
+ * Handles dealing of community cards
  */
 export default function handleDealingNextStreet(
   currentStreet,

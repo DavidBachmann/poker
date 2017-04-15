@@ -13,10 +13,22 @@ class GameManager extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.state.nextPlayerToAct === -1 && !this.lock) {
       this.lock = true
-      console.log(this.props.state.currentStreet)
-      console.log('nextPlayerToAct === -1')
-      this.props.dealNextStreet(this.props.state.currentStreet)
+      this.handleDealing()
     }
+  }
+
+  handleDealing() {
+    const {
+      getHighestCurrentBettor,
+      dealNextStreet,
+      getNextPlayerToAct,
+    } = this.props
+    const { currentStreet } = this.props.state
+
+    this.lock = false
+    getHighestCurrentBettor()
+    getNextPlayerToAct()
+    dealNextStreet(currentStreet)
   }
 
   setState(obj) {
