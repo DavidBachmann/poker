@@ -36,7 +36,6 @@ class GameManager extends Component {
     // this.lock = false
     getHighestCurrentBettor()
     dealNextStreet(currentStreet)
-    getNextPlayerToAct()
   }
 
   setState(obj) {

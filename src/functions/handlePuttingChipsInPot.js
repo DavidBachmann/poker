@@ -3,7 +3,7 @@
  * and putting them in the pot
  */
 export default function handlePuttingChipsInPot(state) {
-  const {players, pot} = state
+  const { players, pot } = state
   const amountOfChipsToTransfer = players.reduce(
     (acc, player) => player.chipsCurrentlyInvested + acc,
     0,
