@@ -19,6 +19,7 @@ export default function handleNextPlayerToAct(
     index = (index + 1) % playerCount
   ) {
     if (DEBUGGER > playerCount) {
+      console.warn('infinite loop')
       return -1
     }
 

@@ -26,7 +26,6 @@ class GameManager extends Component {
   handleDealing() {
     const {
       dealNextStreet,
-      getNextPlayerToAct,
       getHighestCurrentBettor,
       currentStreet,
     } = this.props
