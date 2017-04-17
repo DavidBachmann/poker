@@ -14,13 +14,13 @@ import handleCalculatingPositions
 import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 import initialState from '../initialState'
 
-const PLAYER_BETS = 'PLAYER_BETS'
-const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
-const PLAYER_FOLDS = 'PLAYER_FOLDS'
-const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
-const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
-const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
+const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
+const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
+const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
+const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
+const PLAYER_BETS = 'PLAYER_BETS'
+const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
 
 export function startNewRound() {
@@ -95,7 +95,11 @@ export default function reducer(state = initialState, action) {
 
     case GET_NEXT_PLAYER_TO_ACT: {
       return Object.assign({}, state, {
-        nextPlayerToAct: handleNextPlayerToAct(state),
+        nextPlayerToAct: handleNextPlayerToAct(
+          state.players,
+          state.nextPlayerToAct,
+          state.highestCurrentBettor,
+        ),
       })
     }
 
@@ -117,13 +121,17 @@ export default function reducer(state = initialState, action) {
     }
 
     case DEAL_NEXT_STREET: {
-      return Object.assign({}, state, {
+      debugger
+      const newState = Object.assign({}, state, {
         communityCards: handleDealingNextStreet(
           action.currentStreet,
           state.communityCards,
           state.deck,
         ),
+        nextPlayerToAct: state.positions.button + 1,
       })
+      console.log(newState)
+      return newState
     }
 
     case DEAL_CARDS_TO_PLAYERS: {

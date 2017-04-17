@@ -10,62 +10,37 @@ class GameManager extends Component {
     this.lock = false
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.state.nextPlayerToAct === -1 && !this.lock) {
-      this.lock = true
+  componentDidMount() {
+    this.props.startNewRound()
+    this.props.generateNewDeck()
+    this.props.dealCardsToPlayers()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { nextPlayerToAct } = nextProps
+    if (nextPlayerToAct === -1 && !this.lock) {
       this.handleDealing()
     }
   }
 
   handleDealing() {
     const {
-      getHighestCurrentBettor,
       dealNextStreet,
       getNextPlayerToAct,
+      getHighestCurrentBettor,
+      currentStreet,
     } = this.props
-    const { currentStreet } = this.props.state
 
-    this.lock = false
+    console.log('handling dealing')
+
+    // this.lock = false
     getHighestCurrentBettor()
-    getNextPlayerToAct()
     dealNextStreet(currentStreet)
+    getNextPlayerToAct()
   }
 
   setState(obj) {
     console.log(obj)
-  }
-
-  async moveGameForward() {
-    const { playersInTheHand, handWinners } = this.props.state
-    // Update the list of players that are still in the hand
-    const alivePlayers = this.returnAlivePlayers()
-    if (alivePlayers && alivePlayers.length !== playersInTheHand.length) {
-      this.setState(() => {
-        return {
-          playersInTheHand: alivePlayers,
-        }
-      })
-    }
-
-    if (
-      (alivePlayers && alivePlayers.length === 1 && handWinners.length === 0) ||
-      this.props.state.showdown
-    ) {
-      handlePuttingChipsInPot(this.props.state)
-      await this.handleWinnerSelection(alivePlayers)
-    }
-
-    if (handWinners.length >= 1) {
-      __DEBUG__('handWinners.length >= 1')
-      __DEBUG__('Resetting and stuff from moveGameForward')
-      this.delayAndRestart()
-    }
-  }
-
-  componentDidMount() {
-    this.props.startNewRound()
-    this.props.generateNewDeck()
-    this.props.dealCardsToPlayers()
   }
 
   /**
@@ -73,7 +48,7 @@ class GameManager extends Component {
    */
   handleWinnerSelection = players => {
     __DEBUG__('Calling handleWinnerSelection')
-    const { communityCards } = this.props.state
+    const { communityCards } = this.props
     let winner = null
 
     if (!players) {
@@ -194,8 +169,8 @@ class GameManager extends Component {
       currentStreet,
       positions,
       whatPlayerIsDealer,
-    } = this.props.state
-    handlePuttingChipsInPot(this.props.state)
+    } = this.props
+    handlePuttingChipsInPot(this.props)
     // Preflop
     if (currentStreet === 0) {
       this.dealPlayerCards()
@@ -243,63 +218,13 @@ class GameManager extends Component {
     }
   }
 
-  // returnAlivePlayers = () => {
-  //   const { players } = this.props.state
-  //   if (!players) {
-  //     return
-  //   }
-  //
-  //   return players.filter(player => !player.hasFolded)
-  // }
-
-  /**
-   * Handle getting the next player capable of acting
-   */
-  // returnNextPlayerToAct = state => {
-  //   const {
-  //     players,
-  //     nextPlayerToAct: currentPlayerIndex,
-  //     highestCurrentBettor,
-  //   } = state
-  //   const playerCount = players.length
-  //   const startIndex = (currentPlayerIndex + 1) % playerCount
-  //   const _highestCurrentBet =
-  //     highestCurrentBettor && highestCurrentBettor.chipsCurrentlyInvested
-  //
-  //   for (
-  //     let index = startIndex;
-  //     index !== currentPlayerIndex;
-  //     index = (index + 1) % playerCount
-  //   ) {
-  //     const player = players[index]
-  //     if (
-  //       !player.hasFolded &&
-  //       !player.isAllIn &&
-  //       player.chipsCurrentlyInvested !== _highestCurrentBet
-  //     ) {
-  //       return { nextPlayerToAct: index }
-  //     }
-  //   }
-  //
-  //   return { nextPlayerToAct: -1 }
-  // }
-
-  /**
-   * Handles player's betting (bet, raise, push)
-   */
-
-  //   this.setState(this.returnNextPlayerToAct)
-  // }
-
   render() {
     const {
       children,
-      state,
       playerBets,
       playerFolds,
+      getHighestCurrentBettor,
       getNextPlayerToAct,
-    } = this.props
-    const {
       communityCards,
       currentLevel,
       currentStreet,
@@ -312,7 +237,7 @@ class GameManager extends Component {
       positions,
       pot,
       showdown,
-    } = state
+    } = this.props
 
     return cloneElement(children, {
       pot,
@@ -322,6 +247,7 @@ class GameManager extends Component {
       positions,
       playerBets,
       playerFolds,
+      getHighestCurrentBettor,
       handWinners,
       currentLevel,
       currentStreet,

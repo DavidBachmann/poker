@@ -15,7 +15,7 @@ import {
 
 function mapStateToProps(state) {
   return {
-    state,
+    ...state, //temp
   }
 }
 

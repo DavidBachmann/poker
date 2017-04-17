@@ -23,9 +23,14 @@ class Board extends Component {
   }
 
   betHandler = value => {
-    const { playerBets, getNextPlayerToAct } = this.props
+    const {
+      playerBets,
+      getNextPlayerToAct,
+      getHighestCurrentBettor,
+    } = this.props
 
     playerBets(value)
+    getHighestCurrentBettor()
     getNextPlayerToAct()
   }
 

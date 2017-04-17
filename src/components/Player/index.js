@@ -5,7 +5,7 @@ import './styles.css'
 
 class Player extends Component {
   state = {
-    betValue: 0,
+    betValue: 255,
   }
 
   handleInput = event => {

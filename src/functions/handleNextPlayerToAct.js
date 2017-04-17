@@ -1,13 +1,13 @@
 /**
  * Handle getting the next player capable of acting
  */
-export default function handleNextPlayerToAct(state) {
-  const {
-    players,
-    nextPlayerToAct: currentPlayerIndex,
-    highestCurrentBettor,
-  } = state
-
+export default function handleNextPlayerToAct(
+  players,
+  nextPlayerToAct,
+  highestCurrentBettor,
+) {
+  let DEBUGGER = 0
+  const currentPlayerIndex = nextPlayerToAct
   const playerCount = players.length
   const startIndex = (currentPlayerIndex + 1) % playerCount
   const highestCurrentBet =
@@ -18,6 +18,10 @@ export default function handleNextPlayerToAct(state) {
     index !== currentPlayerIndex;
     index = (index + 1) % playerCount
   ) {
+    if (DEBUGGER > playerCount) {
+      return -1
+    }
+
     const player = players[index]
     if (
       !player.hasFolded &&
