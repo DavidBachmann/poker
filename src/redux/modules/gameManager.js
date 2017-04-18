@@ -1,10 +1,14 @@
 import update from 'immutability-helper'
+import initialState from '../initialState'
 
 import handlePlayerBets from '../../functions/handlePlayerBets'
 import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import handleNextPlayerToAct from '../../functions/handleNextPlayerToAct'
+import handleCollectingPlayerPots
+  from '../../functions/handleCollectingPlayerPots'
+import handleEmptyingPlayerPots from '../../functions/handleEmptyingPlayerPots'
 import handleSettingHighestCurrentBettor
   from '../../functions/handleSettingHighestCurrentBettor'
 import handleDealingCardsToPlayers
@@ -12,7 +16,6 @@ import handleDealingCardsToPlayers
 import handleCalculatingPositions
   from '../../functions/handleCalculatingPositions'
 import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
-import initialState from '../initialState'
 
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
@@ -21,6 +24,8 @@ const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
 const PLAYER_BETS = 'PLAYER_BETS'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
+const COLLECT_PLAYER_POTS = 'COLLECT_PLAYER_POTS'
+const EMPTY_PLAYER_POTS = 'EMPTY_PLAYER_POTS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
 
 export function startNewRound() {
@@ -44,6 +49,18 @@ export function getHighestCurrentBettor() {
 export function generateNewDeck() {
   return {
     type: GENERATE_NEW_DECK,
+  }
+}
+
+export function collectPlayerPots() {
+  return {
+    type: COLLECT_PLAYER_POTS,
+  }
+}
+
+export function emptyPlayerPots() {
+  return {
+    type: EMPTY_PLAYER_POTS,
   }
 }
 
@@ -73,9 +90,45 @@ export function dealNextStreet(currentStreet) {
   }
 }
 
-export function testNextPlayerToAct() {
+export function dealNextStreetThunk(currentStreet) {
+  return (dispatch, getState) => {
+    const { currentStreet } = getState()
+    dispatch(collectPlayerPots())
+    dispatch(emptyPlayerPots())
+    dispatch(dealNextStreet(currentStreet))
+  }
+}
+
+export function playerFoldsThunk() {
   return dispatch => {
-    dispatch(getNextPlayerToAct)
+    dispatch(playerFolds())
+    dispatch(nextPlayerToActThunk())
+  }
+}
+
+export function playerBetsThunk(amount) {
+  return dispatch => {
+    dispatch(playerBets(amount))
+    dispatch(getHighestCurrentBettor())
+    dispatch(nextPlayerToActThunk())
+  }
+}
+
+export function startGameThunk() {
+  return dispatch => {
+    dispatch(startNewRound())
+    dispatch(generateNewDeck())
+    dispatch(dealCardsToPlayers())
+  }
+}
+
+export function nextPlayerToActThunk() {
+  return (dispatch, getState) => {
+    dispatch(getNextPlayerToAct())
+    const { nextPlayerToAct, currentStreet } = getState()
+    if (nextPlayerToAct === -1) {
+      dispatch(dealNextStreetThunk(currentStreet))
+    }
   }
 }
 
@@ -126,18 +179,26 @@ export default function reducer(state = initialState, action) {
       })
     }
 
+    case COLLECT_PLAYER_POTS: {
+      return Object.assign({}, state, {
+        pot: handleCollectingPlayerPots(state.players, state.pot),
+      })
+    }
+
+    case EMPTY_PLAYER_POTS: {
+      return Object.assign({}, state, {
+        players: handleEmptyingPlayerPots(state.players),
+      })
+    }
+
     case DEAL_NEXT_STREET: {
-      debugger
-      const newState = Object.assign({}, state, {
+      return Object.assign({}, state, {
         communityCards: handleDealingNextStreet(
           action.currentStreet,
           state.communityCards,
           state.deck,
         ),
-        nextPlayerToAct: state.positions.button + 1,
       })
-      console.log(newState)
-      return newState
     }
 
     case DEAL_CARDS_TO_PLAYERS: {

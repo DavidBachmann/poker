@@ -6,7 +6,6 @@ export default function handleNextPlayerToAct(
   nextPlayerToAct,
   highestCurrentBettor,
 ) {
-  let DEBUGGER = 0
   const currentPlayerIndex = nextPlayerToAct
   const playerCount = players.length
   const startIndex = (currentPlayerIndex + 1) % playerCount
@@ -18,11 +17,6 @@ export default function handleNextPlayerToAct(
     index !== currentPlayerIndex;
     index = (index + 1) % playerCount
   ) {
-    if (DEBUGGER > playerCount) {
-      console.warn('infinite loop')
-      return -1
-    }
-
     const player = players[index]
     if (
       !player.hasFolded &&

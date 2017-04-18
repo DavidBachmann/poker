@@ -23,28 +23,18 @@ class Board extends Component {
   }
 
   betHandler = value => {
-    const {
-      playerBets,
-      testNextPlayerToAct,
-      getHighestCurrentBettor,
-    } = this.props
+    const { playerBetsThunk } = this.props
 
-    playerBets(value)
-    getHighestCurrentBettor()
-    testNextPlayerToAct()
+    playerBetsThunk(value)
   }
 
   foldHandler = () => {
-    const { playerFolds, testNextPlayerToAct } = this.props
-
-    playerFolds()
-    testNextPlayerToAct()
+    const { playerFoldsThunk } = this.props
+    playerFoldsThunk()
   }
 
   render() {
     const {
-      playerBets,
-      playerFolds,
       communityCards,
       dealerMessage,
       handWinners,
@@ -55,7 +45,6 @@ class Board extends Component {
       currentStreet,
       nextPlayerToAct,
       highestCurrentBettor,
-      handlePlayerFolds,
     } = this.props
 
     const { winnersHaveBeenDetermined } = this.state
@@ -89,31 +78,45 @@ class Board extends Component {
         <div className="Board-communityCards">
           <Community communityCards={communityCards} street={currentStreet} />
         </div>
-        {/* <p className="Board-potInfo">
-          Pot: ${pot} (<strong>${players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}</strong>)
+        <p className="Board-potInfo">
+          Pot: $
+          {pot}
+          {' '}
+          (
+          <strong>
+            $
+            {players.reduce(
+              (acc, player) => player.chipsCurrentlyInvested + acc,
+              0,
+            )}
+          </strong>
+          )
         </p>
-        {handWinners && handWinners.length > 0 && (
+        {handWinners &&
+          handWinners.length > 0 &&
           <div className="Board-winnerInfo">
-            {handWinners.length === 1 && handWinners.map((winner) => (
-              <span key={winner.id}>
-                <strong>{winner.name}</strong> wins the hand
-              </span>
-            ))}
-            {handWinners.length > 1 && (
+            {handWinners.length === 1 &&
+              handWinners.map(winner => (
+                <span key={winner.id}>
+                  <strong>{winner.name}</strong> wins the hand
+                </span>
+              ))}
+            {handWinners.length > 1 &&
               <div>
-                {handWinners.map((winner) => (
+                {handWinners.map(winner => (
                   <strong key={winner.id}>{winner.name}, </strong>
                 ))}
-                <p>tie for the hand with <strong>{handWinners[0].handDetails.descr}</strong></p>
-              </div>
-            )}
-          </div>
-        )}
-        {dealerMessage && (
+                <p>
+                  tie for the hand with
+                  {' '}
+                  <strong>{handWinners[0].handDetails.descr}</strong>
+                </p>
+              </div>}
+          </div>}
+        {dealerMessage &&
           <p className="Board-dealerMessage">
             <strong>{dealerMessage}</strong>
-          </p>
-        )} */}
+          </p>}
       </div>
     )
   }

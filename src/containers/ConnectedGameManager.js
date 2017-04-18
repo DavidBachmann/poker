@@ -3,14 +3,9 @@
 import { connect } from 'react-redux'
 import GameManager from '../components/GameManager'
 import {
-  startNewRound,
-  generateNewDeck,
-  playerBets,
-  playerFolds,
-  dealNextStreet,
-  dealCardsToPlayers,
-  testNextPlayerToAct,
-  getHighestCurrentBettor,
+  startGameThunk,
+  playerBetsThunk,
+  playerFoldsThunk,
 } from '../redux/modules/gameManager'
 
 function mapStateToProps(state) {
@@ -21,14 +16,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    startNewRound: () => dispatch(startNewRound()),
-    generateNewDeck: () => dispatch(generateNewDeck()),
-    dealCardsToPlayers: () => dispatch(dealCardsToPlayers()),
-    playerBets: value => dispatch(playerBets(value)),
-    playerFolds: () => dispatch(playerFolds()),
-    testNextPlayerToAct: () => dispatch(testNextPlayerToAct()),
-    getHighestCurrentBettor: () => dispatch(getHighestCurrentBettor()),
-    dealNextStreet: currentStreet => dispatch(dealNextStreet(currentStreet)),
+    startGameThunk: () => dispatch(startGameThunk()),
+    playerBetsThunk: value => dispatch(playerBetsThunk(value)),
+    playerFoldsThunk: () => dispatch(playerFoldsThunk()),
   }
 }
 
