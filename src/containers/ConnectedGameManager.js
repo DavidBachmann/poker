@@ -9,7 +9,7 @@ import {
   playerFolds,
   dealNextStreet,
   dealCardsToPlayers,
-  getNextPlayerToAct,
+  testNextPlayerToAct,
   getHighestCurrentBettor,
 } from '../redux/modules/gameManager'
 
@@ -26,7 +26,7 @@ function mapDispatchToProps(dispatch) {
     dealCardsToPlayers: () => dispatch(dealCardsToPlayers()),
     playerBets: value => dispatch(playerBets(value)),
     playerFolds: () => dispatch(playerFolds()),
-    getNextPlayerToAct: () => dispatch(getNextPlayerToAct()),
+    testNextPlayerToAct: () => dispatch(testNextPlayerToAct()),
     getHighestCurrentBettor: () => dispatch(getHighestCurrentBettor()),
     dealNextStreet: currentStreet => dispatch(dealNextStreet(currentStreet)),
   }

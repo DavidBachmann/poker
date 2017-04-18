@@ -73,6 +73,12 @@ export function dealNextStreet(currentStreet) {
   }
 }
 
+export function testNextPlayerToAct() {
+  return dispatch => {
+    dispatch(getNextPlayerToAct)
+  }
+}
+
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case PLAYER_BETS: {

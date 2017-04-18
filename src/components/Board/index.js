@@ -25,20 +25,20 @@ class Board extends Component {
   betHandler = value => {
     const {
       playerBets,
-      getNextPlayerToAct,
+      testNextPlayerToAct,
       getHighestCurrentBettor,
     } = this.props
 
     playerBets(value)
     getHighestCurrentBettor()
-    getNextPlayerToAct()
+    testNextPlayerToAct()
   }
 
   foldHandler = () => {
-    const { playerFolds, getNextPlayerToAct } = this.props
+    const { playerFolds, testNextPlayerToAct } = this.props
 
     playerFolds()
-    getNextPlayerToAct()
+    testNextPlayerToAct()
   }
 
   render() {
