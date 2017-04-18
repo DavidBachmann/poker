@@ -1,1 +1,1 @@
-april 14th: handling betAmount checks in Player component. Need to find a way to check it in handlePlayerBets() 
+april 18: community cards to displaying after turn. not stopping after river.

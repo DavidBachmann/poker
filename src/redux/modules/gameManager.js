@@ -2,6 +2,7 @@ import update from 'immutability-helper'
 import initialState from '../initialState'
 
 import handlePlayerBets from '../../functions/handlePlayerBets'
+import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
@@ -83,19 +84,18 @@ export function playerBets(value) {
   }
 }
 
-export function dealNextStreet(currentStreet) {
+export function dealNextStreet(street) {
   return {
     type: DEAL_NEXT_STREET,
-    currentStreet,
+    street,
   }
 }
 
-export function dealNextStreetThunk(currentStreet) {
+export function dealNextStreetThunk(street) {
   return (dispatch, getState) => {
-    const { currentStreet } = getState()
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
-    dispatch(dealNextStreet(currentStreet))
+    dispatch(dealNextStreet(street))
   }
 }
 
@@ -127,7 +127,8 @@ export function nextPlayerToActThunk() {
     dispatch(getNextPlayerToAct())
     const { nextPlayerToAct, currentStreet } = getState()
     if (nextPlayerToAct === -1) {
-      dispatch(dealNextStreetThunk(currentStreet))
+      dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
+      dispatch(getNextPlayerToAct())
     }
   }
 }
@@ -194,10 +195,11 @@ export default function reducer(state = initialState, action) {
     case DEAL_NEXT_STREET: {
       return Object.assign({}, state, {
         communityCards: handleDealingNextStreet(
-          action.currentStreet,
+          action.street,
           state.communityCards,
           state.deck,
         ),
+        currentStreet: action.street,
       })
     }
 
