@@ -4,6 +4,7 @@ import initialState from '../initialState'
 import handlePlayerBets from '../../functions/handlePlayerBets'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handleDetermingWinner from '../../functions/handleDetermingWinner'
+import handlePayingPlayers from '../../functions/handlePayingPlayers'
 import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
@@ -22,13 +23,14 @@ import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 const COLLECT_PLAYER_POTS = 'COLLECT_PLAYER_POTS'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
+const DETERMINE_WINNER = 'DETERMINE_WINNER'
 const EMPTY_PLAYER_POTS = 'EMPTY_PLAYER_POTS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
 const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
 const GO_TO_SHOWDOWN = 'GO_TO_SHOWDOWN'
+const PAY_PLAYERS = 'PAY_PLAYERS'
 const PLAYER_BETS = 'PLAYER_BETS'
-const DETERMINE_WINNER = 'DETERMINE_WINNER'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
 
@@ -99,6 +101,12 @@ export function goToShowdown() {
   }
 }
 
+export function payPlayers() {
+  return {
+    type: PAY_PLAYERS,
+  }
+}
+
 export function dealNextStreet(street) {
   return {
     type: DEAL_NEXT_STREET,
@@ -130,8 +138,10 @@ export function playerBetsThunk(amount) {
 }
 
 export function goToShowdownThunk() {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch(determineWinner())
+    const { handWinners } = getState()
+    dispatch(payPlayers(handWinners))
   }
 }
 
@@ -243,6 +253,16 @@ export default function reducer(state = initialState, action) {
     case DETERMINE_WINNER: {
       return Object.assign({}, state, {
         handWinners: handleDetermingWinner(state.players, state.communityCards),
+      })
+    }
+
+    case PAY_PLAYERS: {
+      return Object.assign({}, state, {
+        players: handlePayingPlayers(
+          state.players,
+          state.handWinners,
+          state.pot,
+        ),
       })
     }
 
