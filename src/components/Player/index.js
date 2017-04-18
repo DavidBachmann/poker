@@ -5,37 +5,36 @@ import './styles.css'
 
 class Player extends Component {
   state = {
-    betValue: 0,
+    betValue: 255,
   }
 
-  handleInput = (event) => {
+  handleInput = event => {
     this.setState({
-      betValue: Number(event.target.value)
+      betValue: Number(event.target.value),
     })
   }
 
   render() {
     const {
+      betHandler,
       canAct,
       chips,
       chipsCurrentlyInvested,
+      foldHandler,
       hasFolded,
+      highestCurrentBettor,
       holeCards,
       index,
-      isLoser,
       isAllIn,
+      isLoser,
       isNextToAct,
       isWinner,
       name,
-      showCards,
       positions,
-      foldHandler,
-      betHandler,
-      highestCurrentBet,
-      highestCurrentBettor,
-     } = this.props
+      showCards,
+    } = this.props
 
-     const { betValue } = this.state
+    const { betValue } = this.state
 
     const isButton = positions.button === index
     const isSB = positions.sb === index
@@ -43,23 +42,27 @@ class Player extends Component {
     const isUTG = positions.utg === index
     const isMP = positions.mp === index
     const isCutOff = positions.cutoff === index
-    const isHighestBettor = highestCurrentBettor && highestCurrentBettor.index === index
+    const highestCurrentBet = highestCurrentBettor
+      ? highestCurrentBettor.chipsCurrentlyInvested
+      : 0
 
     return (
-      <div className={classNames(
-        'Player',
-        isButton && 'is-button',
-        isSB && 'is-sb',
-        isBB && 'is-bb',
-        isLoser && 'is-loser',
-        isNextToAct && 'is-next-to-act',
-        isWinner && 'is-winner',
-      )}>
+      <div
+        className={classNames(
+          'Player',
+          isButton && 'is-button',
+          isSB && 'is-sb',
+          isBB && 'is-bb',
+          isLoser && 'is-loser',
+          isNextToAct && 'is-next-to-act',
+          isWinner && 'is-winner',
+        )}
+      >
         <div className="Player-panel">
           <p className="Player-name">{name}</p>
           <p className="Player-chipCount">{isAllIn ? 'ALL-IN' : `$${chips}`}</p>
         </div>
-        {holeCards && (
+        {holeCards &&
           <div className="Player-cards">
             {holeCards.map((card, i) => (
               <Card
@@ -69,8 +72,7 @@ class Player extends Component {
                 key={i}
               />
             ))}
-          </div>
-        )}
+          </div>}
         <div className="Player-chipsInvested">
           Invested: {chipsCurrentlyInvested}
         </div>
@@ -84,37 +86,36 @@ class Player extends Component {
           {isCutOff && 'cutoff'}
           {hasFolded && 'Player has folded'}
         </div>
-      <div className="Player-actionButtons">
-        <button
-          disabled={!canAct}
-          onClick={() => betHandler(this.state.betValue)}>
+        <div className="Player-actionButtons">
+          <button
+            disabled={!canAct || this.state.betValue < highestCurrentBet}
+            onClick={() => betHandler(this.state.betValue)}
+          >
             Bet
-        </button>
-        <button
-          disabled={!canAct}
-          onClick={() => betHandler(highestCurrentBet - chipsCurrentlyInvested)}>
+          </button>
+          <button
+            disabled={!canAct}
+            onClick={() =>
+              betHandler(highestCurrentBet - chipsCurrentlyInvested)}
+          >
             Call
-        </button>
-        <button
-          disabled={!canAct}
-          onClick={() => {}}>
+          </button>
+          <button disabled={!canAct} onClick={() => {}}>
             Check
-        </button>
-        <button
-          disabled={!canAct}
-          onClick={() => foldHandler()}>
-          Fold
-        </button>
-        <input
-          disabled={!canAct}
-          type="number"
-          value={canAct ? betValue : 0}
-          onChange={this.handleInput} />
-      </div>
+          </button>
+          <button disabled={!canAct} onClick={() => foldHandler()}>
+            Fold
+          </button>
+          <input
+            disabled={!canAct}
+            type="number"
+            value={canAct ? betValue : 0}
+            onChange={this.handleInput}
+          />
+        </div>
       </div>
     )
   }
-
 }
 
 export default Player

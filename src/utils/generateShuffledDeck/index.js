@@ -8,7 +8,7 @@ const generateNewDeck = () => {
     for (let j = 0; j < availableRanks.length; j++) {
       const card = {
         rank: availableRanks[j],
-        suit: availableSuits[i]
+        suit: availableSuits[i],
       }
 
       deck.push(card)

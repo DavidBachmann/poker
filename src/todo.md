@@ -1,1 +1,1 @@
-april 11 2017: Betting invalid amount will still trigger returnNextPlayerToAct()
+april 18: community cards to displaying after turn. not stopping after river.

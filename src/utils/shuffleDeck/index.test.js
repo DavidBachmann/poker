@@ -9,13 +9,12 @@ test('Two shuffled decks should both be of length 52', () => {
   const shuffledDeck1 = shuffleDeck(generateShuffledDeck())
   const shuffledDeck2 = shuffleDeck(generateShuffledDeck())
 
-  expect (shuffledDeck1.length && shuffledDeck2.length).toBe(52)
+  expect(shuffledDeck1.length && shuffledDeck2.length).toBe(52)
 })
 
-
-test('Two shuffled decks shouldn\'t be identical', () => {
+test("Two shuffled decks shouldn't be identical", () => {
   const shuffledDeck1 = shuffleDeck(generateShuffledDeck())
   const shuffledDeck2 = shuffleDeck(generateShuffledDeck())
 
-  expect (shuffledDeck1 === shuffledDeck2).toBe(false)
+  expect(shuffledDeck1 === shuffledDeck2).toBe(false)
 })
