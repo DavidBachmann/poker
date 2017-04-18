@@ -76,7 +76,7 @@ class Board extends Component {
           })}
 
         <div className="Board-communityCards">
-          <Community communityCards={communityCards} street={currentStreet} />
+          <Community communityCards={communityCards} />
         </div>
         <p className="Board-potInfo">
           Pot: $

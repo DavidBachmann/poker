@@ -10,7 +10,7 @@ export default function handleDealingNextStreet(
 ) {
   console.log('current street is ' + currentStreet)
   return update(communityCards, {
-    [currentStreet]: {
+    [currentStreet - 1]: {
       $set: currentStreet === 1 ? deck.splice(0, 3) : deck.splice(0, 1),
     },
   })

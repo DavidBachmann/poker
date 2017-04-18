@@ -3,6 +3,7 @@ import initialState from '../initialState'
 
 import handlePlayerBets from '../../functions/handlePlayerBets'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
+import handleDetermingWinner from '../../functions/handleDetermingWinner'
 import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
@@ -18,15 +19,17 @@ import handleCalculatingPositions
   from '../../functions/handleCalculatingPositions'
 import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 
+const COLLECT_PLAYER_POTS = 'COLLECT_PLAYER_POTS'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
+const EMPTY_PLAYER_POTS = 'EMPTY_PLAYER_POTS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
 const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
+const GO_TO_SHOWDOWN = 'GO_TO_SHOWDOWN'
 const PLAYER_BETS = 'PLAYER_BETS'
+const DETERMINE_WINNER = 'DETERMINE_WINNER'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
-const COLLECT_PLAYER_POTS = 'COLLECT_PLAYER_POTS'
-const EMPTY_PLAYER_POTS = 'EMPTY_PLAYER_POTS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
 
 export function startNewRound() {
@@ -65,6 +68,12 @@ export function emptyPlayerPots() {
   }
 }
 
+export function determineWinner() {
+  return {
+    type: DETERMINE_WINNER,
+  }
+}
+
 export function dealCardsToPlayers() {
   return {
     type: DEAL_CARDS_TO_PLAYERS,
@@ -81,6 +90,12 @@ export function playerBets(value) {
   return {
     type: PLAYER_BETS,
     value,
+  }
+}
+
+export function goToShowdown() {
+  return {
+    type: GO_TO_SHOWDOWN,
   }
 }
 
@@ -114,6 +129,12 @@ export function playerBetsThunk(amount) {
   }
 }
 
+export function goToShowdownThunk() {
+  return dispatch => {
+    dispatch(determineWinner())
+  }
+}
+
 export function startGameThunk() {
   return dispatch => {
     dispatch(startNewRound())
@@ -126,9 +147,16 @@ export function nextPlayerToActThunk() {
   return (dispatch, getState) => {
     dispatch(getNextPlayerToAct())
     const { nextPlayerToAct, currentStreet } = getState()
+    // No one can act ...
     if (nextPlayerToAct === -1) {
-      dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
-      dispatch(getNextPlayerToAct())
+      // ... because we should deal
+      if (currentStreet < 3) {
+        dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
+        dispatch(getNextPlayerToAct())
+      } else {
+        // ... because we should go to showdown
+        dispatch(goToShowdownThunk())
+      }
     }
   }
 }
@@ -209,6 +237,12 @@ export default function reducer(state = initialState, action) {
         deck: update(state.deck, {
           $splice: [[0, state.players.length * 2]],
         }),
+      })
+    }
+
+    case DETERMINE_WINNER: {
+      return Object.assign({}, state, {
+        handWinners: handleDetermingWinner(state.players, state.communityCards),
       })
     }
 
