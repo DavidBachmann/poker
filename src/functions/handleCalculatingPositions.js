@@ -1,5 +1,3 @@
-import update from 'immutability-helper'
-
 export default function handleCalculatingPositions(
   players,
   handHistory,

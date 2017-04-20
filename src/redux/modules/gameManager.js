@@ -30,113 +30,99 @@ const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
 const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
 const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
-const GO_TO_SHOWDOWN = 'GO_TO_SHOWDOWN'
 const PAY_PLAYERS = 'PAY_PLAYERS'
 const PLAYER_BETS = 'PLAYER_BETS'
 const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
-const STOP_FOR_A_SECOND = 'STOP_FOR_A_SECOND'
 
-export function startNewRound() {
+function startNewRound() {
   return {
     type: START_NEW_ROUND,
   }
 }
 
-export function getNextPlayerToAct() {
+function getNextPlayerToAct() {
   return {
     type: GET_NEXT_PLAYER_TO_ACT,
   }
 }
 
-export function setNextPlayerToAct() {
+function setNextPlayerToAct() {
   return {
     type: SET_NEXT_PLAYER_TO_ACT,
   }
 }
 
-export function getHighestCurrentBettor() {
+function getHighestCurrentBettor() {
   return {
     type: GET_HIGHEST_CURRENT_BETTOR,
   }
 }
 
-export function generateNewDeck() {
+function generateNewDeck() {
   return {
     type: GENERATE_NEW_DECK,
   }
 }
 
-export function collectPlayerPots() {
+function collectPlayerPots() {
   return {
     type: COLLECT_PLAYER_POTS,
   }
 }
 
-export function emptyPlayerPots() {
+function emptyPlayerPots() {
   return {
     type: EMPTY_PLAYER_POTS,
   }
 }
 
-export function determineWinner() {
+function determineWinner() {
   return {
     type: DETERMINE_WINNER,
   }
 }
 
-export function dealCardsToPlayers() {
+function dealCardsToPlayers() {
   return {
     type: DEAL_CARDS_TO_PLAYERS,
   }
 }
 
-export function playerFolds() {
+function playerFolds() {
   return {
     type: PLAYER_FOLDS,
   }
 }
 
-export function playerBets(value) {
+function playerBets(value) {
   return {
     type: PLAYER_BETS,
     value,
   }
 }
 
-export function goToShowdown() {
-  return {
-    type: GO_TO_SHOWDOWN,
-  }
-}
-
-export function payPlayers() {
+function payPlayers() {
   return {
     type: PAY_PLAYERS,
   }
 }
 
-export function stopForASecond() {
-  return {
-    type: STOP_FOR_A_SECOND,
-  }
-}
-
-export function addToHandHistory() {
+function addToHandHistory() {
   return {
     type: ADD_TO_HAND_HISTORY,
   }
 }
 
-export function dealNextStreet(street) {
+function dealNextStreet(nextStreet) {
   return {
     type: DEAL_NEXT_STREET,
-    street,
+    nextStreet,
   }
 }
 
-export function dealNextStreetThunk(street) {
+function dealNextStreetThunk(street) {
   return (dispatch, getState) => {
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
@@ -159,7 +145,7 @@ export function playerBetsThunk(amount) {
   }
 }
 
-export function goToShowdownThunk() {
+function goToShowdownThunk() {
   return async (dispatch, getState) => {
     const { handWinners } = getState()
     dispatch(determineWinner())
@@ -180,7 +166,7 @@ export function startGameThunk() {
   }
 }
 
-export function restartRoundThunk() {
+function restartRoundThunk() {
   return dispatch => {
     dispatch(startNewRound())
     dispatch(generateNewDeck())
@@ -189,16 +175,25 @@ export function restartRoundThunk() {
   }
 }
 
-export function getNextPlayerToActThunk() {
+function getNextPlayerToActThunk() {
   return (dispatch, getState) => {
     dispatch(getNextPlayerToAct())
-    const { nextPlayerToAct, currentStreet } = getState()
+    const { nextPlayerToAct, currentStreet, players } = getState()
     // No one can act ...
     if (nextPlayerToAct === -1) {
-      // ... because we should deal
       if (currentStreet < 3) {
-        dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
-        dispatch(getNextPlayerToAct())
+        // ... maybe because every one is all-in?
+        if (
+          players.filter(player => !player.isAllIn && !player.hasFolded)
+            .length === 0
+        ) {
+          console.log('every one is all in')
+          dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
+        } else {
+          // ... because we should deal
+          dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
+          dispatch(getNextPlayerToAct())
+        }
       } else {
         // ... because we should go to showdown
         dispatch(goToShowdownThunk())
@@ -279,11 +274,11 @@ export default function reducer(state = initialState, action) {
     case DEAL_NEXT_STREET: {
       return Object.assign({}, state, {
         communityCards: handleDealingNextStreet(
-          action.street,
+          action.nextStreet,
           state.communityCards,
           state.deck,
         ),
-        currentStreet: action.street,
+        currentStreet: action.nextStreet,
       })
     }
 

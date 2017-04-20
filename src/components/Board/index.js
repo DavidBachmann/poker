@@ -4,24 +4,6 @@ import Community from '../Community'
 import './styles.css'
 
 class Board extends Component {
-  state = {
-    winnersHaveBeenDetermined: false,
-  }
-
-  componentWillReceiveProps() {
-    // const { handWinners } = props
-    //
-    // if (handWinners === null || handWinners.length === 0 || !Array.isArray(handWinners)) {
-    //   this.setState({
-    //     winnersHaveBeenDetermined: false
-    //   })
-    // } else {
-    //   this.setState({
-    //     winnersHaveBeenDetermined: true
-    //   })
-    // }
-  }
-
   betHandler = value => {
     const { playerBetsThunk } = this.props
 
@@ -38,16 +20,12 @@ class Board extends Component {
       communityCards,
       dealerMessage,
       handWinners,
-      showdown,
       positions,
       players,
       pot,
-      currentStreet,
       nextPlayerToAct,
       highestCurrentBettor,
     } = this.props
-
-    const { winnersHaveBeenDetermined } = this.state
 
     return (
       <div className="Board has-6-players">

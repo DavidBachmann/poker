@@ -11,7 +11,6 @@ export default function handleNextPlayerToAct(
   const startIndex = (currentPlayerIndex + 1) % playerCount
   const highestCurrentBet =
     highestCurrentBettor && highestCurrentBettor.chipsCurrentlyInvested
-
   for (
     let index = startIndex;
     index !== currentPlayerIndex;
