@@ -3,6 +3,8 @@ import initialState from '../initialState'
 
 import delay from '../../utils/delay'
 import handlePlayerBets from '../../functions/handlePlayerBets'
+import handleRestartingPlayerStates
+  from '../../functions/handleRestartingPlayerStates'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handleDetermingWinner from '../../functions/handleDetermingWinner'
 import handlePayingPlayers from '../../functions/handlePayingPlayers'
@@ -35,6 +37,7 @@ const PLAYER_BETS = 'PLAYER_BETS'
 const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
+const RESTART_PLAYER_STATES = 'RESTART_PLAYER_STATES'
 
 function startNewRound() {
   return {
@@ -122,11 +125,27 @@ function dealNextStreet(nextStreet) {
   }
 }
 
-function dealNextStreetThunk(street) {
-  return (dispatch, getState) => {
+function restartPlayerStates() {
+  return {
+    type: RESTART_PLAYER_STATES,
+  }
+}
+
+function dealNextStreetThunk(street, runToEnd) {
+  return async (dispatch, getState) => {
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
-    dispatch(dealNextStreet(street))
+    if (runToEnd) {
+      for (let i = street; i <= 3; i++) {
+        dispatch(dealNextStreet(i))
+        await delay(500)
+        if (i === 3) {
+          dispatch(goToShowdownThunk())
+        }
+      }
+    } else {
+      dispatch(dealNextStreet(street))
+    }
   }
 }
 
@@ -168,6 +187,7 @@ export function startGameThunk() {
 
 function restartRoundThunk() {
   return dispatch => {
+    dispatch(restartPlayerStates())
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
@@ -187,8 +207,9 @@ function getNextPlayerToActThunk() {
           players.filter(player => !player.isAllIn && !player.hasFolded)
             .length === 0
         ) {
-          console.log('every one is all in')
-          dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
+          dispatch(
+            dealNextStreetThunk(handleGettingNextStreet(currentStreet), true),
+          )
         } else {
           // ... because we should deal
           dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
@@ -236,6 +257,12 @@ export default function reducer(state = initialState, action) {
       return Object.assign({}, state, {
         // Todo: won't work with fewer players.
         nextPlayerToAct: state.positions.utg,
+      })
+    }
+
+    case RESTART_PLAYER_STATES: {
+      return Object.assign({}, state, {
+        players: handleRestartingPlayerStates(state.players),
       })
     }
 
