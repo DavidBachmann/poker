@@ -3,8 +3,8 @@ import initialState from '../initialState'
 
 import delay from '../../utils/delay'
 import handlePlayerBets from '../../functions/handlePlayerBets'
-import handleRestartingPlayerStates
-  from '../../functions/handleRestartingPlayerStates'
+import handleResettingPlayerStates
+  from '../../functions/handleResettingPlayerStates'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handleDetermingWinner from '../../functions/handleDetermingWinner'
 import handlePayingPlayers from '../../functions/handlePayingPlayers'
@@ -138,7 +138,7 @@ function dealNextStreetThunk(street, runToEnd) {
     if (runToEnd) {
       for (let i = street; i <= 3; i++) {
         dispatch(dealNextStreet(i))
-        await delay(500)
+        await delay(750)
         if (i === 3) {
           dispatch(goToShowdownThunk())
         }
@@ -202,7 +202,7 @@ function getNextPlayerToActThunk() {
     // No one can act ...
     if (nextPlayerToAct === -1) {
       if (currentStreet < 3) {
-        // ... maybe because every one is all-in?
+        // ... because every one is all-in?
         if (
           players.filter(player => !player.isAllIn && !player.hasFolded)
             .length === 0
@@ -262,7 +262,7 @@ export default function reducer(state = initialState, action) {
 
     case RESTART_PLAYER_STATES: {
       return Object.assign({}, state, {
-        players: handleRestartingPlayerStates(state.players),
+        players: handleResettingPlayerStates(state.players),
       })
     }
 
