@@ -1,9 +1,11 @@
 import update from 'immutability-helper'
 import initialState from '../initialState'
 
+import delay from '../../utils/delay'
 import handlePlayerBets from '../../functions/handlePlayerBets'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handleDetermingWinner from '../../functions/handleDetermingWinner'
+import handlePayingPlayers from '../../functions/handlePayingPlayers'
 import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
@@ -22,15 +24,19 @@ import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 const COLLECT_PLAYER_POTS = 'COLLECT_PLAYER_POTS'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
+const DETERMINE_WINNER = 'DETERMINE_WINNER'
 const EMPTY_PLAYER_POTS = 'EMPTY_PLAYER_POTS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
 const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
+const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
 const GO_TO_SHOWDOWN = 'GO_TO_SHOWDOWN'
+const PAY_PLAYERS = 'PAY_PLAYERS'
 const PLAYER_BETS = 'PLAYER_BETS'
-const DETERMINE_WINNER = 'DETERMINE_WINNER'
+const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
 const START_NEW_ROUND = 'START_NEW_ROUND'
+const STOP_FOR_A_SECOND = 'STOP_FOR_A_SECOND'
 
 export function startNewRound() {
   return {
@@ -41,6 +47,12 @@ export function startNewRound() {
 export function getNextPlayerToAct() {
   return {
     type: GET_NEXT_PLAYER_TO_ACT,
+  }
+}
+
+export function setNextPlayerToAct() {
+  return {
+    type: SET_NEXT_PLAYER_TO_ACT,
   }
 }
 
@@ -99,6 +111,24 @@ export function goToShowdown() {
   }
 }
 
+export function payPlayers() {
+  return {
+    type: PAY_PLAYERS,
+  }
+}
+
+export function stopForASecond() {
+  return {
+    type: STOP_FOR_A_SECOND,
+  }
+}
+
+export function addToHandHistory() {
+  return {
+    type: ADD_TO_HAND_HISTORY,
+  }
+}
+
 export function dealNextStreet(street) {
   return {
     type: DEAL_NEXT_STREET,
@@ -117,7 +147,7 @@ export function dealNextStreetThunk(street) {
 export function playerFoldsThunk() {
   return dispatch => {
     dispatch(playerFolds())
-    dispatch(nextPlayerToActThunk())
+    dispatch(getNextPlayerToActThunk())
   }
 }
 
@@ -125,13 +155,20 @@ export function playerBetsThunk(amount) {
   return dispatch => {
     dispatch(playerBets(amount))
     dispatch(getHighestCurrentBettor())
-    dispatch(nextPlayerToActThunk())
+    dispatch(getNextPlayerToActThunk())
   }
 }
 
 export function goToShowdownThunk() {
-  return dispatch => {
+  return async (dispatch, getState) => {
+    const { handWinners } = getState()
     dispatch(determineWinner())
+    dispatch(collectPlayerPots())
+    dispatch(emptyPlayerPots())
+    dispatch(payPlayers(handWinners))
+    dispatch(addToHandHistory())
+    await delay(2500)
+    dispatch(restartRoundThunk())
   }
 }
 
@@ -143,7 +180,16 @@ export function startGameThunk() {
   }
 }
 
-export function nextPlayerToActThunk() {
+export function restartRoundThunk() {
+  return dispatch => {
+    dispatch(startNewRound())
+    dispatch(generateNewDeck())
+    dispatch(dealCardsToPlayers())
+    dispatch(setNextPlayerToAct())
+  }
+}
+
+export function getNextPlayerToActThunk() {
   return (dispatch, getState) => {
     dispatch(getNextPlayerToAct())
     const { nextPlayerToAct, currentStreet } = getState()
@@ -191,8 +237,18 @@ export default function reducer(state = initialState, action) {
       })
     }
 
+    case SET_NEXT_PLAYER_TO_ACT: {
+      return Object.assign({}, state, {
+        // Todo: won't work with fewer players.
+        nextPlayerToAct: state.positions.utg,
+      })
+    }
+
     case START_NEW_ROUND: {
       return Object.assign({}, state, {
+        communityCards: {},
+        handWinners: [],
+        pot: 0,
         positions: handleCalculatingPositions(
           state.players,
           state.handHistory,
@@ -243,6 +299,22 @@ export default function reducer(state = initialState, action) {
     case DETERMINE_WINNER: {
       return Object.assign({}, state, {
         handWinners: handleDetermingWinner(state.players, state.communityCards),
+      })
+    }
+
+    case ADD_TO_HAND_HISTORY: {
+      return Object.assign({}, state, {
+        handHistory: [...state.handHistory, state.handWinners],
+      })
+    }
+
+    case PAY_PLAYERS: {
+      return Object.assign({}, state, {
+        players: handlePayingPlayers(
+          state.players,
+          state.handWinners,
+          state.pot,
+        ),
       })
     }
 
