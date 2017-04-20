@@ -5,6 +5,7 @@ export default function handleCalculatingPositions(
 ) {
   const totalPlayers = players.length
 
+  // Todo doesn't work with fewer players
   const newPositions = {
     bb: (handHistory.length + totalPlayers - 1) % totalPlayers,
     sb: (handHistory.length + totalPlayers - 2) % totalPlayers,

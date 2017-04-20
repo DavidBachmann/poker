@@ -12,6 +12,8 @@ import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import handleNextPlayerToAct from '../../functions/handleNextPlayerToAct'
+import handleRemovingBustedPlayers
+  from '../../functions/handleRemovingBustedPlayers'
 import handleCollectingPlayerPots
   from '../../functions/handleCollectingPlayerPots'
 import handleEmptyingPlayerPots from '../../functions/handleEmptyingPlayerPots'
@@ -23,6 +25,7 @@ import handleCalculatingPositions
   from '../../functions/handleCalculatingPositions'
 import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 
+const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
 const COLLECT_PLAYER_POTS = 'COLLECT_PLAYER_POTS'
 const DEAL_CARDS_TO_PLAYERS = 'DEAL_CARDS_TO_PLAYERS'
 const DEAL_NEXT_STREET = 'DEAL_NEXT_STREET'
@@ -31,13 +34,13 @@ const EMPTY_PLAYER_POTS = 'EMPTY_PLAYER_POTS'
 const GENERATE_NEW_DECK = 'GENERATE_NEW_DECK'
 const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
-const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
 const PAY_PLAYERS = 'PAY_PLAYERS'
 const PLAYER_BETS = 'PLAYER_BETS'
-const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
 const PLAYER_FOLDS = 'PLAYER_FOLDS'
-const START_NEW_ROUND = 'START_NEW_ROUND'
+const REMOVE_BUSTED_PLAYERS = 'REMOVE_BUSTED_PLAYERS'
 const RESTART_PLAYER_STATES = 'RESTART_PLAYER_STATES'
+const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
+const START_NEW_ROUND = 'START_NEW_ROUND'
 
 function startNewRound() {
   return {
@@ -112,6 +115,12 @@ function payPlayers() {
   }
 }
 
+function removeBustedPlayers() {
+  return {
+    type: REMOVE_BUSTED_PLAYERS,
+  }
+}
+
 function addToHandHistory() {
   return {
     type: ADD_TO_HAND_HISTORY,
@@ -131,12 +140,12 @@ function restartPlayerStates() {
   }
 }
 
-function dealNextStreetThunk(street, runToEnd) {
+function dealNextStreetThunk(currentStreet, runToEnd) {
   return async (dispatch, getState) => {
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
     if (runToEnd) {
-      for (let i = street; i <= 3; i++) {
+      for (let i = currentStreet; i <= 3; i++) {
         dispatch(dealNextStreet(i))
         await delay(750)
         if (i === 3) {
@@ -144,7 +153,7 @@ function dealNextStreetThunk(street, runToEnd) {
         }
       }
     } else {
-      dispatch(dealNextStreet(street))
+      dispatch(dealNextStreet(currentStreet))
     }
   }
 }
@@ -188,6 +197,7 @@ export function startGameThunk() {
 function restartRoundThunk() {
   return dispatch => {
     dispatch(restartPlayerStates())
+    dispatch(removeBustedPlayers())
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
@@ -337,6 +347,12 @@ export default function reducer(state = initialState, action) {
           state.handWinners,
           state.pot,
         ),
+      })
+    }
+
+    case REMOVE_BUSTED_PLAYERS: {
+      return Object.assign({}, state, {
+        players: handleRemovingBustedPlayers(state.players),
       })
     }
 

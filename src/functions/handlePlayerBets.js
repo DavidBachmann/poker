@@ -8,11 +8,6 @@ import update from 'immutability-helper'
  */
 
 export default function handlePlayerBets(amountRequested, state) {
-  console.log('handlePlayerBets got state = ')
-  console.log(state)
-  console.log('and amount requested = ')
-  console.log(amountRequested)
-
   const {
     players,
     nextPlayerToAct,

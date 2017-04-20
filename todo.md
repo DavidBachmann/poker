@@ -1,0 +1,3 @@
+- Player can check
+- Recalculate positions when a player drops out
+  - Make UTG always be a position, to simplify player selection on a new street (?)
