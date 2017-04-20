@@ -33,7 +33,8 @@ export default function handlePlayerBets(amountRequested, state) {
   // By default that's 2xBB
   const defaultMinAmount = levels[currentLevel].bigBlind * 2
   // Unless someone has bet higher
-  // If we have chipsCurrentlyInvested, we don't have to pay that amount again to call or raise the current bet.
+  // If we have chipsCurrentlyInvested
+  // we don't have to pay that amount again to call or raise the current bet.
   const actualMinAmount = highestCurrentBet > defaultMinAmount
     ? highestCurrentBet - players[nextPlayerToAct].chipsCurrentlyInvested
     : defaultMinAmount
