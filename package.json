@@ -76,6 +76,7 @@
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
+      "max-len": ["error", 100],
       "semi": [
         "error",
         "never"

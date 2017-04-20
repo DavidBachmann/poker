@@ -3,8 +3,7 @@ import initialState from '../initialState'
 
 import delay from '../../utils/delay'
 import handlePlayerBets from '../../functions/handlePlayerBets'
-import handleResettingPlayerStates
-  from '../../functions/handleResettingPlayerStates'
+import handleResettingPlayerStates from '../../functions/handleResettingPlayerStates'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handleDetermingWinner from '../../functions/handleDetermingWinner'
 import handlePayingPlayers from '../../functions/handlePayingPlayers'
@@ -12,17 +11,12 @@ import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
 import handleNextPlayerToAct from '../../functions/handleNextPlayerToAct'
-import handleRemovingBustedPlayers
-  from '../../functions/handleRemovingBustedPlayers'
-import handleCollectingPlayerPots
-  from '../../functions/handleCollectingPlayerPots'
+import handleRemovingBustedPlayers from '../../functions/handleRemovingBustedPlayers'
+import handleCollectingPlayerPots from '../../functions/handleCollectingPlayerPots'
 import handleEmptyingPlayerPots from '../../functions/handleEmptyingPlayerPots'
-import handleSettingHighestCurrentBettor
-  from '../../functions/handleSettingHighestCurrentBettor'
-import handleDealingCardsToPlayers
-  from '../../functions/handleDealingCardsToPlayers'
-import handleCalculatingPositions
-  from '../../functions/handleCalculatingPositions'
+import handleSettingHighestCurrentBettor from '../../functions/handleSettingHighestCurrentBettor'
+import handleDealingCardsToPlayers from '../../functions/handleDealingCardsToPlayers'
+import handleCalculatingPositions from '../../functions/handleCalculatingPositions'
 import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 
 const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
@@ -213,13 +207,8 @@ function getNextPlayerToActThunk() {
     if (nextPlayerToAct === -1) {
       if (currentStreet < 3) {
         // ... because every one is all-in?
-        if (
-          players.filter(player => !player.isAllIn && !player.hasFolded)
-            .length === 0
-        ) {
-          dispatch(
-            dealNextStreetThunk(handleGettingNextStreet(currentStreet), true),
-          )
+        if (players.filter(player => !player.isAllIn && !player.hasFolded).length === 0) {
+          dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet), true))
         } else {
           // ... because we should deal
           dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
@@ -281,11 +270,7 @@ export default function reducer(state = initialState, action) {
         communityCards: {},
         handWinners: [],
         pot: 0,
-        positions: handleCalculatingPositions(
-          state.players,
-          state.handHistory,
-          state.positions,
-        ),
+        positions: handleCalculatingPositions(state.players, state.handHistory, state.positions),
         players: handlePostBlinds(state),
       })
     }
@@ -342,11 +327,7 @@ export default function reducer(state = initialState, action) {
 
     case PAY_PLAYERS: {
       return Object.assign({}, state, {
-        players: handlePayingPlayers(
-          state.players,
-          state.handWinners,
-          state.pot,
-        ),
+        players: handlePayingPlayers(state.players, state.handWinners, state.pot),
       })
     }
 

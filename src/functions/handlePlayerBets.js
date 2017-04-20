@@ -8,13 +8,7 @@ import update from 'immutability-helper'
  */
 
 export default function handlePlayerBets(amountRequested, state) {
-  const {
-    players,
-    nextPlayerToAct,
-    levels,
-    currentLevel,
-    highestCurrentBettor,
-  } = state
+  const { players, nextPlayerToAct, levels, currentLevel, highestCurrentBettor } = state
 
   // Values we'll be changing and returning
   let $chips = players[nextPlayerToAct].chips
@@ -33,9 +27,7 @@ export default function handlePlayerBets(amountRequested, state) {
   }
 
   // Check what the highest current bet is
-  const highestCurrentBet = highestCurrentBettor
-    ? highestCurrentBettor.chipsCurrentlyInvested
-    : 0
+  const highestCurrentBet = highestCurrentBettor ? highestCurrentBettor.chipsCurrentlyInvested : 0
 
   // Check if the player is betting the mininum required
   // By default that's 2xBB

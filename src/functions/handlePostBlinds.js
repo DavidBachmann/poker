@@ -1,6 +1,5 @@
 import update from 'immutability-helper'
-import getAmountTakenFromBlindedPlayers
-  from './getAmountTakenFromBlindedPlayers'
+import getAmountTakenFromBlindedPlayers from './getAmountTakenFromBlindedPlayers'
 
 /**
  * Handles collecting blinds from players
