@@ -6,7 +6,7 @@ import update from 'immutability-helper'
 export default function handlePlayerChecks(players, nextPlayerToAct) {
   return update(players, {
     [nextPlayerToAct]: {
-
+      hasActed: { $set: true },
     },
   })
 }

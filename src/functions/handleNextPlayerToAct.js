@@ -11,6 +11,7 @@ export default function handleNextPlayerToAct(players, nextPlayerToAct, highestC
     if (
       !player.hasFolded &&
       !player.isAllIn &&
+      !player.hasActed &&
       player.chipsCurrentlyInvested !== highestCurrentBet
     ) {
       return index
