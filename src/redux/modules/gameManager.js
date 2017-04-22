@@ -8,6 +8,7 @@ import handleCollectingPlayerPots from '../../functions/handleCollectingPlayerPo
 import handleDealingCardsToPlayers from '../../functions/handleDealingCardsToPlayers'
 import handleDealingNextStreet from '../../functions/handleDealingNextStreet'
 import handleDetermingWinner from '../../functions/handleDetermingWinner'
+import handlePlayerChecks from '../../functions/handlePlayerChecks'
 import handleEmptyingPlayerPots from '../../functions/handleEmptyingPlayerPots'
 import handleGettingNextStreet from '../../functions/handleGettingNextStreet'
 import handleNextPlayerToAct from '../../functions/handleNextPlayerToAct'
@@ -30,8 +31,10 @@ export const GET_HIGHEST_CURRENT_BETTOR = 'GET_HIGHEST_CURRENT_BETTOR'
 export const GET_NEXT_PLAYER_TO_ACT = 'GET_NEXT_PLAYER_TO_ACT'
 export const PAY_PLAYERS = 'PAY_PLAYERS'
 export const PLAYER_BETS = 'PLAYER_BETS'
+export const PLAYER_CHECKS = 'PLAYER_CHECKS'
 export const PLAYER_FOLDS = 'PLAYER_FOLDS'
 export const REMOVE_BUSTED_PLAYERS = 'REMOVE_BUSTED_PLAYERS'
+export const RESET_HIGHEST_CURRENT_BETTOR = 'RESET_HIGHEST_CURRENT_BETTOR'
 export const RESTART_PLAYER_STATES = 'RESTART_PLAYER_STATES'
 export const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
 export const START_NEW_ROUND = 'START_NEW_ROUND'
@@ -90,9 +93,21 @@ function dealCardsToPlayers() {
   }
 }
 
+function resetHighestCurrentBettor() {
+  return {
+    type: RESET_HIGHEST_CURRENT_BETTOR,
+  }
+}
+
 function playerFolds() {
   return {
     type: PLAYER_FOLDS,
+  }
+}
+
+function playerChecks() {
+  return {
+    type: PLAYER_CHECKS,
   }
 }
 
@@ -138,6 +153,7 @@ function dealNextStreetThunk(currentStreet, runToEnd) {
   return async (dispatch, getState) => {
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
+    dispatch(resetHighestCurrentBettor())
     if (runToEnd) {
       for (let i = currentStreet; i <= 3; i++) {
         dispatch(dealNextStreet(i))
@@ -155,6 +171,9 @@ function dealNextStreetThunk(currentStreet, runToEnd) {
 export function playerFoldsThunk() {
   return dispatch => {
     dispatch(playerFolds())
+    // Check if player is the last to fold
+    // => pay out
+    // else
     dispatch(getNextPlayerToActThunk())
   }
 }
@@ -163,6 +182,13 @@ export function playerBetsThunk(amount) {
   return dispatch => {
     dispatch(playerBets(amount))
     dispatch(getHighestCurrentBettor())
+    dispatch(getNextPlayerToActThunk())
+  }
+}
+
+export function playerChecksThunk() {
+  return dispatch => {
+    dispatch(playerChecks())
     dispatch(getNextPlayerToActThunk())
   }
 }
@@ -230,6 +256,12 @@ export default function reducer(state = initialState, action) {
       })
     }
 
+    case PLAYER_CHECKS: {
+      return Object.assign({}, state, {
+        players: state.players, //handlePlayerChecks(state.players),
+      })
+    }
+
     case PLAYER_FOLDS: {
       return Object.assign({}, state, {
         players: handlePlayerFolds(state.players, state.nextPlayerToAct),
@@ -284,6 +316,12 @@ export default function reducer(state = initialState, action) {
     case COLLECT_PLAYER_POTS: {
       return Object.assign({}, state, {
         pot: handleCollectingPlayerPots(state.players, state.pot),
+      })
+    }
+
+    case RESET_HIGHEST_CURRENT_BETTOR: {
+      return Object.assign({}, state, {
+        highestCurrentBettor: null,
       })
     }
 

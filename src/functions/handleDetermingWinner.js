@@ -1,8 +1,7 @@
 import { Hand } from 'pokersolver'
 import { concat, valuesIn, flatten } from 'lodash'
-import { stripSpaces } from '../utils'
 import { formatHand } from '../utils/formatHand'
-
+import { stripSpaces } from '../utils'
 export default function handlingDetermingWinner(players, communityCards) {
   let winners = []
 

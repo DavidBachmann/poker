@@ -6,6 +6,7 @@ import {
   startGameThunk,
   playerBetsThunk,
   playerFoldsThunk,
+  playerChecksThunk,
 } from '../redux/modules/gameManager'
 
 function mapStateToProps(state) {
@@ -19,6 +20,7 @@ function mapDispatchToProps(dispatch) {
     startGameThunk: () => dispatch(startGameThunk()),
     playerBetsThunk: value => dispatch(playerBetsThunk(value)),
     playerFoldsThunk: () => dispatch(playerFoldsThunk()),
+    playerChecksThunk: () => dispatch(playerChecksThunk()),
   }
 }
 

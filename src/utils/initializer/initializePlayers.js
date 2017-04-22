@@ -1,5 +1,5 @@
 import uuidV4 from 'uuid/v4'
-import randomNameGenerator from '../randomNameGenerator'
+import randomNameGenerator from './randomNameGenerator'
 
 const initalizePlayers = (
   totalPlayers,

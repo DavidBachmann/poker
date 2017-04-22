@@ -1,5 +1,5 @@
-import shuffleDeck from './'
-import generateShuffledDeck from '../generateShuffledDeck'
+import shuffleDeck from './shuffleDeck'
+import generateShuffledDeck from './generateShuffledDeck'
 
 test('Shuffle a deck', () => {
   shuffleDeck(generateShuffledDeck())

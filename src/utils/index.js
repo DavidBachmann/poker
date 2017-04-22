@@ -1,3 +1,3 @@
-export const stripSpaces = (str) => {
+export const stripSpaces = str => {
   return str.replace(/\s+/g, '')
 }

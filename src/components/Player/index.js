@@ -21,6 +21,7 @@ class Player extends Component {
       chips,
       chipsCurrentlyInvested,
       foldHandler,
+      checkHandler,
       hasFolded,
       highestCurrentBettor,
       holeCards,
@@ -42,9 +43,7 @@ class Player extends Component {
     const isUTG = positions.utg === index
     const isMP = positions.mp === index
     const isCutOff = positions.cutoff === index
-    const highestCurrentBet = highestCurrentBettor
-      ? highestCurrentBettor.chipsCurrentlyInvested
-      : 0
+    const highestCurrentBet = highestCurrentBettor ? highestCurrentBettor.chipsCurrentlyInvested : 0
 
     return (
       <div
@@ -65,12 +64,7 @@ class Player extends Component {
         {holeCards &&
           <div className="Player-cards">
             {holeCards.map((card, i) => (
-              <Card
-                visible={showCards}
-                suit={card.suit}
-                rank={card.rank}
-                key={i}
-              />
+              <Card visible={showCards} suit={card.suit} rank={card.rank} key={i} />
             ))}
           </div>}
         <div className="Player-chipsInvested">
@@ -95,12 +89,14 @@ class Player extends Component {
           </button>
           <button
             disabled={!canAct}
-            onClick={() =>
-              betHandler(highestCurrentBet - chipsCurrentlyInvested)}
+            onClick={() => betHandler(highestCurrentBet - chipsCurrentlyInvested)}
           >
             Call
           </button>
-          <button disabled={!canAct} onClick={() => {}}>
+          <button
+            disabled={!canAct || highestCurrentBet > chipsCurrentlyInvested}
+            onClick={() => checkHandler()}
+          >
             Check
           </button>
           <button disabled={!canAct} onClick={() => foldHandler()}>

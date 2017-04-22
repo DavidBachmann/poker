@@ -15,6 +15,11 @@ class Board extends Component {
     playerFoldsThunk()
   }
 
+  checkHandler = () => {
+    const { playerChecksThunk } = this.props
+    playerChecksThunk()
+  }
+
   render() {
     const {
       communityCards,
@@ -39,14 +44,13 @@ class Board extends Component {
                 index={index}
                 canAct={nextPlayerToAct === index}
                 isAllIn={player.isAllIn}
-                isWinner={
-                  this.cachedWinners && this.cachedWinners.includes(player.id)
-                }
+                isWinner={this.cachedWinners && this.cachedWinners.includes(player.id)}
                 holeCards={player.holeCards}
                 positions={positions}
                 showCards={true}
                 betHandler={this.betHandler}
                 foldHandler={this.foldHandler}
+                checkHandler={this.checkHandler}
                 highestCurrentBettor={highestCurrentBettor}
                 chipsCurrentlyInvested={player.chipsCurrentlyInvested}
               />
@@ -63,10 +67,7 @@ class Board extends Component {
           (
           <strong>
             $
-            {players.reduce(
-              (acc, player) => player.chipsCurrentlyInvested + acc,
-              0,
-            )}
+            {players.reduce((acc, player) => player.chipsCurrentlyInvested + acc, 0)}
           </strong>
           )
         </p>
@@ -81,9 +82,7 @@ class Board extends Component {
               ))}
             {handWinners.length > 1 &&
               <div>
-                {handWinners.map(winner => (
-                  <strong key={winner.id}>{winner.name}, </strong>
-                ))}
+                {handWinners.map(winner => <strong key={winner.id}>{winner.name}, </strong>)}
                 <p>
                   tie for the hand with
                   {' '}
