@@ -2,8 +2,15 @@ import { Hand } from 'pokersolver'
 import { concat, valuesIn, flatten } from 'lodash'
 import { formatHand } from '../utils/formatHand'
 import { stripSpaces } from '../utils'
+import getAlivePlayers from './getAlivePlayers'
+
 export default function handlingDetermingWinner(players, communityCards) {
   let winners = []
+  const alivePlayers = getAlivePlayers(players)
+
+  if (alivePlayers.length === 1) {
+    return winners.concat(alivePlayers)
+  }
 
   /*
     Note: Format Hand means taking an array with with objects that look like:

@@ -3,6 +3,7 @@ import initialState from '../initialState'
 
 import delay from '../../utils/delay'
 import generateShuffledDeck from '../../utils/generateShuffledDeck'
+import getAlivePlayers from '../../functions/getAlivePlayers'
 import handleCalculatingPositions from '../../functions/handleCalculatingPositions'
 import handleCollectingPlayerPots from '../../functions/handleCollectingPlayerPots'
 import handleDealingCardsToPlayers from '../../functions/handleDealingCardsToPlayers'
@@ -169,12 +170,17 @@ function dealNextStreetThunk(currentStreet, runToEnd) {
 }
 
 export function playerFoldsThunk() {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch(playerFolds())
-    // Check if player is the last to fold
-    // => pay out
-    // else
-    dispatch(getNextPlayerToActThunk())
+    // Get players after current player has folded
+    const { players } = getState()
+    const alivePlayers = getAlivePlayers(players)
+    // If this player was the last to fold then end the round
+    if (alivePlayers.length === 1) {
+      dispatch(goToShowdownThunk())
+    } else {
+      dispatch(getNextPlayerToActThunk())
+    }
   }
 }
 
@@ -194,8 +200,10 @@ export function playerChecksThunk() {
 }
 
 function goToShowdownThunk() {
+  console.log('go to showdownthunk called')
   return async (dispatch, getState) => {
     const { handWinners } = getState()
+    console.log(handWinners)
     dispatch(determineWinner())
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
@@ -211,6 +219,7 @@ export function startGameThunk() {
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
+    dispatch(getHighestCurrentBettor())
   }
 }
 
@@ -258,7 +267,7 @@ export default function reducer(state = initialState, action) {
 
     case PLAYER_CHECKS: {
       return Object.assign({}, state, {
-        players: state.players, //handlePlayerChecks(state.players),
+        players: state.players, //Todo: handlePlayerChecks(state.players),
       })
     }
 
@@ -352,6 +361,7 @@ export default function reducer(state = initialState, action) {
     }
 
     case DETERMINE_WINNER: {
+      console.log('DETERMINE_WINNER called')
       return Object.assign({}, state, {
         handWinners: handleDetermingWinner(state.players, state.communityCards),
       })

@@ -1,3 +1,3 @@
-- Player can check
+- Player can't check when first to act
 - Recalculate positions when a player drops out
   - Make UTG always be a position, to simplify player selection on a new street (?)
