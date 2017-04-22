@@ -15,7 +15,7 @@ const initialState = deepFreeze({
   handWinners: [],
   currentLevel: 1,
   currentStreet: 0,
-  communityCards: [{}, {}, {}],
+  communityCards: {},
   nextPlayerToAct: 0,
   playersInTheHand: players,
   whatPlayerIsDealer: null,
