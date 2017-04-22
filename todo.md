@@ -1,3 +1,4 @@
 - Player can't check when first to act
 - Recalculate positions when a player drops out
   - Make UTG always be a position, to simplify player selection on a new street (?)
+- Fix bug where in hand #2, BB is second to act.
