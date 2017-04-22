@@ -56,6 +56,7 @@ export default function handlePlayerBets(amountRequested, state) {
     [nextPlayerToAct]: {
       chips: { $set: $chips },
       isAllIn: { $set: $isAllIn },
+      hasActed: { $set: true },
       chipsCurrentlyInvested: { $set: $chipsCurrentlyInvested },
     },
   })

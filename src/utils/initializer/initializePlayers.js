@@ -20,6 +20,7 @@ const initalizePlayers = (
       chipsCurrentlyInvested: 0,
       id: generateRandomId ? uuidV4() : null,
       hasFolded: false,
+      hasActed: false,
       isAllIn: false,
     }),
   )

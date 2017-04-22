@@ -8,6 +8,7 @@ export default function handlePlayerFolds(players, nextPlayerToAct) {
     [nextPlayerToAct]: {
       holeCards: { $set: [] },
       hasFolded: { $set: true },
+      hasActed: { $set: true },
     },
   })
 }
