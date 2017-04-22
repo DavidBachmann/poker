@@ -1,6 +1,6 @@
 import reducer, { COLLECT_PLAYER_POTS } from '../gameManager'
 
-test("Two players are all-in and we're about to go to showdown", () => {
+test('Two players are all-in and game is about to go to showdown', () => {
   let state
   state = reducer(
     {
