@@ -1,18 +1,24 @@
 /**
  * Handle getting the next player capable of acting
  */
-export default function handleNextPlayerToAct(players, nextPlayerToAct, highestCurrentBettor) {
+export default function handleNextPlayerToAct(
+  players,
+  nextPlayerToAct,
+  highestCurrentBettor,
+  handHistory,
+) {
   const currentPlayerIndex = nextPlayerToAct
   const playerCount = players.length
+  const historyCount = handHistory.length
   const startIndex = (currentPlayerIndex + 1) % playerCount
   const highestCurrentBet = highestCurrentBettor && highestCurrentBettor.chipsCurrentlyInvested
   for (let index = startIndex; index !== currentPlayerIndex; index = (index + 1) % playerCount) {
     const player = players[index]
     if (
       !player.hasFolded &&
-      !player.isAllIn &&
-      !player.hasActed &&
-      player.chipsCurrentlyInvested !== highestCurrentBet
+      !player.isAllIn
+      // &&
+      // player.chipsCurrentlyInvested !== highestCurrentBet
     ) {
       return index
     }

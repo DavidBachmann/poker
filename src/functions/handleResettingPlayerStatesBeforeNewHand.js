@@ -7,6 +7,7 @@ export default function handleResettingPlayerStatesBeforeNewHand(players) {
   _players.forEach(z => {
     z.isAllIn = false
     z.hasActed = false
+    z.hasFolded = false
   })
 
   return _players

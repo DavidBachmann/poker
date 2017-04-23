@@ -42,7 +42,7 @@ export const RESET_HIGHEST_CURRENT_BETTOR = 'RESET_HIGHEST_CURRENT_BETTOR'
 export const RESTART_PLAYER_STATES_BEFORE_NEW_HAND = 'RESTART_PLAYER_STATES_BEFORE_NEW_HAND'
 export const RESTART_PLAYER_STATES_BEFORE_NEW_BETTING_ROUND =
   'RESTART_PLAYER_STATES_BEFORE_NEW_BETTING_ROUND'
-export const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
+// export const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
 export const START_NEW_ROUND = 'START_NEW_ROUND'
 
 function startNewRound() {
@@ -57,11 +57,11 @@ function getNextPlayerToAct() {
   }
 }
 
-function setNextPlayerToAct() {
-  return {
-    type: SET_NEXT_PLAYER_TO_ACT,
-  }
-}
+// function setNextPlayerToAct() {
+//   return {
+//     type: SET_NEXT_PLAYER_TO_ACT,
+//   }
+// }
 
 function getHighestCurrentBettor() {
   return {
@@ -235,7 +235,7 @@ function restartRoundThunk() {
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
-    dispatch(setNextPlayerToAct())
+    dispatch(getNextPlayerToAct())
   }
 }
 
@@ -294,16 +294,17 @@ export default function reducer(state = initialState, action) {
           state.players,
           state.nextPlayerToAct,
           state.highestCurrentBettor,
+          state.handHistory,
         ),
       })
     }
+    // case SET_NEXT_PLAYER_TO_ACT: {
+    //   return Object.assign({}, state, {
+    //     // Todo: won't work with fewer players.
+    //     nextPlayerToAct: state.positions.utg,
+    //   })
+    // }
 
-    case SET_NEXT_PLAYER_TO_ACT: {
-      return Object.assign({}, state, {
-        // Todo: won't work with fewer players.
-        nextPlayerToAct: state.positions.utg,
-      })
-    }
 
     case RESTART_PLAYER_STATES_BEFORE_NEW_HAND: {
       return Object.assign({}, state, {
@@ -315,6 +316,7 @@ export default function reducer(state = initialState, action) {
       return Object.assign({}, state, {
         communityCards: {},
         handWinners: [],
+        highestCurrentBettor: null,
         pot: 0,
         positions: handleCalculatingPositions(state.players, state.handHistory, state.positions),
         players: handlePostBlinds(state),
@@ -333,12 +335,6 @@ export default function reducer(state = initialState, action) {
       })
     }
 
-    case RESET_HIGHEST_CURRENT_BETTOR: {
-      return Object.assign({}, state, {
-        highestCurrentBettor: null,
-      })
-    }
-
     case EMPTY_PLAYER_POTS: {
       return Object.assign({}, state, {
         players: handleEmptyingPlayerPots(state.players),
@@ -354,6 +350,7 @@ export default function reducer(state = initialState, action) {
         ),
         currentStreet: action.nextStreet,
         players: handleResettingPlayerStatesBeforeNewBettingRound(state.players),
+        highestCurrentBettor: null,
       })
     }
 
