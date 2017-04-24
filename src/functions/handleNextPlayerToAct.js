@@ -16,9 +16,8 @@ export default function handleNextPlayerToAct(
     const player = players[index]
     if (
       !player.hasFolded &&
-      !player.isAllIn
-      // &&
-      // player.chipsCurrentlyInvested !== highestCurrentBet
+      !player.isAllIn &&
+      player.chipsCurrentlyInvested !== highestCurrentBet
     ) {
       return index
     }
