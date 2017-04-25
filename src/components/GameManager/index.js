@@ -3,8 +3,8 @@ import __DEBUG__ from '../../utils'
 
 class GameManager extends Component {
   componentDidMount() {
-    const { startRoundThunk } = this.props
-    startRoundThunk()
+    const { startGameThunk } = this.props
+    startGameThunk()
   }
 
   render() {

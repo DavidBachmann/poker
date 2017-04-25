@@ -235,7 +235,6 @@ function restartRoundThunk() {
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
-    dispatch(getNextPlayerToAct())
   }
 }
 
@@ -306,12 +305,18 @@ export default function reducer(state = initialState, action) {
     }
 
     case START_NEW_ROUND: {
+      const positions = handleCalculatingPositions(
+        state.players,
+        state.handHistory,
+        state.positions,
+      )
       return Object.assign({}, state, {
         communityCards: {},
         handWinners: [],
         highestCurrentBettor: null,
         pot: 0,
-        positions: handleCalculatingPositions(state.players, state.handHistory, state.positions),
+        positions,
+        nextPlayerToAct: positions.utg,
         players: handlePostBlinds(state),
       })
     }
