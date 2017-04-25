@@ -3,7 +3,7 @@
 import { connect } from 'react-redux'
 import GameManager from '../components/GameManager'
 import {
-  startGameThunk,
+  startRoundThunk,
   playerBetsThunk,
   playerFoldsThunk,
   playerChecksThunk,
@@ -17,7 +17,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    startGameThunk: () => dispatch(startGameThunk()),
+    startRoundThunk: () => dispatch(startRoundThunk()),
     playerBetsThunk: value => dispatch(playerBetsThunk(value)),
     playerFoldsThunk: () => dispatch(playerFoldsThunk()),
     playerChecksThunk: () => dispatch(playerChecksThunk()),

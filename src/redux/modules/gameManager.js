@@ -205,37 +205,26 @@ export function playerChecksThunk() {
 }
 
 function goToShowdownThunk() {
-  console.log('go to showdownthunk called')
   return async (dispatch, getState) => {
     const { handWinners } = getState()
-    console.log(handWinners)
     dispatch(determineWinner())
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
     dispatch(payPlayers(handWinners))
     dispatch(addToHandHistory())
     await delay(2500)
-    dispatch(restartRoundThunk())
+    dispatch(startRoundThunk())
   }
 }
 
-export function startGameThunk() {
-  return dispatch => {
-    dispatch(startNewRound())
-    dispatch(generateNewDeck())
-    dispatch(dealCardsToPlayers())
-    dispatch(getHighestCurrentBettor())
-  }
-}
-
-function restartRoundThunk() {
+export function startRoundThunk() {
   return dispatch => {
     dispatch(restartPlayerStatesBeforeNewHand())
     dispatch(removeBustedPlayers())
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
-    dispatch(getNextPlayerToAct())
+    dispatch(getHighestCurrentBettor())
   }
 }
 
@@ -272,7 +261,7 @@ export default function reducer(state = initialState, action) {
 
     case PLAYER_CHECKS: {
       return Object.assign({}, state, {
-        players: handlePlayerChecks(state.players),
+        players: handlePlayerChecks(state.players, state.nextPlayerToAct),
       })
     }
 
@@ -294,17 +283,10 @@ export default function reducer(state = initialState, action) {
           state.players,
           state.nextPlayerToAct,
           state.highestCurrentBettor,
-          state.handHistory,
+          state.positions,
         ),
       })
     }
-    // case SET_NEXT_PLAYER_TO_ACT: {
-    //   return Object.assign({}, state, {
-    //     // Todo: won't work with fewer players.
-    //     nextPlayerToAct: state.positions.utg,
-    //   })
-    // }
-
 
     case RESTART_PLAYER_STATES_BEFORE_NEW_HAND: {
       return Object.assign({}, state, {
@@ -313,13 +295,19 @@ export default function reducer(state = initialState, action) {
     }
 
     case START_NEW_ROUND: {
+      const positions = handleCalculatingPositions(
+        state.players,
+        state.handHistory,
+        state.positions,
+      )
       return Object.assign({}, state, {
         communityCards: {},
         handWinners: [],
         highestCurrentBettor: null,
         pot: 0,
-        positions: handleCalculatingPositions(state.players, state.handHistory, state.positions),
+        positions,
         players: handlePostBlinds(state),
+        nextPlayerToAct: positions.utg,
       })
     }
 
