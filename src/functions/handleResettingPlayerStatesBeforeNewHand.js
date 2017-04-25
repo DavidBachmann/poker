@@ -6,6 +6,7 @@ export default function handleResettingPlayerStatesBeforeNewHand(players) {
   for (var i = 0; i < players.length; i++) {
     players[i].hasActed = false
     players[i].isAllIn = false
+    players[i].hasFolded = false
   }
 
   return players

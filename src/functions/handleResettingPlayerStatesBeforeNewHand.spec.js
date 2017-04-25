@@ -99,7 +99,7 @@ test('Returns correctly resetted player array', () => {
       chips: 1500,
       chipsCurrentlyInvested: 0,
       id: 'aa654ab0-4a83-4c00-90f4-4bf4a067a02f',
-      hasFolded: true,
+      hasFolded: false,
       isAllIn: false,
     },
     {
@@ -111,7 +111,7 @@ test('Returns correctly resetted player array', () => {
       chips: 1500,
       chipsCurrentlyInvested: 0,
       id: '4509a8a1-4c7f-4cd7-bada-8c8e93b269ba',
-      hasFolded: true,
+      hasFolded: false,
       isAllIn: false,
     },
     {
@@ -135,7 +135,7 @@ test('Returns correctly resetted player array', () => {
       chips: 1490,
       chipsCurrentlyInvested: 0,
       id: '33333c18-9214-4b10-ae55-f4318ffb1be1',
-      hasFolded: true,
+      hasFolded: false,
       isAllIn: false,
     },
     {
@@ -147,7 +147,7 @@ test('Returns correctly resetted player array', () => {
       chips: 1480,
       chipsCurrentlyInvested: 0,
       id: 'ebc4e7c2-0081-460a-a173-bd00e07905e2',
-      hasFolded: true,
+      hasFolded: false,
       isAllIn: false,
     },
   ])
