@@ -205,26 +205,37 @@ export function playerChecksThunk() {
 }
 
 function goToShowdownThunk() {
+  console.log('go to showdownthunk called')
   return async (dispatch, getState) => {
     const { handWinners } = getState()
+    console.log(handWinners)
     dispatch(determineWinner())
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
     dispatch(payPlayers(handWinners))
     dispatch(addToHandHistory())
     await delay(2500)
-    dispatch(startRoundThunk())
+    dispatch(restartRoundThunk())
   }
 }
 
-export function startRoundThunk() {
+export function startGameThunk() {
+  return dispatch => {
+    dispatch(startNewRound())
+    dispatch(generateNewDeck())
+    dispatch(dealCardsToPlayers())
+    dispatch(getHighestCurrentBettor())
+  }
+}
+
+function restartRoundThunk() {
   return dispatch => {
     dispatch(restartPlayerStatesBeforeNewHand())
     dispatch(removeBustedPlayers())
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
-    dispatch(getHighestCurrentBettor())
+    dispatch(getNextPlayerToAct())
   }
 }
 
@@ -261,7 +272,7 @@ export default function reducer(state = initialState, action) {
 
     case PLAYER_CHECKS: {
       return Object.assign({}, state, {
-        players: handlePlayerChecks(state.players, state.nextPlayerToAct),
+        players: handlePlayerChecks(state.players),
       })
     }
 
@@ -283,6 +294,7 @@ export default function reducer(state = initialState, action) {
           state.players,
           state.nextPlayerToAct,
           state.highestCurrentBettor,
+          state.handHistory,
         ),
       })
     }
@@ -294,19 +306,13 @@ export default function reducer(state = initialState, action) {
     }
 
     case START_NEW_ROUND: {
-      const positions = handleCalculatingPositions(
-        state.players,
-        state.handHistory,
-        state.positions,
-      )
       return Object.assign({}, state, {
         communityCards: {},
         handWinners: [],
         highestCurrentBettor: null,
         pot: 0,
-        positions,
+        positions: handleCalculatingPositions(state.players, state.handHistory, state.positions),
         players: handlePostBlinds(state),
-        nextPlayerToAct: positions.utg,
       })
     }
 
