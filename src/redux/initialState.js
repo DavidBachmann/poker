@@ -4,7 +4,7 @@ import { initializePlayers, initializeLevels } from '../utils/initializer'
 const players = initializePlayers(6, 1500)
 const levels = initializeLevels()
 
-const initialState = deepFreeze({
+const initialState = {
   pot: 0,
   deck: [],
   levels: levels,
@@ -19,6 +19,6 @@ const initialState = deepFreeze({
   nextPlayerToAct: 0,
   whatPlayerIsDealer: null,
   highestCurrentBettor: null,
-})
+}
 
 export default initialState
