@@ -18,7 +18,10 @@ import handlePlayerBets from '../../functions/handlePlayerBets'
 import handlePlayerFolds from '../../functions/handlePlayerFolds'
 import handlePostBlinds from '../../functions/handlePostBlinds'
 import handleRemovingBustedPlayers from '../../functions/handleRemovingBustedPlayers'
-import handleResettingPlayerStates from '../../functions/handleResettingPlayerStates'
+import handleResettingPlayerStatesBeforeNewHand
+  from '../../functions/handleResettingPlayerStatesBeforeNewHand'
+import handleResettingPlayerStatesBeforeNewBettingRound
+  from '../../functions/handleResettingPlayerStatesBeforeNewBettingRound'
 import handleSettingHighestCurrentBettor from '../../functions/handleSettingHighestCurrentBettor'
 
 export const ADD_TO_HAND_HISTORY = 'ADD_TO_HAND_HISTORY'
@@ -36,8 +39,10 @@ export const PLAYER_CHECKS = 'PLAYER_CHECKS'
 export const PLAYER_FOLDS = 'PLAYER_FOLDS'
 export const REMOVE_BUSTED_PLAYERS = 'REMOVE_BUSTED_PLAYERS'
 export const RESET_HIGHEST_CURRENT_BETTOR = 'RESET_HIGHEST_CURRENT_BETTOR'
-export const RESTART_PLAYER_STATES = 'RESTART_PLAYER_STATES'
-export const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
+export const RESTART_PLAYER_STATES_BEFORE_NEW_HAND = 'RESTART_PLAYER_STATES_BEFORE_NEW_HAND'
+export const RESTART_PLAYER_STATES_BEFORE_NEW_BETTING_ROUND =
+  'RESTART_PLAYER_STATES_BEFORE_NEW_BETTING_ROUND'
+// export const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
 export const START_NEW_ROUND = 'START_NEW_ROUND'
 
 function startNewRound() {
@@ -52,11 +57,11 @@ function getNextPlayerToAct() {
   }
 }
 
-function setNextPlayerToAct() {
-  return {
-    type: SET_NEXT_PLAYER_TO_ACT,
-  }
-}
+// function setNextPlayerToAct() {
+//   return {
+//     type: SET_NEXT_PLAYER_TO_ACT,
+//   }
+// }
 
 function getHighestCurrentBettor() {
   return {
@@ -144,9 +149,9 @@ function dealNextStreet(nextStreet) {
   }
 }
 
-function restartPlayerStates() {
+function restartPlayerStatesBeforeNewHand() {
   return {
-    type: RESTART_PLAYER_STATES,
+    type: RESTART_PLAYER_STATES_BEFORE_NEW_HAND,
   }
 }
 
@@ -200,37 +205,26 @@ export function playerChecksThunk() {
 }
 
 function goToShowdownThunk() {
-  console.log('go to showdownthunk called')
   return async (dispatch, getState) => {
     const { handWinners } = getState()
-    console.log(handWinners)
     dispatch(determineWinner())
     dispatch(collectPlayerPots())
     dispatch(emptyPlayerPots())
     dispatch(payPlayers(handWinners))
     dispatch(addToHandHistory())
     await delay(2500)
-    dispatch(restartRoundThunk())
+    dispatch(startRoundThunk())
   }
 }
 
-export function startGameThunk() {
+export function startRoundThunk() {
   return dispatch => {
-    dispatch(startNewRound())
-    dispatch(generateNewDeck())
-    dispatch(dealCardsToPlayers())
-    dispatch(getHighestCurrentBettor())
-  }
-}
-
-function restartRoundThunk() {
-  return dispatch => {
-    dispatch(restartPlayerStates())
+    dispatch(restartPlayerStatesBeforeNewHand())
     dispatch(removeBustedPlayers())
     dispatch(startNewRound())
     dispatch(generateNewDeck())
     dispatch(dealCardsToPlayers())
-    dispatch(setNextPlayerToAct())
+    dispatch(getHighestCurrentBettor())
   }
 }
 
@@ -267,7 +261,7 @@ export default function reducer(state = initialState, action) {
 
     case PLAYER_CHECKS: {
       return Object.assign({}, state, {
-        players: state.players, //Todo: handlePlayerChecks(state.players),
+        players: handlePlayerChecks(state.players, state.nextPlayerToAct),
       })
     }
 
@@ -289,30 +283,31 @@ export default function reducer(state = initialState, action) {
           state.players,
           state.nextPlayerToAct,
           state.highestCurrentBettor,
+          state.positions,
         ),
       })
     }
 
-    case SET_NEXT_PLAYER_TO_ACT: {
+    case RESTART_PLAYER_STATES_BEFORE_NEW_HAND: {
       return Object.assign({}, state, {
-        // Todo: won't work with fewer players.
-        nextPlayerToAct: state.positions.utg,
-      })
-    }
-
-    case RESTART_PLAYER_STATES: {
-      return Object.assign({}, state, {
-        players: handleResettingPlayerStates(state.players),
+        players: handleResettingPlayerStatesBeforeNewHand(state.players),
       })
     }
 
     case START_NEW_ROUND: {
+      const positions = handleCalculatingPositions(
+        state.players,
+        state.handHistory,
+        state.positions,
+      )
       return Object.assign({}, state, {
         communityCards: {},
         handWinners: [],
+        highestCurrentBettor: null,
         pot: 0,
-        positions: handleCalculatingPositions(state.players, state.handHistory, state.positions),
+        positions,
         players: handlePostBlinds(state),
+        nextPlayerToAct: positions.utg,
       })
     }
 
@@ -325,12 +320,6 @@ export default function reducer(state = initialState, action) {
     case COLLECT_PLAYER_POTS: {
       return Object.assign({}, state, {
         pot: handleCollectingPlayerPots(state.players, state.pot),
-      })
-    }
-
-    case RESET_HIGHEST_CURRENT_BETTOR: {
-      return Object.assign({}, state, {
-        highestCurrentBettor: null,
       })
     }
 
@@ -348,6 +337,8 @@ export default function reducer(state = initialState, action) {
           state.deck,
         ),
         currentStreet: action.nextStreet,
+        players: handleResettingPlayerStatesBeforeNewBettingRound(state.players),
+        highestCurrentBettor: null,
       })
     }
 

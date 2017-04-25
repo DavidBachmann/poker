@@ -9,9 +9,7 @@ export default function handleNextPlayerToAct(players, nextPlayerToAct, highestC
   for (let index = startIndex; index !== currentPlayerIndex; index = (index + 1) % playerCount) {
     const player = players[index]
     if (
-      !player.hasFolded &&
-      !player.isAllIn &&
-      player.chipsCurrentlyInvested !== highestCurrentBet
+      !player.hasFolded && !player.isAllIn && player.chipsCurrentlyInvested !== highestCurrentBet
     ) {
       return index
     }

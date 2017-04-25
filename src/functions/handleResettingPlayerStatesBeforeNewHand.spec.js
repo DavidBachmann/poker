@@ -1,13 +1,14 @@
-import handleResettingPlayerStates from './handleResettingPlayerStates'
+import handleResettingPlayerStatesBeforeNewHand from './handleResettingPlayerStatesBeforeNewHand'
 
 test('Returns correctly resetted player array', () => {
   // Only resets isAllIn at the moment.
   expect(
-    handleResettingPlayerStates([
+    handleResettingPlayerStatesBeforeNewHand([
       {
         index: 0,
         holeCards: [],
         hand: [],
+        hasActed: true,
         name: 'Viktor Selbst',
         chips: 0,
         chipsCurrentlyInvested: 0,
@@ -19,6 +20,7 @@ test('Returns correctly resetted player array', () => {
         index: 1,
         holeCards: [],
         hand: [],
+        hasActed: true,
         name: 'Liv Hellmuth',
         chips: 1500,
         chipsCurrentlyInvested: 0,
@@ -30,6 +32,7 @@ test('Returns correctly resetted player array', () => {
         index: 2,
         holeCards: [],
         hand: [],
+        hasActed: true,
         name: 'JC Tran',
         chips: 1500,
         chipsCurrentlyInvested: 0,
@@ -41,6 +44,7 @@ test('Returns correctly resetted player array', () => {
         index: 3,
         holeCards: [],
         hand: [],
+        hasActed: true,
         name: 'Scott Ivey',
         chips: 3030,
         chipsCurrentlyInvested: 0,
@@ -52,6 +56,7 @@ test('Returns correctly resetted player array', () => {
         index: 4,
         holeCards: [],
         hand: [],
+        hasActed: true,
         name: 'Liv Tran',
         chips: 1490,
         chipsCurrentlyInvested: 0,
@@ -63,6 +68,7 @@ test('Returns correctly resetted player array', () => {
         index: 5,
         holeCards: [],
         hand: [],
+        hasActed: true,
         name: 'Liv Tran',
         chips: 1480,
         chipsCurrentlyInvested: 0,
@@ -76,6 +82,7 @@ test('Returns correctly resetted player array', () => {
       index: 0,
       holeCards: [],
       hand: [],
+      hasActed: false,
       name: 'Viktor Selbst',
       chips: 0,
       chipsCurrentlyInvested: 0,
@@ -87,6 +94,7 @@ test('Returns correctly resetted player array', () => {
       index: 1,
       holeCards: [],
       hand: [],
+      hasActed: false,
       name: 'Liv Hellmuth',
       chips: 1500,
       chipsCurrentlyInvested: 0,
@@ -98,6 +106,7 @@ test('Returns correctly resetted player array', () => {
       index: 2,
       holeCards: [],
       hand: [],
+      hasActed: false,
       name: 'JC Tran',
       chips: 1500,
       chipsCurrentlyInvested: 0,
@@ -109,6 +118,7 @@ test('Returns correctly resetted player array', () => {
       index: 3,
       holeCards: [],
       hand: [],
+      hasActed: false,
       name: 'Scott Ivey',
       chips: 3030,
       chipsCurrentlyInvested: 0,
@@ -120,6 +130,7 @@ test('Returns correctly resetted player array', () => {
       index: 4,
       holeCards: [],
       hand: [],
+      hasActed: false,
       name: 'Liv Tran',
       chips: 1490,
       chipsCurrentlyInvested: 0,
@@ -131,6 +142,7 @@ test('Returns correctly resetted player array', () => {
       index: 5,
       holeCards: [],
       hand: [],
+      hasActed: false,
       name: 'Liv Tran',
       chips: 1480,
       chipsCurrentlyInvested: 0,
