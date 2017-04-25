@@ -283,7 +283,6 @@ export default function reducer(state = initialState, action) {
           state.players,
           state.nextPlayerToAct,
           state.highestCurrentBettor,
-          state.positions,
         ),
       })
     }
