@@ -56,12 +56,6 @@ function getNextPlayerToAct() {
   }
 }
 
-// function setNextPlayerToAct() {
-//   return {
-//     type: SET_NEXT_PLAYER_TO_ACT,
-//   }
-// }
-
 function getHighestCurrentBettor() {
   return {
     type: GET_HIGHEST_CURRENT_BETTOR,

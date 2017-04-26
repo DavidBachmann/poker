@@ -30,7 +30,7 @@ test('Everyone folds to the BB', () => {
   expect(state.handWinners.length).toBe(1)
 })
 
-test('Last two players go all-in', async () => {
+test('Last two players go all-in and one is eliminated', async () => {
   const { getState, dispatch } = createStore(reducer, initialState, applyMiddleware(thunk))
   const { players } = getState()
   await dispatch(startGameThunk())
