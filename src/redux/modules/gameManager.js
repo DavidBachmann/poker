@@ -42,7 +42,6 @@ export const RESET_HIGHEST_CURRENT_BETTOR = 'RESET_HIGHEST_CURRENT_BETTOR'
 export const RESTART_PLAYER_STATES_BEFORE_NEW_HAND = 'RESTART_PLAYER_STATES_BEFORE_NEW_HAND'
 export const RESTART_PLAYER_STATES_BEFORE_NEW_BETTING_ROUND =
   'RESTART_PLAYER_STATES_BEFORE_NEW_BETTING_ROUND'
-// export const SET_NEXT_PLAYER_TO_ACT = 'SET_NEXT_PLAYER_TO_ACT'
 export const START_NEW_ROUND = 'START_NEW_ROUND'
 
 function startNewRound() {
@@ -56,12 +55,6 @@ function getNextPlayerToAct() {
     type: GET_NEXT_PLAYER_TO_ACT,
   }
 }
-
-// function setNextPlayerToAct() {
-//   return {
-//     type: SET_NEXT_PLAYER_TO_ACT,
-//   }
-// }
 
 function getHighestCurrentBettor() {
   return {
@@ -156,80 +149,88 @@ function restartPlayerStatesBeforeNewHand() {
 }
 
 function dealNextStreetThunk(currentStreet, runToEnd) {
+  console.log('dealing street')
   return async (dispatch, getState) => {
-    dispatch(collectPlayerPots())
-    dispatch(emptyPlayerPots())
-    dispatch(resetHighestCurrentBettor())
+    await dispatch(collectPlayerPots())
+    await dispatch(emptyPlayerPots())
+    await dispatch(resetHighestCurrentBettor())
     if (runToEnd) {
       for (let i = currentStreet; i <= 3; i++) {
-        dispatch(dealNextStreet(i))
+        await dispatch(dealNextStreet(i))
         await delay(750)
         if (i === 3) {
-          dispatch(goToShowdownThunk())
+          await dispatch(goToShowdownThunk())
         }
       }
     } else {
-      dispatch(dealNextStreet(currentStreet))
+      await dispatch(dealNextStreet(currentStreet))
     }
   }
 }
 
 export function playerFoldsThunk() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch(playerFolds())
     // Get players after current player has folded
     const { players } = getState()
     const alivePlayers = getAlivePlayers(players)
     // If this player was the last to fold then end the round
     if (alivePlayers.length === 1) {
-      dispatch(goToShowdownThunk())
+      await dispatch(goToShowdownThunk())
     } else {
-      dispatch(getNextPlayerToActThunk())
+      await dispatch(getNextPlayerToActThunk())
     }
   }
 }
 
 export function playerBetsThunk(amount) {
-  return dispatch => {
-    dispatch(playerBets(amount))
-    dispatch(getHighestCurrentBettor())
-    dispatch(getNextPlayerToActThunk())
+  return async dispatch => {
+    await dispatch(playerBets(amount))
+    await dispatch(getHighestCurrentBettor())
+    await dispatch(getNextPlayerToActThunk())
   }
 }
 
 export function playerChecksThunk() {
-  return dispatch => {
-    dispatch(playerChecks())
-    dispatch(getNextPlayerToActThunk())
+  return async dispatch => {
+    await dispatch(playerChecks())
+    await dispatch(getNextPlayerToActThunk())
   }
 }
 
 function goToShowdownThunk() {
   return async (dispatch, getState) => {
-    const { handWinners } = getState()
-    dispatch(determineWinner())
-    dispatch(collectPlayerPots())
-    dispatch(emptyPlayerPots())
-    dispatch(payPlayers(handWinners))
-    dispatch(addToHandHistory())
+    await dispatch(determineWinner())
+    await dispatch(collectPlayerPots())
+    await dispatch(emptyPlayerPots())
+    await dispatch(payPlayers(getState().handWinners))
+    await dispatch(addToHandHistory())
     await delay(2500)
-    dispatch(startRoundThunk())
+    await dispatch(restartRoundThunk())
   }
 }
 
-export function startRoundThunk() {
-  return dispatch => {
-    dispatch(restartPlayerStatesBeforeNewHand())
-    dispatch(removeBustedPlayers())
-    dispatch(startNewRound())
-    dispatch(generateNewDeck())
-    dispatch(dealCardsToPlayers())
-    dispatch(getHighestCurrentBettor())
+export function startGameThunk() {
+  return async dispatch => {
+    await dispatch(startNewRound())
+    await dispatch(generateNewDeck())
+    await dispatch(dealCardsToPlayers())
+    await dispatch(getHighestCurrentBettor())
+  }
+}
+
+function restartRoundThunk() {
+  return async dispatch => {
+    await dispatch(restartPlayerStatesBeforeNewHand())
+    await dispatch(removeBustedPlayers())
+    await dispatch(startNewRound())
+    await dispatch(generateNewDeck())
+    await dispatch(dealCardsToPlayers())
   }
 }
 
 function getNextPlayerToActThunk() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch(getNextPlayerToAct())
     const { nextPlayerToAct, currentStreet, players } = getState()
     // No one can act ...
@@ -237,15 +238,15 @@ function getNextPlayerToActThunk() {
       if (currentStreet < 3) {
         // ... because every one is all-in?
         if (players.filter(player => !player.isAllIn && !player.hasFolded).length === 0) {
-          dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet), true))
+          await dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet), true))
         } else {
           // ... because we should deal
-          dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
-          dispatch(getNextPlayerToAct())
+          await dispatch(dealNextStreetThunk(handleGettingNextStreet(currentStreet)))
+          await dispatch(getNextPlayerToAct())
         }
       } else {
         // ... because we should go to showdown
-        dispatch(goToShowdownThunk())
+        await dispatch(goToShowdownThunk())
       }
     }
   }
@@ -261,7 +262,7 @@ export default function reducer(state = initialState, action) {
 
     case PLAYER_CHECKS: {
       return Object.assign({}, state, {
-        players: handlePlayerChecks(state.players, state.nextPlayerToAct),
+        players: handlePlayerChecks(state.players),
       })
     }
 
@@ -283,7 +284,7 @@ export default function reducer(state = initialState, action) {
           state.players,
           state.nextPlayerToAct,
           state.highestCurrentBettor,
-          state.positions,
+          state.handHistory,
         ),
       })
     }
@@ -306,8 +307,8 @@ export default function reducer(state = initialState, action) {
         highestCurrentBettor: null,
         pot: 0,
         positions,
-        players: handlePostBlinds(state),
         nextPlayerToAct: positions.utg,
+        players: handlePostBlinds(state),
       })
     }
 
