@@ -1,7 +1,9 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import initialState from '../initialState'
+import mockState from '../../utils/testing/mockState'
 import reducer, { startGameThunk, playerBetsThunk, playerFoldsThunk } from './gameManager'
+
+const initialState = mockState()
 
 jest.mock('../../utils/delay', () => {
   return jest.fn(() => Promise.resolve())
